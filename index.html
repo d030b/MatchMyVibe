@@ -308,7 +308,7 @@
         <div id="loginExpandPanel" class="doodle-box-sm p-5 bg-[#fffdf7] text-left space-y-4">
           <div>
             <label class="block text-sm font-black mb-1">✏️ 你的暱稱：</label>
-            <input type="text" id="inputNickname" value="人類" maxlength="10" placeholder="請輸入暱稱..." class="doodle-input w-full text-lg" />
+            <input type="text" id="inputNickname" value="" maxlength="10" placeholder="請輸入暱稱..." class="doodle-input w-full text-lg" />
           </div>
 
           <!-- 加入房間專屬：輸入朋友的 4 碼房號 -->
@@ -792,7 +792,7 @@
       peer: null,
       conns: [],        // 房主維護的所有客戶端連線
       hostConn: null,   // 房客連向房主的連線
-      prefix: ' POPULARITY_KING_V1_',
+      prefix: 'POPULARITY_KING_V1_',
 
       updateBadge(text, bgClass = 'bg-[#d4edda] text-green-800') {
         const el = document.getElementById('netStatusBadge');
@@ -811,7 +811,15 @@
           if (this.peer) this.peer.destroy();
           this.conns = [];
           const peerId = this.prefix + roomCode;
-          this.peer = new Peer(peerId);
+          this.peer = new Peer(peerId, {
+            config: {
+              iceServers: [
+                { urls: 'stun:stun.l.google.com:19302' },
+                { urls: 'stun:stun1.l.google.com:19302' },
+                { urls: 'stun:stun2.l.google.com:19302' }
+              ]
+            }
+          });
 
           this.peer.on('open', () => {
             this.updateBadge(`🟢 房間已開啟 (#${roomCode})`, 'bg-[#d4edda] text-green-800');
@@ -827,7 +835,11 @@
 
           this.peer.on('error', (err) => {
             console.warn('Peer Host Warning:', err.type);
-            this.updateBadge(`🟢 本機房主模式 (#${roomCode})`, 'bg-[#ffe66d] text-[#1e1e1e]');
+            if (err.type === 'unavailable-id') {
+              this.updateBadge(`⚠️ 房號 #${roomCode} 已被佔用，請換一個房號`, 'bg-red-100 text-red-700');
+            } else {
+              this.updateBadge(`🟢 本機房主模式 (#${roomCode})`, 'bg-[#ffe66d] text-[#1e1e1e]');
+            }
           });
         } catch (e) {
           console.warn(e);
@@ -836,24 +848,34 @@
 
       initClient(roomCode, nickname, onJoinedCallback, onErrorCallback) {
         if (typeof Peer === 'undefined') {
-          if (onErrorCallback) onErrorCallback('網路元件未載入，已切換為單機模式');
+          if (onErrorCallback) onErrorCallback('網路元件未載入，無法連線');
           return;
         }
         try {
           if (this.peer) this.peer.destroy();
-          this.peer = new Peer();
+          this.peer = new Peer({
+            config: {
+              iceServers: [
+                { urls: 'stun:stun.l.google.com:19302' },
+                { urls: 'stun:stun1.l.google.com:19302' },
+                { urls: 'stun:stun2.l.google.com:19302' }
+              ]
+            }
+          });
+
+          let connected = false;
+          const timeout = setTimeout(() => {
+            if (!connected && onErrorCallback) {
+              onErrorCallback(`連線逾時：找不到房號 #${roomCode}，請確認房主已進入大廳且房號正確！`);
+            }
+          }, 7000);
 
           this.peer.on('open', (myPeerId) => {
             const conn = this.peer.connect(this.prefix + roomCode, { reliable: true });
             this.hostConn = conn;
 
-            const timeout = setTimeout(() => {
-              if (!conn.open && onErrorCallback) {
-                onErrorCallback(`找不到房號 #${roomCode}，已為您開啟本地測試房間！`);
-              }
-            }, 4500);
-
             conn.on('open', () => {
+              connected = true;
               clearTimeout(timeout);
               this.updateBadge(`🟢 已連線至房號 #${roomCode}`, 'bg-[#d4edda] text-green-800');
               const newPid = 'p_' + myPeerId.slice(-5);
@@ -867,7 +889,12 @@
                   isAI: false,
                   totalScore: 0,
                   roundDelta: 0,
-                  avatar: createRandomAvatarConfig(Math.floor(Math.random() * 10))
+                  avatar: {
+                    faceShape: 'square',
+                    skinColor: SKIN_COLORS[0].hex,
+                    hairColor: HAIR_COLORS[0].hex,
+                    parts: {}
+                  }
                 }
               });
               if (onJoinedCallback) onJoinedCallback();
@@ -878,6 +905,13 @@
               clearTimeout(timeout);
               if (onErrorCallback) onErrorCallback(`連線房號 #${roomCode} 失敗`);
             });
+          });
+
+          this.peer.on('error', (err) => {
+            clearTimeout(timeout);
+            if (onErrorCallback) {
+              onErrorCallback(`無法連入房號 #${roomCode} (${err.type})`);
+            }
           });
         } catch (e) {
           if (onErrorCallback) onErrorCallback('連線初始化異常');
@@ -1591,10 +1625,10 @@
       };
     }
 
-    function initDefaultPlayers(humanName = "人類") {
+    function initDefaultPlayers(humanName = "人類", withAI = false) {
       GameState.players = [
         {
-          id: 'p0',
+          id: GameState.myPlayerId || 'p0',
           name: humanName,
           isAI: false,
           totalScore: 0,
@@ -1607,8 +1641,10 @@
           }
         }
       ];
-      for (let i = 0; i < 3; i++) {
-        addAIPlayer(true);
+      if (withAI) {
+        for (let i = 0; i < 3; i++) {
+          addAIPlayer(true);
+        }
       }
       resetChemistryMatrix();
     }
@@ -1722,7 +1758,7 @@
     function handleQuickJump(val) {
       if (!val) return;
       if (GameState.players.length < 2) {
-        initDefaultPlayers(document.getElementById('inputNickname')?.value || '人類');
+        initDefaultPlayers(document.getElementById('inputNickname')?.value || '玩家1', true);
       }
       if (val.startsWith('game-')) {
         const gId = parseInt(val.split('-')[1], 10);
@@ -1740,6 +1776,7 @@
     }
 
     function addAIPlayer(silent = false) {
+      if (!GameState.isRoomHost && !silent) return;
       if (GameState.players.length >= 12) return;
       const idx = GameState.players.length;
       const usedNames = GameState.players.map(p => p.name);
@@ -1804,7 +1841,14 @@
       const customRoomInput = document.getElementById('inputCreateRoomCode');
       const joinRoomInput = document.getElementById('inputJoinRoomCode');
       const errBox = document.getElementById('loginErrorMsg');
-      const nickname = (nickInput.value || '').trim() || '人類';
+      const nickname = (nickInput.value || '').trim();
+
+      if (!nickname) {
+        SoundFX.wrong();
+        errBox.textContent = '✏️ 請先輸入你的暱稱！';
+        errBox.classList.remove('hidden');
+        return;
+      }
 
       if (GameState.loginMode === 'create') {
         if (passInput.value !== '00001234') {
@@ -1819,32 +1863,58 @@
         GameState.myPlayerId = 'p0';
         errBox.classList.add('hidden');
         SoundFX.pop();
-        initDefaultPlayers(nickname);
+        // 建立房間時不自動塞入 AI，房主可在大廳視需要手動點擊「➕ 加入測試 AI 玩家」
+        initDefaultPlayers(nickname, false);
         NetSync.initHost(GameState.roomCode);
         switchScreen('screen-lobby');
       } else {
-        const targetCode = (joinRoomInput?.value || '').trim().toUpperCase() || '8888';
+        const targetCode = (joinRoomInput?.value || '').trim().toUpperCase();
+        if (!targetCode) {
+          SoundFX.wrong();
+          errBox.textContent = '🔑 請輸入要加入的 4 碼房間代碼！';
+          errBox.classList.remove('hidden');
+          return;
+        }
         GameState.roomCode = targetCode;
+        GameState.isRoomHost = false;
         errBox.classList.add('hidden');
         SoundFX.pop();
-        initDefaultPlayers(nickname);
+        // 加入房間時絕不產生 AI 玩家，僅顯示自己並等待與房主同步清單
+        GameState.players = [
+          {
+            id: 'p_joining',
+            name: nickname,
+            isAI: false,
+            totalScore: 0,
+            roundDelta: 0,
+            avatar: {
+              faceShape: 'square',
+              skinColor: SKIN_COLORS[0].hex,
+              hairColor: HAIR_COLORS[0].hex,
+              parts: {}
+            }
+          }
+        ];
+        resetChemistryMatrix();
         switchScreen('screen-lobby');
         NetSync.updateBadge(`⏳ 正在連線至房號 #${targetCode}...`, 'bg-yellow-100 text-yellow-800');
         NetSync.initClient(
           targetCode,
           nickname,
           () => { renderLobbyPlayers(); },
-          (msg) => { NetSync.updateBadge(`🟡 ${msg}`, 'bg-yellow-100 text-yellow-800'); }
+          (msg) => { NetSync.updateBadge(`🔴 ${msg}`, 'bg-red-100 text-red-700'); }
         );
       }
     }
 
     function removeLastAIPlayer() {
+      if (!GameState.isRoomHost) return;
       for (let i = GameState.players.length - 1; i >= 0; i--) {
         if (GameState.players[i].isAI) {
           GameState.players.splice(i, 1);
           resetChemistryMatrix();
           renderLobbyPlayers();
+          NetSync.broadcastState();
           return;
         }
       }
@@ -1854,12 +1924,23 @@
       const grid = document.getElementById('lobbyPlayersGrid');
       const countText = document.getElementById('lobbyCountText');
       const startBtn = document.getElementById('btnLobbyStart');
+      const hostControls = document.getElementById('lobbyHostControls');
       const ruleBadge = document.getElementById('lobbyRoundRuleBadge');
       if (!grid) return;
 
       const n = GameState.players.length;
       countText.textContent = n;
-      startBtn.disabled = n < 2;
+
+      // 權限控制：只有房主可以管理 AI 與點擊「開始遊戲」，從「加入房間」進來的玩家無法按開始
+      if (GameState.isRoomHost) {
+        if (hostControls) hostControls.classList.remove('hidden');
+        startBtn.disabled = n < 2;
+        startBtn.innerHTML = '🎨 開始遊戲 ➔';
+      } else {
+        if (hostControls) hostControls.classList.add('hidden');
+        startBtn.disabled = true;
+        startBtn.innerHTML = '⏳ 等待房主開始遊戲...';
+      }
 
       const totalRounds = calculateTargetRounds(n, GameState.gameLength);
       const lenLabel = GameState.gameLength === 'short' ? '短' : (GameState.gameLength === 'medium' ? '中' : '長');
@@ -1872,14 +1953,17 @@
         const card = document.createElement('div');
         card.className = 'doodle-box-sm p-3 bg-white flex items-center gap-3 transition transform hover:-translate-y-0.5';
         const canvasId = `lobby_av_${p.id}`;
+        const roleTag = p.isAI
+          ? '🤖 測試 AI 玩家'
+          : (idx === 0 ? '👑 房主' : '🙋 連線玩家');
         card.innerHTML = `
           <div class="w-14 h-14 rounded-full border-2 border-[#1e1e1e] bg-[#fffdf7] overflow-hidden flex-shrink-0">
             <canvas id="${canvasId}" width="120" height="120" class="w-full h-full"></canvas>
           </div>
           <div class="min-w-0 flex-1">
             <div class="font-black text-sm truncate">${p.name}</div>
-            <div class="text-[11px] font-bold ${p.isAI ? 'text-teal-700' : 'text-red-600'}">
-              ${idx === 0 ? '👑 房主 (人類)' : '🤖 測試 AI 玩家'}
+            <div class="text-[11px] font-bold ${p.isAI ? 'text-teal-700' : (idx === 0 ? 'text-red-600' : 'text-blue-700')}">
+              ${roleTag}
             </div>
           </div>
         `;
@@ -1889,6 +1973,7 @@
     }
 
     function startGameFromLobby(skipCreator = false) {
+      if (!GameState.isRoomHost) return;
       if (GameState.players.length < 2) return;
       SoundFX.correct();
       buildRoundQueueByLength();
@@ -1932,7 +2017,7 @@
     };
 
     function initCreatorStudio() {
-      const human = GameState.players[0];
+      const human = getLocalPlayer();
       document.getElementById('creatorStep1').classList.remove('hidden');
       document.getElementById('creatorStep2').classList.add('hidden');
 
@@ -1966,14 +2051,14 @@
     }
 
     function setCreatorFaceShape(shape) {
-      GameState.players[0].avatar.faceShape = shape;
+      getLocalPlayer().avatar.faceShape = shape;
       initCreatorStudio();
     }
 
     function renderUnderlyingFaceForCreator() {
       const bgCanvas = document.getElementById('partBgFaceCanvas');
       if (!bgCanvas) return;
-      const human = GameState.players[0];
+      const human = getLocalPlayer();
       // 將目前已畫好的部位與臉型底圖渲染在下層畫布，讓玩家直接看著臉畫五官
       const completedKeys = CreatorState.partsSequence.slice(0, CreatorState.stepIndex).map(p => p.key);
       const hideKeys = ['eyes', 'nose', 'mouth', 'hair'].filter(k => !completedKeys.includes(k));
@@ -1982,7 +2067,7 @@
 
     function startTimedDrawingSequence() {
       // 清空人類舊部位，確保完全手繪無預設
-      GameState.players[0].avatar.parts = {};
+      getLocalPlayer().avatar.parts = {};
       document.getElementById('creatorStep1').classList.add('hidden');
       document.getElementById('creatorStep2').classList.remove('hidden');
       CreatorState.stepIndex = 0;
@@ -2051,7 +2136,7 @@
         btn.title = hc.name;
         btn.onclick = () => {
           CreatorState.currentBrushColor = hc.hex;
-          GameState.players[0].avatar.hairColor = hc.hex;
+          getLocalPlayer().avatar.hairColor = hc.hex;
           renderHairColorSwatches();
         };
         container.appendChild(btn);
@@ -4909,7 +4994,7 @@
 
     // 頁面載入初始化
     window.addEventListener('DOMContentLoaded', () => {
-      initDefaultPlayers('人類');
+      initDefaultPlayers('', false);
       openLoginPanel('create');
       selectGameLength('long');
     });
