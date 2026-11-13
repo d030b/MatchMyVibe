@@ -692,6 +692,142 @@
   <!-- ==================== JavaScript 核心邏輯與完整題庫 ==================== -->
   <script>
     /**************************************************************
+     * 0. 音效合成器 (SoundFX)、全局狀態 (GameState) 與隨機亂數工具
+     **************************************************************/
+    const SoundFX = {
+      ctx: null,
+      muted: false,
+      init() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (AudioCtx) this.ctx = new AudioCtx();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      },
+      toggleMute() {
+        this.muted = !this.muted;
+        const btn = document.getElementById('muteBtn');
+        if (btn) btn.textContent = this.muted ? '🔇 靜音' : '🔊 音效';
+      },
+      playTone(freq = 440, type = 'sine', duration = 0.08, vol = 0.12) {
+        if (this.muted) return;
+        try {
+          this.init();
+          if (!this.ctx) return;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+          gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + duration);
+        } catch (e) {}
+      },
+      click() { this.playTone(520, 'triangle', 0.06, 0.12); },
+      pop() { this.playTone(680, 'sine', 0.09, 0.15); },
+      correct() {
+        this.playTone(523.25, 'triangle', 0.1, 0.15);
+        setTimeout(() => this.playTone(659.25, 'triangle', 0.1, 0.15), 90);
+        setTimeout(() => this.playTone(783.99, 'triangle', 0.18, 0.18), 180);
+      },
+      wrong() {
+        this.playTone(220, 'sawtooth', 0.15, 0.15);
+        setTimeout(() => this.playTone(165, 'sawtooth', 0.22, 0.15), 120);
+      },
+      fanfare() {
+        [523, 659, 784, 1046].forEach((f, i) => {
+          setTimeout(() => this.playTone(f, 'triangle', 0.2, 0.16), i * 110);
+        });
+      }
+    };
+
+    document.addEventListener('click', (e) => {
+      if (e.target.closest('button') || e.target.closest('select')) {
+        SoundFX.click();
+      }
+    });
+
+    const AI_NAME_POOL = [
+      "AI-小守", "AI-阿呆", "AI-帥哥學員", "AI-香菜教主", "AI-夜貓子",
+      "AI-快樂水", "AI-摸魚王", "AI-大胃王", "AI-推理狂", "AI-繪畫鬼才", "AI-路人甲"
+    ];
+
+    const ALL_GAMES_META = [
+      { id: 0, title: "默契感應", minPlayers: 2, desc: "10 秒內快問快答，靠你對主持人的了解選出主持人的選擇，我們是最好的朋友對吧？" },
+      { id: 1, title: "猜猜我是誰", minPlayers: 2, desc: "主持人的臉孔被神秘馬賽克遮蔽，逐一選擇真正屬於他的臉型、眼睛、鼻子、嘴巴與髮型，幫助主持人找回臉吧！" },
+      { id: 2, title: "大腦裝什麼", minPlayers: 2, desc: "主持人輸入一樣目視所及的物品，大家盲猜！主持人不參與猜題。猜錯累積三次會解鎖「問題卡」逼問線索，搶先猜中本尊所想的物品。" },
+      { id: 3, title: "記憶考驗", minPlayers: 2, desc: "考驗短暫記憶！主持人每回合都會丟出一個新詞語。從第 4 題開始，你必須準確回想並填出主持人「前三個」說過的話。" },
+      { id: 4, title: "殘酷二選一", minPlayers: 3, desc: "限時 1 分鐘，根據荒謬題目畫出你的作品！主持人會把大家的畫兩兩捉對廝殺，只有被看上眼的那幅才能晉級。" },
+      { id: 5, title: "這是我的回答", minPlayers: 3, desc: "面對情境題，每個人都要交出一句靈魂回答。所有答案打散混在一起，請靠直覺抓出哪一句才是主持人的真心話。" },
+      { id: 6, title: "臉部拼圖", minPlayers: 3, desc: "主持人的五官離家散落！請依序對眼睛、鼻子、嘴巴、髮型，從左下開始，各長按右鍵與上鍵協助復位。" },
+      { id: 7, title: "超級找找王", minPlayers: 2, desc: "畫面裡塞滿了各式各樣長得很像主持人的冒牌貨，還在做奇怪的事！眼明手快找出總共５個正版，千萬別亂點。" }
+    ];
+
+    const GameState = {
+      loginMode: 'create',
+      gameLength: 'long',
+      testMode: false,
+      hasCompletedCreator: false,
+      kickedOut: false,
+      roomCode: '8888',
+      myPlayerId: 'p0',
+      isRoomHost: true,
+      players: [],
+      chemistry: {},
+      stats: {
+        telepathyMaxMatches: {},
+        cruelChampionGiven: {},
+        mutualVotes: {},
+        quickFinderHit: {},
+        missedParts: {},
+        funnyGrudge: {},
+        prankHighScorer: {}
+      },
+      roundQueue: [],
+      hostQueue: [],
+      introReadyMap: {},
+      currentRoundIdx: 0,
+      currentHostIdx: 0,
+      roundSeed: 12345,
+      activeTimers: []
+    };
+
+    // 確定性偽隨機數產生器 (確保所有連線裝置抽題與打散順序 100% 同步)
+    function createSeededRandom(seed) {
+      let s = (seed || 12345) % 2147483647;
+      if (s <= 0) s += 2147483646;
+      return function() {
+        s = (s * 16807) % 2147483647;
+        return (s - 1) / 2147483646;
+      };
+    }
+
+    function deterministicShuffle(arr, rng) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(rng() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    // 測試模式控制列：僅在「創角完成後」且為「房主」頁面時顯示
+    function updateHostDevToolsVisibility() {
+      const devTools = document.getElementById('hostDevTools');
+      if (!devTools) return;
+      if (GameState.isRoomHost && GameState.hasCompletedCreator) {
+        devTools.classList.remove('hidden');
+      } else {
+        devTools.classList.add('hidden');
+      }
+    }
+
+    /**************************************************************
      * 3.5 PeerJS WebRTC 跨裝置即時連線同步引擎 + BroadcastChannel 同機多分頁秒連
      **************************************************************/
     const NetSync = {
@@ -1857,9 +1993,10 @@
       }
 
       if (GameState.loginMode === 'create') {
-        if (passInput.value !== '00001234') {
+        const passVal = (passInput.value || '').trim();
+        if (passVal !== '00001234') {
           SoundFX.wrong();
-          errBox.textContent = '❌ 房間密碼驗證錯誤！請輸入正確密碼。';
+          errBox.textContent = '❌ 房間密碼驗證錯誤！（請輸入 8 碼通關密語 00001234）';
           errBox.classList.remove('hidden');
           return;
         }
