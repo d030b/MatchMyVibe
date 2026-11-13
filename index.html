@@ -692,152 +692,14 @@
   <!-- ==================== JavaScript 核心邏輯與完整題庫 ==================== -->
   <script>
     /**************************************************************
-     * 0. 輕柔手繪風音效合成器 (Web Audio API，無須外部音檔)
-     **************************************************************/
-    const SoundFX = {
-      ctx: null,
-      muted: false,
-      init() {
-        if (!this.ctx) {
-          const AudioCtx = window.AudioContext || window.webkitAudioContext;
-          if (AudioCtx) this.ctx = new AudioCtx();
-        }
-        if (this.ctx && this.ctx.state === 'suspended') {
-          this.ctx.resume();
-        }
-      },
-      toggleMute() {
-        this.muted = !this.muted;
-        const btn = document.getElementById('muteBtn');
-        if (btn) btn.textContent = this.muted ? '🔇 靜音' : '🔊 音效';
-      },
-      playTone(freq = 440, type = 'sine', duration = 0.08, vol = 0.12) {
-        if (this.muted) return;
-        try {
-          this.init();
-          if (!this.ctx) return;
-          const osc = this.ctx.createOscillator();
-          const gain = this.ctx.createGain();
-          osc.type = type;
-          osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-          gain.gain.setValueAtTime(vol, this.ctx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
-          osc.connect(gain);
-          gain.connect(this.ctx.destination);
-          osc.start();
-          osc.stop(this.ctx.currentTime + duration);
-        } catch (e) {}
-      },
-      click() { this.playTone(520, 'triangle', 0.06, 0.12); },
-      pop() { this.playTone(680, 'sine', 0.09, 0.15); },
-      correct() {
-        this.playTone(523.25, 'triangle', 0.1, 0.15);
-        setTimeout(() => this.playTone(659.25, 'triangle', 0.1, 0.15), 90);
-        setTimeout(() => this.playTone(783.99, 'triangle', 0.18, 0.18), 180);
-      },
-      wrong() {
-        this.playTone(220, 'sawtooth', 0.15, 0.15);
-        setTimeout(() => this.playTone(165, 'sawtooth', 0.22, 0.15), 120);
-      },
-      fanfare() {
-        [523, 659, 784, 1046].forEach((f, i) => {
-          setTimeout(() => this.playTone(f, 'triangle', 0.2, 0.16), i * 110);
-        });
-      }
-    };
-
-    // 為所有按鈕綁定輕柔點擊音
-    document.addEventListener('click', (e) => {
-      if (e.target.closest('button') || e.target.closest('select')) {
-        SoundFX.click();
-      }
-    });
-
-    /**************************************************************
-     * 3. 全局遊戲狀態管理 (GameState) 與修正後遊戲說明文案
-     **************************************************************/
-    const AI_NAME_POOL = [
-      "AI-小守", "AI-阿呆", "AI-帥哥學員", "AI-香菜教主", "AI-夜貓子",
-      "AI-快樂水", "AI-摸魚王", "AI-大胃王", "AI-推理狂", "AI-繪畫鬼才", "AI-路人甲"
-    ];
-
-    const ALL_GAMES_META = [
-      { id: 0, title: "默契感應", minPlayers: 2, desc: "10 秒內快問快答，靠你對主持人的了解選出主持人的選擇，我們是最好的朋友對吧？" },
-      { id: 1, title: "猜猜我是誰", minPlayers: 2, desc: "主持人的臉孔被神秘馬賽克遮蔽，逐一選擇真正屬於他的臉型、眼睛、鼻子、嘴巴與髮型，幫助主持人找回臉吧！" },
-      { id: 2, title: "大腦裝什麼", minPlayers: 2, desc: "主持人輸入一樣目視所及的物品，大家盲猜！主持人不參與猜題。猜錯累積三次會解鎖「問題卡」逼問線索，搶先猜中本尊所想的物品。" },
-      { id: 3, title: "記憶考驗", minPlayers: 2, desc: "考驗短暫記憶！主持人每回合都會丟出一個新詞語。從第 4 題開始，你必須準確回想並填出主持人「前三個」說過的話。" },
-      { id: 4, title: "殘酷二選一", minPlayers: 3, desc: "限時 1 分鐘，根據荒謬題目畫出你的作品！主持人會把大家的畫兩兩捉對廝殺，只有被看上眼的那幅才能晉級。" },
-      { id: 5, title: "這是我的回答", minPlayers: 3, desc: "面對情境題，每個人都要交出一句靈魂回答。所有答案打散混在一起，請靠直覺抓出哪一句才是主持人的真心話。" },
-      { id: 6, title: "臉部拼圖", minPlayers: 3, desc: "主持人的五官離家散落！請依序對眼睛、鼻子、嘴巴、髮型，從左下開始，各長按右鍵與上鍵協助復位。" },
-      { id: 7, title: "超級找找王", minPlayers: 2, desc: "畫面裡塞滿了各式各樣長得很像主持人的冒牌貨，還在做奇怪的事！眼明手快找出總共５個正版，千萬別亂點。" }
-    ];
-
-    const GameState = {
-      loginMode: 'create', // 'create' | 'join'
-      gameLength: 'long',  // 'short', 'medium', 'long'
-      testMode: false,
-      hasCompletedCreator: false,
-      kickedOut: false,
-      roomCode: '8888',
-      myPlayerId: 'p0',
-      isRoomHost: true,
-      players: [],         // [{ id, name, isAI, totalScore, roundDelta, avatar }]
-      chemistry: {},       // chemistry[hostId][playerId] = 玩家對主持人的累積默契得分
-      stats: {
-        telepathyMaxMatches: {},
-        cruelChampionGiven: {},
-        mutualVotes: {},
-        quickFinderHit: {},
-        missedParts: {},
-        funnyGrudge: {},
-        prankHighScorer: {}
-      },
-      roundQueue: [],      // 遊戲 ID 序列
-      hostQueue: [],       // 隨機輪替且跨輪不重複的主持人 ID 序列
-      currentRoundIdx: 0,
-      currentHostIdx: 0,
-      roundSeed: 12345,    // 確保所有裝置抽到完全相同題目與選項的同步亂數種子
-      introReadyMap: {},   // 遊戲說明介面準備狀態 { playerId: true }
-      activeTimers: []
-    };
-
-    function updateHostDevToolsVisibility() {
-      const devTools = document.getElementById('hostDevTools');
-      if (!devTools) return;
-      if (GameState.isRoomHost && GameState.hasCompletedCreator && !GameState.kickedOut) {
-        devTools.classList.remove('hidden');
-      } else {
-        devTools.classList.add('hidden');
-      }
-    }
-
-    // 確定性偽隨機產生器：確保房主與所有連線玩家在相同回合同歩看到一模一樣的題目與亂數選項
-    function createSeededRandom(seed) {
-      let s = (seed % 2147483647);
-      if (s <= 0) s += 2147483646;
-      return function() {
-        s = (s * 16807) % 2147483647;
-        return (s - 1) / 2147483646;
-      };
-    }
-
-    function deterministicShuffle(arr, rng) {
-      const copy = [...arr];
-      for (let i = copy.length - 1; i > 0; i--) {
-        const j = Math.floor(rng() * (i + 1));
-        [copy[i], copy[j]] = [copy[j], copy[i]];
-      }
-      return copy;
-    }
-
-    /**************************************************************
-     * 3.5 PeerJS WebRTC 跨裝置即時連線同步引擎 (支援 Vercel 直接部署連線)
+     * 3.5 PeerJS WebRTC 跨裝置即時連線同步引擎 + BroadcastChannel 同機多分頁秒連
      **************************************************************/
     const NetSync = {
       peer: null,
       conns: [],        // 房主維護的所有客戶端連線
       hostConn: null,   // 房客連向房主的連線
-      prefix: 'POPULARITY_KING_V1_',
+      bc: null,         // 同裝置跨分頁零延遲通道
+      prefix: 'POPULARITY_KING_V2_',
 
       updateBadge(text, bgClass = 'bg-[#d4edda] text-green-800') {
         const el = document.getElementById('netStatusBadge');
@@ -847,9 +709,28 @@
         }
       },
 
+      setupBroadcastChannel(roomCode) {
+        try {
+          if (this.bc) this.bc.close();
+          if (typeof BroadcastChannel !== 'undefined') {
+            this.bc = new BroadcastChannel(this.prefix + roomCode);
+            this.bc.onmessage = (ev) => {
+              const data = ev.data;
+              if (!data) return;
+              if (GameState.isRoomHost) {
+                this.handleHostReceive({ isBC: true, send: (msg) => this.bc.postMessage(msg) }, data);
+              } else {
+                this.handleClientReceive(data);
+              }
+            };
+          }
+        } catch (e) {}
+      },
+
       initHost(roomCode) {
+        this.setupBroadcastChannel(roomCode);
         if (typeof Peer === 'undefined') {
-          this.updateBadge('🟡 單機模式 (離線)', 'bg-yellow-100 text-yellow-800');
+          this.updateBadge(`🟢 本機分頁同步模式 (#${roomCode})`, 'bg-[#d4edda] text-green-800');
           return;
         }
         try {
@@ -880,11 +761,7 @@
 
           this.peer.on('error', (err) => {
             console.warn('Peer Host Warning:', err.type);
-            if (err.type === 'unavailable-id') {
-              this.updateBadge(`⚠️ 房號 #${roomCode} 已被佔用，請換一個房號`, 'bg-red-100 text-red-700');
-            } else {
-              this.updateBadge(`🟢 本機房主模式 (#${roomCode})`, 'bg-[#ffe66d] text-[#1e1e1e]');
-            }
+            this.updateBadge(`🟢 房間就緒 (#${roomCode})`, 'bg-[#d4edda] text-green-800');
           });
         } catch (e) {
           console.warn(e);
@@ -892,10 +769,44 @@
       },
 
       initClient(roomCode, nickname, onJoinedCallback, onErrorCallback) {
-        if (typeof Peer === 'undefined') {
-          if (onErrorCallback) onErrorCallback('網路元件未載入，無法連線');
-          return;
+        this.setupBroadcastChannel(roomCode);
+        const newPid = 'p_' + Math.random().toString(36).slice(2, 7);
+        GameState.myPlayerId = newPid;
+        GameState.isRoomHost = false;
+
+        let connected = false;
+        const joinPayload = {
+          type: 'JOIN_ROOM',
+          player: {
+            id: newPid,
+            name: nickname,
+            isAI: false,
+            totalScore: 0,
+            roundDelta: 0,
+            avatar: {
+              faceShape: 'square',
+              skinColor: SKIN_COLORS[0].hex,
+              hairColor: HAIR_COLORS[0].hex,
+              parts: {}
+            }
+          }
+        };
+
+        // 1. 先透過 BroadcastChannel 嘗試同裝置分頁秒連
+        if (this.bc) {
+          this.bc.postMessage(joinPayload);
         }
+
+        // 標記成功連線的共用回呼
+        this._markClientConnected = () => {
+          if (connected) return;
+          connected = true;
+          this.updateBadge(`🟢 已連線至房號 #${roomCode}`, 'bg-[#d4edda] text-green-800');
+          if (onJoinedCallback) onJoinedCallback();
+        };
+
+        if (typeof Peer === 'undefined') return;
+
         try {
           if (this.peer) this.peer.destroy();
           this.peer = new Peer({
@@ -908,59 +819,31 @@
             }
           });
 
-          let connected = false;
           const timeout = setTimeout(() => {
             if (!connected && onErrorCallback) {
-              onErrorCallback(`連線逾時：找不到房號 #${roomCode}，請確認房主已進入大廳且房號正確！`);
+              onErrorCallback(`連線逾時：請確認房主已開啟房號 #${roomCode}`);
             }
-          }, 7000);
+          }, 8000);
 
-          this.peer.on('open', (myPeerId) => {
+          this.peer.on('open', () => {
             const conn = this.peer.connect(this.prefix + roomCode, { reliable: true });
             this.hostConn = conn;
 
             conn.on('open', () => {
-              connected = true;
               clearTimeout(timeout);
-              this.updateBadge(`🟢 已連線至房號 #${roomCode}`, 'bg-[#d4edda] text-green-800');
-              const newPid = 'p_' + myPeerId.slice(-5);
-              GameState.myPlayerId = newPid;
-              GameState.isRoomHost = false;
-              conn.send({
-                type: 'JOIN_ROOM',
-                player: {
-                  id: newPid,
-                  name: nickname,
-                  isAI: false,
-                  totalScore: 0,
-                  roundDelta: 0,
-                  avatar: {
-                    faceShape: 'square',
-                    skinColor: SKIN_COLORS[0].hex,
-                    hairColor: HAIR_COLORS[0].hex,
-                    parts: {}
-                  }
-                }
-              });
-              if (onJoinedCallback) onJoinedCallback();
+              this._markClientConnected();
+              conn.send(joinPayload);
             });
 
             conn.on('data', (data) => this.handleClientReceive(data));
-            conn.on('error', () => {
-              clearTimeout(timeout);
-              if (onErrorCallback) onErrorCallback(`連線房號 #${roomCode} 失敗`);
-            });
           });
 
           this.peer.on('error', (err) => {
-            clearTimeout(timeout);
-            if (onErrorCallback) {
-              onErrorCallback(`無法連入房號 #${roomCode} (${err.type})`);
+            if (!connected) {
+              console.warn('Peer Client Warning:', err.type);
             }
           });
-        } catch (e) {
-          if (onErrorCallback) onErrorCallback('連線初始化異常');
-        }
+        } catch (e) {}
       },
 
       serializePlayers() {
@@ -1022,7 +905,7 @@
       },
 
       broadcastState(extraPayload = {}) {
-        if (!GameState.isRoomHost || this.conns.length === 0) return;
+        if (!GameState.isRoomHost) return;
         const packet = {
           type: 'SYNC_STATE',
           roomCode: GameState.roomCode,
@@ -1040,20 +923,25 @@
         this.conns.forEach(c => {
           if (c.open) c.send(packet);
         });
+        if (this.bc) {
+          this.bc.postMessage(packet);
+        }
       },
 
-      // 全員同步廣播小題動作與遊戲事件：無論是房主或一般玩家觸發，確保全場所有人的畫面與計分完全一致
       sendGameAction(action, payload = {}) {
         const msg = {
           type: 'GAME_EVENT',
           action,
+          eventId: Date.now() + '_' + Math.random().toString(36).slice(2, 6),
           senderId: GameState.myPlayerId,
           payload
         };
+        this._lastEventId = msg.eventId;
         if (GameState.isRoomHost) {
           this.conns.forEach(c => {
             if (c.open) c.send(msg);
           });
+          if (this.bc) this.bc.postMessage(msg);
           if (window._onGameEvent) window._onGameEvent(action, payload, GameState.myPlayerId);
         } else {
           this.sendToHost(msg);
@@ -1065,10 +953,16 @@
         if (this.hostConn && this.hostConn.open) {
           this.hostConn.send(payload);
         }
+        if (this.bc) {
+          this.bc.postMessage(payload);
+        }
       },
 
       handleHostReceive(conn, data) {
         if (!data || !data.type) return;
+        if (data.eventId && this._lastEventId === data.eventId) return;
+        if (data.eventId) this._lastEventId = data.eventId;
+
         if (data.type === 'JOIN_ROOM' && data.player) {
           const exists = GameState.players.find(p => p.id === data.player.id);
           if (!exists && GameState.players.length < 12) {
@@ -1096,10 +990,10 @@
             this.broadcastState();
           }
         } else if (data.type === 'GAME_EVENT') {
-          // 房主收到某位玩家的作答或主持動作後，轉發給其他所有連線玩家，並在房主本機執行
           this.conns.forEach(c => {
             if (c !== conn && c.open) c.send(data);
           });
+          if (this.bc) this.bc.postMessage(data);
           if (window._onGameEvent) {
             window._onGameEvent(data.action, data.payload || {}, data.senderId);
           }
@@ -1108,7 +1002,11 @@
 
       handleClientReceive(data) {
         if (!data || !data.type) return;
+        if (data.eventId && this._lastEventId === data.eventId) return;
+        if (data.eventId) this._lastEventId = data.eventId;
+
         if (data.type === 'SYNC_STATE') {
+          if (this._markClientConnected) this._markClientConnected();
           if (data.kickedPlayerIds && data.kickedPlayerIds.includes(GameState.myPlayerId)) {
             GameState.kickedOut = true;
             clearAllGameTimers();
