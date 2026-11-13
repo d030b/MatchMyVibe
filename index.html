@@ -246,27 +246,29 @@
 
       <!-- 測試模式與自由跳關控制列 -->
       <div class="flex flex-wrap items-center gap-1.5 text-xs md:text-sm">
-        <label class="flex items-center gap-1.5 bg-white px-2.5 py-1 border-2 border-[#1e1e1e] rounded-lg cursor-pointer font-bold shadow-[2px_2px_0px_#1e1e1e]">
-          <input type="checkbox" id="globalTestModeToggle" class="w-4 h-4 accent-[#1e1e1e]" checked onchange="toggleTestMode(this.checked)">
-          <span>🤖 測試模式</span>
-        </label>
+        <div id="hostDevTools" class="hidden flex flex-wrap items-center gap-1.5">
+          <label class="flex items-center gap-1.5 bg-white px-2.5 py-1 border-2 border-[#1e1e1e] rounded-lg cursor-pointer font-bold shadow-[2px_2px_0px_#1e1e1e]">
+            <input type="checkbox" id="globalTestModeToggle" class="w-4 h-4 accent-[#1e1e1e]" onchange="toggleTestMode(this.checked)">
+            <span>🤖 測試模式</span>
+          </label>
 
-        <select id="quickJumpSelect" onchange="handleQuickJump(this.value)" class="bg-white border-2 border-[#1e1e1e] rounded-lg px-2 py-1 font-bold shadow-[2px_2px_0px_#1e1e1e] cursor-pointer">
-          <option value="">⚡ 快速跳關 / 測試選單...</option>
-          <option value="screen-login">【1】登入介面</option>
-          <option value="screen-lobby">【2】等待介面 (大廳)</option>
-          <option value="screen-creator">【3】創角介面 (手繪五官)</option>
-          <option value="screen-showcase">【4】玩家展示過場</option>
-          <option value="game-0">🎮 遊戲1：默契感應</option>
-          <option value="game-1">🎮 遊戲2：猜猜我是誰</option>
-          <option value="game-2">🎮 遊戲3：大腦裝什麼</option>
-          <option value="game-3">🎮 遊戲4：記憶考驗</option>
-          <option value="game-4">🎮 遊戲5：殘酷二選一</option>
-          <option value="game-5">🎮 遊戲6：這是我的回答</option>
-          <option value="game-6">🎮 遊戲7：臉部拼圖</option>
-          <option value="game-7">🎮 遊戲8：超級找找王</option>
-          <option value="screen-final">🏆 【6】最終結算與關係圖</option>
-        </select>
+          <select id="quickJumpSelect" onchange="handleQuickJump(this.value)" class="bg-white border-2 border-[#1e1e1e] rounded-lg px-2 py-1 font-bold shadow-[2px_2px_0px_#1e1e1e] cursor-pointer">
+            <option value="">⚡ 快速跳關 / 測試選單...</option>
+            <option value="screen-login">【1】登入介面</option>
+            <option value="screen-lobby">【2】等待介面 (大廳)</option>
+            <option value="screen-creator">【3】創角介面 (手繪五官)</option>
+            <option value="screen-showcase">【4】玩家展示過場</option>
+            <option value="game-0">🎮 遊戲1：默契感應</option>
+            <option value="game-1">🎮 遊戲2：猜猜我是誰</option>
+            <option value="game-2">🎮 遊戲3：大腦裝什麼</option>
+            <option value="game-3">🎮 遊戲4：記憶考驗</option>
+            <option value="game-4">🎮 遊戲5：殘酷二選一</option>
+            <option value="game-5">🎮 遊戲6：這是我的回答</option>
+            <option value="game-6">🎮 遊戲7：臉部拼圖</option>
+            <option value="game-7">🎮 遊戲8：超級找找王</option>
+            <option value="screen-final">🏆 【6】最終結算與關係圖</option>
+          </select>
+        </div>
 
         <button onclick="SoundFX.toggleMute()" id="muteBtn" class="doodle-btn px-2.5 py-1 text-xs bg-white">
           🔊 音效
@@ -547,9 +549,18 @@
           10 秒內快問快答，靠你對主持人的了解選出主持人的選擇，我們是最好的朋友對吧？
         </p>
 
-        <div class="mt-8 flex justify-center">
-          <button onclick="launchActiveMiniGame()" class="doodle-btn px-10 py-4 text-xl bg-[#ffe66d] text-[#1e1e1e]">
-            🚀 開始本局遊戲！
+        <!-- 20秒準備倒數與全員準備狀態 -->
+        <div class="mt-6 max-w-lg mx-auto bg-black/40 border-2 border-neutral-500 rounded-xl p-3">
+          <div class="flex items-center justify-between text-xs font-black text-[#ffe66d] mb-2">
+            <span>⏳ 請全體玩家點擊準備開始（逾時未按將被踢出遊戲！）</span>
+            <span id="introReadyTimerText" class="text-base font-mono bg-[#ff6b6b] text-white px-2 py-0.5 rounded">20s</span>
+          </div>
+          <div id="introReadyPlayersList" class="flex flex-wrap justify-center gap-1.5 text-xs"></div>
+        </div>
+
+        <div class="mt-6 flex justify-center">
+          <button id="btnIntroReady" onclick="markPlayerIntroReady()" class="doodle-btn px-10 py-4 text-xl bg-[#ffe66d] text-[#1e1e1e]">
+            🚀 我準備好了！（開始本局）
           </button>
         </div>
       </div>
@@ -764,7 +775,9 @@
     const GameState = {
       loginMode: 'create', // 'create' | 'join'
       gameLength: 'long',  // 'short', 'medium', 'long'
-      testMode: true,
+      testMode: false,
+      hasCompletedCreator: false,
+      kickedOut: false,
       roomCode: '8888',
       myPlayerId: 'p0',
       isRoomHost: true,
@@ -780,11 +793,23 @@
         prankHighScorer: {}
       },
       roundQueue: [],      // 遊戲 ID 序列
+      hostQueue: [],       // 隨機輪替且跨輪不重複的主持人 ID 序列
       currentRoundIdx: 0,
       currentHostIdx: 0,
       roundSeed: 12345,    // 確保所有裝置抽到完全相同題目與選項的同步亂數種子
+      introReadyMap: {},   // 遊戲說明介面準備狀態 { playerId: true }
       activeTimers: []
     };
+
+    function updateHostDevToolsVisibility() {
+      const devTools = document.getElementById('hostDevTools');
+      if (!devTools) return;
+      if (GameState.isRoomHost && GameState.hasCompletedCreator && !GameState.kickedOut) {
+        devTools.classList.remove('hidden');
+      } else {
+        devTools.classList.add('hidden');
+      }
+    }
 
     // 確定性偽隨機產生器：確保房主與所有連線玩家在相同回合同歩看到一模一樣的題目與亂數選項
     function createSeededRandom(seed) {
@@ -1006,6 +1031,7 @@
           chemistry: GameState.chemistry,
           stats: GameState.stats,
           roundQueue: GameState.roundQueue,
+          hostQueue: GameState.hostQueue,
           currentRoundIdx: GameState.currentRoundIdx,
           currentHostIdx: GameState.currentHostIdx,
           roundSeed: GameState.roundSeed,
@@ -1083,11 +1109,25 @@
       handleClientReceive(data) {
         if (!data || !data.type) return;
         if (data.type === 'SYNC_STATE') {
+          if (data.kickedPlayerIds && data.kickedPlayerIds.includes(GameState.myPlayerId)) {
+            GameState.kickedOut = true;
+            clearAllGameTimers();
+            if (this.peer) this.peer.destroy();
+            switchScreen('screen-login', true);
+            const errBox = document.getElementById('loginErrorMsg');
+            if (errBox) {
+              errBox.textContent = '⚠️ 你因為在遊戲說明階段逾時 20 秒未按開始，已被移出房間！';
+              errBox.classList.remove('hidden');
+            }
+            return;
+          }
+
           GameState.roomCode = data.roomCode || GameState.roomCode;
           GameState.gameLength = data.gameLength || GameState.gameLength;
           GameState.chemistry = data.chemistry || GameState.chemistry;
           if (data.stats) GameState.stats = data.stats;
           GameState.roundQueue = data.roundQueue || GameState.roundQueue;
+          GameState.hostQueue = data.hostQueue || GameState.hostQueue;
           GameState.currentRoundIdx = data.currentRoundIdx ?? GameState.currentRoundIdx;
           GameState.currentHostIdx = data.currentHostIdx ?? GameState.currentHostIdx;
           if (data.roundSeed !== undefined) GameState.roundSeed = data.roundSeed;
@@ -1753,6 +1793,11 @@
     }
 
     function getCurrentHost() {
+      const hostId = GameState.hostQueue?.[GameState.currentRoundIdx];
+      if (hostId) {
+        const found = GameState.players.find(p => p.id === hostId);
+        if (found) return found;
+      }
       return GameState.players[GameState.currentHostIdx % GameState.players.length] || GameState.players[0];
     }
 
@@ -1796,6 +1841,11 @@
 
       const lobbyRoomText = document.getElementById('lobbyRoomCodeDisplay');
       if (lobbyRoomText) lobbyRoomText.textContent = `#${GameState.roomCode}`;
+
+      if (screenId === 'screen-showcase') {
+        GameState.hasCompletedCreator = true;
+      }
+      updateHostDevToolsVisibility();
 
       if (screenId === 'screen-lobby') renderLobbyPlayers();
       if (screenId === 'screen-creator') initCreatorStudio();
@@ -1918,10 +1968,11 @@
         const customCode = (customRoomInput?.value || '').trim().toUpperCase();
         GameState.roomCode = customCode || String(Math.floor(1000 + Math.random() * 9000));
         GameState.isRoomHost = true;
+        GameState.hasCompletedCreator = false;
+        GameState.kickedOut = false;
         GameState.myPlayerId = 'p0';
         errBox.classList.add('hidden');
         SoundFX.pop();
-        // 建立房間時不自動塞入 AI，房主可在大廳視需要手動點擊「➕ 加入測試 AI 玩家」
         initDefaultPlayers(nickname, false);
         NetSync.initHost(GameState.roomCode);
         switchScreen('screen-lobby');
@@ -1935,6 +1986,8 @@
         }
         GameState.roomCode = targetCode;
         GameState.isRoomHost = false;
+        GameState.hasCompletedCreator = false;
+        GameState.kickedOut = false;
         errBox.classList.add('hidden');
         SoundFX.pop();
         // 加入房間時絕不產生 AI 玩家，僅顯示自己並等待與房主同步清單
@@ -2047,12 +2100,58 @@
       const validGames = ALL_GAMES_META.filter(g => playerCount >= g.minPlayers).map(g => g.id);
       const targetRounds = calculateTargetRounds(playerCount, GameState.gameLength);
 
+      // 1. 遊戲隨機輪替：全部出完一輪後才會跳下一輪，且第一輪「猜猜我是誰 (id=1)」固定排在後半段，跨輪邊界不重複
       GameState.roundQueue = [];
-      for (let i = 0; i < targetRounds; i++) {
-        GameState.roundQueue.push(validGames[i % validGames.length]);
+      let lastGameId = null;
+      let cycleIndex = 0;
+
+      while (GameState.roundQueue.length < targetRounds) {
+        let cycleGames = [...validGames].sort(() => Math.random() - 0.5);
+
+        if (cycleIndex === 0 && cycleGames.includes(1) && cycleGames.length > 2) {
+          // 第一輪確保「猜猜我是誰(1)」在後半段才出現
+          const withoutWho = cycleGames.filter(id => id !== 1);
+          const minPos = Math.max(1, Math.floor(cycleGames.length / 2));
+          const insertPos = minPos + Math.floor(Math.random() * (cycleGames.length - minPos));
+          withoutWho.splice(insertPos, 0, 1);
+          cycleGames = withoutWho;
+        } else if (lastGameId !== null && cycleGames.length > 1 && cycleGames[0] === lastGameId) {
+          // 下一輪的第一個遊戲不跟上一輪最後一個重複
+          const swapIdx = 1 + Math.floor(Math.random() * (cycleGames.length - 1));
+          [cycleGames[0], cycleGames[swapIdx]] = [cycleGames[swapIdx], cycleGames[0]];
+        }
+
+        for (const gId of cycleGames) {
+          if (GameState.roundQueue.length < targetRounds) {
+            GameState.roundQueue.push(gId);
+            lastGameId = gId;
+          }
+        }
+        cycleIndex++;
       }
+
+      // 2. 主持人隨機輪替：全部當過一輪後才進入下一輪，且下一輪第一位主持人絕不與上一輪最後一位重複
+      GameState.hostQueue = [];
+      const playerIds = GameState.players.map(p => p.id);
+      let lastHostId = null;
+
+      while (GameState.hostQueue.length < targetRounds) {
+        const cycleHosts = [...playerIds].sort(() => Math.random() - 0.5);
+        if (lastHostId !== null && cycleHosts.length > 1 && cycleHosts[0] === lastHostId) {
+          const swapIdx = 1 + Math.floor(Math.random() * (cycleHosts.length - 1));
+          [cycleHosts[0], cycleHosts[swapIdx]] = [cycleHosts[swapIdx], cycleHosts[0]];
+        }
+        for (const hId of cycleHosts) {
+          if (GameState.hostQueue.length < targetRounds) {
+            GameState.hostQueue.push(hId);
+            lastHostId = hId;
+          }
+        }
+      }
+
       GameState.currentRoundIdx = 0;
-      GameState.currentHostIdx = 0;
+      const firstHostIdx = GameState.players.findIndex(p => p.id === GameState.hostQueue[0]);
+      GameState.currentHostIdx = firstHostIdx >= 0 ? firstHostIdx : 0;
       GameState.roundSeed = Math.floor(10000 + Math.random() * 900000);
     }
 
@@ -2330,8 +2429,49 @@
     }
 
     /**************************************************************
-     * 7. 【5】遊戲說明黑板 & 回合結算綜藝台
+     * 7. 【5】遊戲說明黑板 & 回合結算綜藝台 (全員按開始或 20 秒倒數，未準備者踢出遊戲)
      **************************************************************/
+    function renderIntroReadyStatus() {
+      const listEl = document.getElementById('introReadyPlayersList');
+      const btnEl = document.getElementById('btnIntroReady');
+      const me = getLocalPlayer();
+      if (!listEl) return;
+
+      listEl.innerHTML = GameState.players.map(p => {
+        const isReady = !!GameState.introReadyMap[p.id];
+        return `
+          <span class="px-2.5 py-0.5 rounded-full border border-neutral-400 font-bold ${isReady ? 'bg-[#4ecdc4] text-[#1e1e1e] border-[#1e1e1e]' : 'bg-neutral-700 text-neutral-300'}">
+            ${p.name} ${isReady ? '✅已準備' : '⏳等待中'}
+          </span>
+        `;
+      }).join('');
+
+      if (btnEl && me) {
+        if (GameState.introReadyMap[me.id]) {
+          btnEl.disabled = true;
+          btnEl.textContent = '✅ 已準備！等待其他玩家...';
+        } else {
+          btnEl.disabled = false;
+          btnEl.textContent = '🚀 我準備好了！（開始本局）';
+        }
+      }
+    }
+
+    function checkAllIntroReadyAndLaunch() {
+      const allReady = GameState.players.every(p => !!GameState.introReadyMap[p.id]);
+      if (allReady && GameState.isRoomHost) {
+        clearAllGameTimers();
+        launchActiveMiniGame(false);
+      }
+    }
+
+    function markPlayerIntroReady() {
+      const me = getLocalPlayer();
+      if (!me || GameState.introReadyMap[me.id]) return;
+      SoundFX.pop();
+      NetSync.sendGameAction('INTRO_PLAYER_READY', { playerId: me.id });
+    }
+
     function showGameIntroCard(fromRemote = false) {
       clearAllGameTimers();
       window._onGameEvent = null;
@@ -2339,12 +2479,18 @@
       document.getElementById('subview-game-play').classList.add('hidden');
       document.getElementById('subview-round-result').classList.add('hidden');
 
-      // 重置本局加減分紀錄
+      // 重置本局加減分紀錄與準備表
       GameState.players.forEach(p => p.roundDelta = 0);
+      GameState.introReadyMap = {};
+      GameState.players.forEach(p => {
+        if (p.isAI) GameState.introReadyMap[p.id] = true;
+      });
 
       const gameId = GameState.roundQueue[GameState.currentRoundIdx] ?? 0;
       const meta = ALL_GAMES_META.find(g => g.id === gameId) || ALL_GAMES_META[0];
       const host = getCurrentHost();
+      const hostIdx = GameState.players.findIndex(p => p.id === host.id);
+      if (hostIdx >= 0) GameState.currentHostIdx = hostIdx;
 
       document.getElementById('introRoundBadge').textContent = `第 ${GameState.currentRoundIdx + 1} / ${GameState.roundQueue.length} 回合`;
       document.getElementById('introGameTitle').textContent = meta.title;
@@ -2359,7 +2505,7 @@
         const opt = document.createElement('option');
         opt.value = idx;
         opt.textContent = `${p.name} ${p.isAI ? '(AI)' : ''}`;
-        if (idx === GameState.currentHostIdx % GameState.players.length) opt.selected = true;
+        if (p.id === host.id) opt.selected = true;
         sel.appendChild(opt);
       });
 
@@ -2372,6 +2518,49 @@
         renderAvatarToCanvas(document.getElementById('introHostCanvas'), host.avatar);
       }
 
+      renderIntroReadyStatus();
+
+      let introTimeLeft = 20;
+      const timerEl = document.getElementById('introReadyTimerText');
+      if (timerEl) timerEl.textContent = `${introTimeLeft}s`;
+
+      window._onGameEvent = (action, payload) => {
+        if (action === 'INTRO_PLAYER_READY') {
+          GameState.introReadyMap[payload.playerId] = true;
+          renderIntroReadyStatus();
+          checkAllIntroReadyAndLaunch();
+        }
+      };
+
+      const introTimer = setInterval(() => {
+        introTimeLeft--;
+        const tEl = document.getElementById('introReadyTimerText');
+        if (tEl) tEl.textContent = `${introTimeLeft}s`;
+        if (introTimeLeft <= 0) {
+          clearInterval(introTimer);
+          if (GameState.isRoomHost) {
+            // 踢出 20 秒內未按準備的連線玩家（房主本人除外，避免房間直接解體）
+            const kickedIds = [];
+            GameState.players = GameState.players.filter(p => {
+              if (p.isAI || p.id === GameState.myPlayerId || GameState.introReadyMap[p.id]) {
+                return true;
+              }
+              kickedIds.push(p.id);
+              return false;
+            });
+            // 若玩家人數低於 2 人則補 1 名 AI 維持遊戲進行
+            if (GameState.players.length < 2) {
+              addAIPlayer(true);
+            }
+            if (kickedIds.length > 0) {
+              NetSync.broadcastState({ kickedPlayerIds: kickedIds });
+            }
+            launchActiveMiniGame(false);
+          }
+        }
+      }, 1000);
+      GameState.activeTimers.push(introTimer);
+
       if (GameState.isRoomHost && !fromRemote) {
         NetSync.broadcastState({ navigateScreen: 'screen-game-loop', subAction: 'SHOW_INTRO' });
       }
@@ -2379,7 +2568,11 @@
 
     function changeCurrentHost(newIdxStr) {
       if (!GameState.isRoomHost) return;
-      GameState.currentHostIdx = parseInt(newIdxStr, 10) || 0;
+      const idx = parseInt(newIdxStr, 10) || 0;
+      GameState.currentHostIdx = idx;
+      if (GameState.hostQueue && GameState.players[idx]) {
+        GameState.hostQueue[GameState.currentRoundIdx] = GameState.players[idx].id;
+      }
       GameState.roundSeed = Math.floor(10000 + Math.random() * 900000);
       showGameIntroCard();
     }
@@ -2463,7 +2656,9 @@
         return;
       }
       GameState.currentRoundIdx++;
-      GameState.currentHostIdx = (GameState.currentHostIdx + 1) % GameState.players.length;
+      const nextHostId = GameState.hostQueue?.[GameState.currentRoundIdx];
+      const foundIdx = GameState.players.findIndex(p => p.id === nextHostId);
+      GameState.currentHostIdx = foundIdx >= 0 ? foundIdx : (GameState.currentHostIdx + 1) % GameState.players.length;
       GameState.roundSeed = Math.floor(10000 + Math.random() * 900000);
       if (GameState.currentRoundIdx >= GameState.roundQueue.length) {
         switchScreen('screen-final');
@@ -2489,12 +2684,15 @@
     }
 
     /**************************************************************
-     * 遊戲 1：默契感應 (全員同步題目、同步等待所有人作答完畢才揭曉、正確計入各自玩家分數)
+     * 遊戲 1：默契感應
+     * - 確保所有人同步，加強主持人當題如何選擇的巨大舉牌畫面
+     * - 只在主持人點「進入下一題」後所有人畫面才會跳轉，玩家無法自行進入下一題
      **************************************************************/
     function startMiniGame0_Telepathy() {
       const mount = document.getElementById('miniGameMountPoint');
       const host = getCurrentHost();
       const me = getLocalPlayer();
+      const isHumanHost = (me.id === host.id);
       const rng = createSeededRandom(GameState.roundSeed + 101);
 
       const bankKeys = ['bankB', 'bankC', 'bankD', 'bankE'];
@@ -2593,6 +2791,13 @@
         GameState.activeTimers.push(tId);
       }
 
+      function getFullOptionText(q, code) {
+        if (code === 'O') return q.btnLabels[0];
+        if (code === 'X') return q.btnLabels[1];
+        if (code === 'T') return q.btnLabels[2];
+        return '❓ 未選';
+      }
+
       function renderTelepathyView() {
         const q = questions[curIdx];
         const myPick = choices[me.id];
@@ -2614,18 +2819,28 @@
               <h3 class="text-xl md:text-2xl font-black mt-2 leading-snug">${q.text}</h3>
             </div>
 
+            ${revealed ? `
+              <!-- 揭曉時：強烈突顯主持人當題選擇的巨大看板 -->
+              <div class="theme-cut-in doodle-box-sm p-4 bg-[#ffe66d] border-4 border-[#1e1e1e] text-center shadow-lg">
+                <div class="text-xs font-black text-neutral-800">📢 主持人【${host.name}】本題的真實選擇是：</div>
+                <div class="text-2xl md:text-4xl font-black text-[#ff6b6b] mt-1 tracking-wide">
+                  【 ${getFullOptionText(q, hostPick)} 】
+                </div>
+              </div>
+            ` : ''}
+
             <!-- 舞台中央：主持人舉牌與四周玩家頭像 -->
             <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
-              <div class="md:col-span-4 flex flex-col items-center p-3 doodle-box-sm bg-[#ffe66d]/30">
+              <div class="md:col-span-4 flex flex-col items-center p-3 doodle-box-sm ${revealed ? 'bg-[#fff9db] ring-4 ring-[#ff6b6b]' : 'bg-[#ffe66d]/30'}">
                 <div class="text-xs font-black mb-1">🎤 主持人：${host.name}</div>
                 <div class="relative w-24 h-24 rounded-full border-3 border-[#1e1e1e] bg-white overflow-hidden">
                   <canvas id="teleHostCanvas" width="120" height="120" class="w-full h-full"></canvas>
                 </div>
-                <div class="mt-2 px-3 py-1 rounded-lg border-2 border-[#1e1e1e] bg-white font-black text-sm">
+                <div class="mt-2 px-3 py-1.5 rounded-lg border-2 border-[#1e1e1e] bg-white font-black text-sm text-center">
                   ${revealed
-                    ? `主持人舉牌：<span class="text-lg text-red-600">${formatOXSymbol(hostPick)}</span>`
-                    : (host.id === me.id
-                        ? (myPick ? `你已選：${formatOXSymbol(myPick)} (等待其他人...)` : '請選擇你的答案！')
+                    ? `舉牌：<span class="text-base text-red-600">${getFullOptionText(q, hostPick)}</span>`
+                    : (isHumanHost
+                        ? (myPick ? `你已選：${getFullOptionText(q, myPick)}` : '請選擇你的答案！')
                         : (hostPick ? '✅ 主持人已作答' : '🤔 主持人思考中...'))}
                 </div>
               </div>
@@ -2644,7 +2859,7 @@
                         <div class="font-black text-xs truncate">${p.name}</div>
                         <div class="text-xs font-bold mt-0.5">
                           ${revealed
-                            ? `${formatOXSymbol(pPick)} ${isMatch ? '<span class="text-red-600 font-black">+1分!</span>' : ''}`
+                            ? `${getFullOptionText(q, pPick)} ${isMatch ? '<span class="text-red-600 font-black">+1分!</span>' : ''}`
                             : (pPick ? '✅ 已作答' : '⏳ 思考中...')}
                         </div>
                       </div>
@@ -2654,7 +2869,7 @@
               </div>
             </div>
 
-            <!-- 底部：圈、叉、三角形按鈕 -->
+            <!-- 底部：作答按鈕 或 僅限主持人點擊的下一題按鈕 -->
             <div class="pt-2">
               ${!revealed ? `
                 <div class="grid grid-cols-3 gap-3">
@@ -2668,13 +2883,19 @@
                     ${q.btnLabels[2]}
                   </button>
                 </div>
-              ` : `
-                <div class="flex justify-center">
-                  <button onclick="window._nextTelepathyQ()" class="doodle-btn px-8 py-3 text-lg bg-[#ffe66d]">
-                    ${curIdx + 1 < 7 ? '下一題 (全員同步) ➔' : '查看本局計分台 ➔'}
-                  </button>
-                </div>
-              `}
+              ` : (
+                isHumanHost ? `
+                  <div class="flex justify-center">
+                    <button onclick="window._nextTelepathyQ()" class="doodle-btn px-8 py-3 text-lg bg-[#ffe66d]">
+                      🎤 主持人點此進入${curIdx + 1 < 7 ? '下一題' : '本局計分台'} (全員同步跳轉) ➔
+                    </button>
+                  </div>
+                ` : `
+                  <div class="text-center py-2 font-black text-sm text-neutral-600 bg-neutral-100 rounded-xl border-2 border-[#1e1e1e]">
+                    ⏳ 等待主持人【${host.name}】點擊進入${curIdx + 1 < 7 ? '下一題' : '計分台'}...
+                  </div>
+                `
+              )}
             </div>
           </div>
         `;
@@ -2683,13 +2904,6 @@
         GameState.players.filter(p => p.id !== host.id).forEach(p => {
           renderAvatarToCanvas(document.getElementById(`tele_p_${p.id}`), p.avatar);
         });
-      }
-
-      function formatOXSymbol(code) {
-        if (code === 'O') return '⭕ 圈';
-        if (code === 'X') return '❌ 叉';
-        if (code === 'T') return '🔺 三角';
-        return '❓ 未選';
       }
 
       function revealTelepathyAnswer() {
@@ -2711,6 +2925,14 @@
 
         if (anyMatch) SoundFX.correct(); else SoundFX.pop();
         renderTelepathyView();
+
+        // 若主持人為 AI，展示 2.6 秒後自動由房主觸發進入下一題
+        if (host.isAI && GameState.isRoomHost) {
+          const aiNextTimer = setTimeout(() => {
+            NetSync.sendGameAction('TELE_NEXT_Q', { nextIdx: curIdx + 1 });
+          }, 2600);
+          GameState.activeTimers.push(aiNextTimer);
+        }
       }
 
       window._pickTelepathy = (code) => {
@@ -2720,6 +2942,7 @@
       };
 
       window._nextTelepathyQ = () => {
+        if (!isHumanHost) return;
         NetSync.sendGameAction('TELE_NEXT_Q', { nextIdx: curIdx + 1 });
       };
 
@@ -2727,7 +2950,9 @@
     }
 
     /**************************************************************
-     * 遊戲 2：猜猜我是誰 (全員同步選項、主持人可隨時揭曉/推進、或全員選完自動揭曉)
+     * 遊戲 2：猜猜我是誰
+     * - 各階段增加 15 秒時間限制
+     * - 所有人選完或 15 秒時間到後，自動揭曉並進入下一階段（徹底解決無法選擇或卡住問題）
      **************************************************************/
     function startMiniGame1_WhoAmI() {
       const mount = document.getElementById('miniGameMountPoint');
@@ -2745,6 +2970,7 @@
       ];
 
       let stepIdx = 0;
+      let stepTimeLeft = 15;
       const unmaskedParts = [];
       let currentOptions = [];
       let stepPicks = {}; // { playerId: optId }
@@ -2797,6 +3023,7 @@
       function revealCurrentPartStep() {
         if (stepRevealed) return;
         stepRevealed = true;
+        clearAllGameTimers();
         const targetPart = partSteps[stepIdx];
 
         if (!unmaskedParts.includes(targetPart.key)) {
@@ -2818,6 +3045,14 @@
 
         if (anyCorrect) SoundFX.correct(); else SoundFX.wrong();
         renderWhoStepView();
+
+        // 揭曉正解後停留 2.2 秒，自動同步進入下一階段！
+        if (GameState.isRoomHost) {
+          const autoAdvance = setTimeout(() => {
+            NetSync.sendGameAction('WHO_NEXT_STEP', { nextIdx: stepIdx + 1 });
+          }, 2200);
+          GameState.activeTimers.push(autoAdvance);
+        }
       }
 
       window._onGameEvent = (action, payload) => {
@@ -2833,11 +3068,13 @@
       };
 
       function loadPartStep(idx) {
+        clearAllGameTimers();
         if (idx >= partSteps.length) {
           finishMiniGameAndShowRoundResult();
           return;
         }
         stepIdx = idx;
+        stepTimeLeft = 15;
         stepPicks = {};
         stepRevealed = false;
         const targetPart = partSteps[stepIdx];
@@ -2855,8 +3092,27 @@
           }
         });
 
-        document.getElementById('playSubProgress').textContent = `進度 ${stepIdx + 1} / 5：猜【${targetPart.name}】(答對 +${targetPart.points} 分)`;
+        document.getElementById('playSubProgress').textContent = `進度 ${stepIdx + 1} / 5：猜【${targetPart.name}】(限時 15 秒｜答對 +${targetPart.points} 分)`;
         renderWhoStepView();
+        checkAllGuessedAndReveal();
+
+        const tId = setInterval(() => {
+          if (stepRevealed) return;
+          stepTimeLeft--;
+          const bar = document.getElementById('whoTimerBar');
+          const txt = document.getElementById('whoTimerText');
+          if (bar) bar.style.width = `${(stepTimeLeft / 15) * 100}%`;
+          if (txt) txt.textContent = `${stepTimeLeft}s`;
+          if (stepTimeLeft <= 0) {
+            clearInterval(tId);
+            if (GameState.isRoomHost) {
+              NetSync.sendGameAction('WHO_HOST_REVEAL', { stepIdx });
+            } else {
+              revealCurrentPartStep();
+            }
+          }
+        }, 1000);
+        GameState.activeTimers.push(tId);
       }
 
       function renderWhoStepView() {
@@ -2867,25 +3123,28 @@
 
         mount.innerHTML = `
           <div class="space-y-4">
+            <!-- 15秒進度條 -->
+            <div class="w-full bg-neutral-200 h-5 rounded-full border-2 border-[#1e1e1e] overflow-hidden relative">
+              <div id="whoTimerBar" class="bg-[#4ecdc4] h-full transition-all duration-300" style="width: ${(stepTimeLeft/15)*100}%"></div>
+              <span id="whoTimerText" class="absolute inset-0 flex items-center justify-center text-xs font-black">${stepTimeLeft}s</span>
+            </div>
+
             <!-- 上方：全部遮住並逐一揭曉的主持人大頭貼 -->
             <div class="flex flex-col items-center doodle-box-sm p-4 bg-[#fffdf7]">
               <div class="text-xs font-black bg-[#ffe66d] px-3 py-0.5 rounded-full border border-black mb-2">
-                第 ${stepIdx + 1}/5 關：請找出主持人【${host.name}】真正的「${targetPart.name}」（+${targetPart.points}分）
+                第 ${stepIdx + 1}/5 關：請在 15 秒內找出主持人【${host.name}】真正的「${targetPart.name}」（+${targetPart.points}分）
               </div>
-              <div class="w-40 h-40 bg-white border-3 border-[#1e1e1e] rounded-2xl overflow-hidden shadow">
+              <div class="w-36 h-36 bg-white border-3 border-[#1e1e1e] rounded-2xl overflow-hidden shadow">
                 <canvas id="whoMaskedHostCanvas" width="240" height="240" class="w-full h-full"></canvas>
               </div>
               <div class="text-xs font-bold text-neutral-500 mt-2">
-                目前已作答人數：${answeredCount} / ${guessers.length} 人 ｜ 已揭曉：${unmaskedParts.length === 0 ? '無' : unmaskedParts.map(k => partSteps.find(s => s.key === k)?.name).join('、')}
+                已作答人數：${answeredCount} / ${guessers.length} 人 ｜ 已揭曉：${unmaskedParts.length === 0 ? '無' : unmaskedParts.map(k => partSteps.find(s => s.key === k)?.name).join('、')}
               </div>
             </div>
 
             ${isHumanHost && !stepRevealed ? `
-              <div class="p-3 bg-[#ffe66d]/40 border-2 border-[#1e1e1e] rounded-xl text-center font-black text-sm">
-                🎤 你是本局主持人！當大家選完會自動揭曉，你也可以隨時點擊下方按鈕直接揭曉：
-                <button onclick="window._hostForceRevealWho()" class="doodle-btn ml-2 px-4 py-1.5 text-xs bg-[#ff6b6b] text-white">
-                  👀 立即公布【${targetPart.name}】正解
-                </button>
+              <div class="p-2.5 bg-[#ffe66d]/40 border-2 border-[#1e1e1e] rounded-xl text-center font-black text-xs">
+                🎤 你是本局主持人（不參與選擇）！全員選完或 15 秒時間到將自動進入下一階段。
               </div>
             ` : ''}
 
@@ -2901,10 +3160,10 @@
                   borderStyle = 'bg-[#ffe66d] ring-4 ring-[#1e1e1e]';
                 }
                 return `
-                  <button ${(isHumanHost || stepRevealed) ? 'disabled' : ''} onclick="window._selectWhoOption('${opt.id}')" class="doodle-box-sm p-3 flex flex-col items-center cursor-pointer transition hover:-translate-y-0.5 ${borderStyle}">
-                    <span class="text-xs font-black mb-1">選項 #${idx + 1} ${stepRevealed && opt.isCorrect ? '👑 正解!' : ''}</span>
-                    <div class="w-24 h-24 bg-[#fffdf7] border-2 border-[#1e1e1e] rounded-xl overflow-hidden">
-                      <canvas id="who_opt_${opt.id}" width="160" height="160" class="w-full h-full"></canvas>
+                  <button type="button" ${(isHumanHost || stepRevealed) ? 'disabled' : ''} onclick="window._selectWhoOption('${opt.id}')" class="doodle-box-sm p-3 flex flex-col items-center cursor-pointer transition hover:-translate-y-0.5 ${borderStyle}">
+                    <span class="text-xs font-black mb-1 pointer-events-none">選項 #${idx + 1} ${stepRevealed && opt.isCorrect ? '👑 正解!' : (isPicked ? '✅ 已選' : '')}</span>
+                    <div class="w-24 h-24 bg-[#fffdf7] border-2 border-[#1e1e1e] rounded-xl overflow-hidden pointer-events-none">
+                      <canvas id="who_opt_${opt.id}" width="160" height="160" class="w-full h-full pointer-events-none"></canvas>
                     </div>
                   </button>
                 `;
@@ -2912,10 +3171,8 @@
             </div>
 
             ${stepRevealed ? `
-              <div class="text-center pt-2">
-                <button onclick="window._nextWhoPartStep()" class="doodle-btn px-8 py-3 text-lg bg-[#ffe66d]">
-                  ${stepIdx + 1 < partSteps.length ? `揭曉下一部位（${partSteps[stepIdx + 1].name}） ➔` : '全部部位揭曉完畢！查看計分台 ➔'}
-                </button>
+              <div class="text-center py-2 font-black text-sm text-teal-800 bg-[#d4edda] rounded-xl border-2 border-[#1e1e1e]">
+                ✨ 正解已揭曉！即將自動進入下一階段...
               </div>
             ` : ''}
           </div>
@@ -2959,20 +3216,13 @@
         NetSync.sendGameAction('WHO_PICK', { stepIdx, playerId: me.id, optId });
       };
 
-      window._hostForceRevealWho = () => {
-        if (stepRevealed) return;
-        NetSync.sendGameAction('WHO_HOST_REVEAL', { stepIdx });
-      };
-
-      window._nextWhoPartStep = () => {
-        NetSync.sendGameAction('WHO_NEXT_STEP', { nextIdx: stepIdx + 1 });
-      };
-
       loadPartStep(0);
     }
 
     /**************************************************************
-     * 遊戲 3：大腦裝什麼 (全員同步出題、同步搶答紀錄、同步問題卡回覆與計分)
+     * 遊戲 3：大腦裝什麼
+     * - 修正輸入框超過介面的問題 (min-w-0 w-full box-border)
+     * - 採用增量附加 DOM 節點與保留焦點設計，其他玩家猜題時絕不重繪或打斷正在輸入的文字
      **************************************************************/
     function startMiniGame2_BrainInside() {
       const mount = document.getElementById('miniGameMountPoint');
@@ -2984,6 +3234,7 @@
       let wordConfirmed = host.isAI;
       let myWrongCount = 0;
       let guessHistory = [];
+      let renderedCount = 0;
       let gameEnded = false;
       let aiRaceInterval = null;
 
@@ -3045,16 +3296,17 @@
             myWrongCount++;
           }
         }
-        renderBrainView();
+        updateBrainDynamicZones();
       }
 
       window._onGameEvent = (action, payload) => {
         if (action === 'BRAIN_SET_SECRET') {
           secretWord = payload.secretWord;
           wordConfirmed = true;
+          renderedCount = 0;
           SoundFX.pop();
           startAIRaceLoop();
-          renderBrainView();
+          renderBrainLayout();
         } else if (action === 'BRAIN_GUESS') {
           processIncomingGuess(payload.gId, payload.playerName, payload.playerId, payload.guessText);
         } else if (action === 'BRAIN_QUESTION') {
@@ -3066,13 +3318,14 @@
             reply: host.isAI ? '啊齁你說的都對' : '（等待主持人回覆...）'
           });
           SoundFX.pop();
-          renderBrainView();
+          updateBrainDynamicZones();
         } else if (action === 'BRAIN_REPLY') {
           const target = guessHistory.find(x => x.id === payload.qId);
           if (target) {
             target.reply = payload.reply;
             SoundFX.pop();
-            renderBrainView();
+            const replyTextEl = document.getElementById(`reply_text_${payload.qId}`);
+            if (replyTextEl) replyTextEl.textContent = `🎤 主持人回覆：「${target.reply}」`;
           }
         } else if (action === 'BRAIN_JUDGE_CORRECT') {
           if (gameEnded) return;
@@ -3084,96 +3337,159 @@
             GameState.stats.prankHighScorer[target.playerId] = (GameState.stats.prankHighScorer[target.playerId] || 0) + 3;
             gameEnded = true;
             clearAllGameTimers();
-            renderBrainView();
+            const statusSpan = document.getElementById(`guess_status_${payload.gId}`);
+            if (statusSpan) {
+              statusSpan.className = 'font-black text-sm text-green-700';
+              statusSpan.textContent = '⭕ 搶答成功 (+7分!)';
+            }
+            updateBrainDynamicZones();
           }
         }
       };
 
-      function renderBrainView() {
-        const canAskQuestion = (!isHumanHost && myWrongCount >= 3);
-        const remainingTries = Math.max(0, 10 - myWrongCount);
-
+      function renderBrainLayout() {
+        renderedCount = 0;
         mount.innerHTML = `
-          <div class="space-y-4">
-            <div class="doodle-box-sm p-4 bg-[#fffdf7] flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div class="flex items-center gap-3">
-                <div class="w-16 h-16 rounded-full border-3 border-[#1e1e1e] bg-white overflow-hidden flex-shrink-0">
+          <div class="space-y-4 w-full max-w-full overflow-hidden">
+            <div class="doodle-box-sm p-4 bg-[#fffdf7] flex flex-col sm:flex-row items-center justify-between gap-3 w-full">
+              <div class="flex items-center gap-3 min-w-0 w-full sm:w-auto">
+                <div class="w-14 h-14 rounded-full border-3 border-[#1e1e1e] bg-white overflow-hidden flex-shrink-0">
                   <canvas id="brainHostCanvas" width="100" height="100" class="w-full h-full"></canvas>
                 </div>
-                <div>
+                <div class="min-w-0 flex-1">
                   <div class="text-xs font-black text-neutral-500">🎤 主持人：${host.name}</div>
-                  <div class="font-black text-base md:text-lg mt-0.5">
-                    ${!wordConfirmed
-                      ? (isHumanHost
-                          ? '✍️ 請在下方輸入你心中目視所及的物品名稱！'
-                          : '⏳ 主持人正在輸入目視物品，請稍候...')
-                      : (isHumanHost
-                          ? `💭 你的題目：「<span class="text-red-600 underline">${secretWord}</span>」（大家正在搶答中！）`
-                          : `💭 神秘目視物品：「<span class="bg-[#ffe66d] px-2 py-0.5 rounded border border-black">❓❓❓（共 ${secretWord.length} 個字）</span>」`)}
-                  </div>
+                  <div id="brainHeaderStatusText" class="font-black text-sm md:text-base mt-0.5 break-words"></div>
                 </div>
               </div>
 
               ${!wordConfirmed && isHumanHost ? `
-                <div class="flex gap-2 w-full sm:w-auto">
-                  <input id="hostSecretInput" type="text" value="" placeholder="輸入目視物品 (如: 鉛筆)..." class="doodle-input text-base flex-1" onkeydown="if(event.key==='Enter') window._confirmHostSecret()" />
-                  <button onclick="window._confirmHostSecret()" class="doodle-btn px-5 py-2.5 text-sm bg-[#ff6b6b] text-white">
-                    🔒 鎖定出題並開始搶答
+                <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto max-w-full">
+                  <input id="hostSecretInput" type="text" value="" placeholder="輸入目視物品..." class="doodle-input text-base w-full sm:w-48 min-w-0" onkeydown="if(event.key==='Enter') window._confirmHostSecret()" />
+                  <button onclick="window._confirmHostSecret()" class="doodle-btn px-4 py-2.5 text-sm bg-[#ff6b6b] text-white flex-shrink-0">
+                    🔒 鎖定出題
                   </button>
                 </div>
               ` : ''}
 
               ${wordConfirmed && !isHumanHost ? `
-                <div class="flex items-center gap-2">
-                  <span class="text-xs font-black bg-[#ffe66d] px-3 py-1.5 rounded-lg border-2 border-[#1e1e1e]">
-                    ⚡ 先搶先贏｜剩餘 ${remainingTries} 次機會 (已錯 ${myWrongCount} 次)
-                  </span>
+                <div class="flex items-center gap-2 flex-shrink-0">
+                  <span id="brainTriesBadge" class="text-xs font-black bg-[#ffe66d] px-3 py-1.5 rounded-lg border-2 border-[#1e1e1e]"></span>
                 </div>
               ` : ''}
             </div>
 
-            <div id="brainHistoryBox" class="doodle-box-sm p-3 bg-white h-56 overflow-y-auto space-y-2">
-              ${guessHistory.length === 0 ? `<div class="text-center text-neutral-400 font-bold py-14">${wordConfirmed ? '搶答開始！不用輪流，誰先輸入正確答案直接拿 7 分！' : '等待主持人鎖定題目...'}</div>` : ''}
-              ${guessHistory.map((item, i) => {
-                if (item.isQuestion) {
-                  return `
-                    <div class="p-2.5 rounded-xl bg-purple-50 border-2 border-[#1e1e1e] text-xs md:text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                      <div>
-                        <span class="font-black text-purple-800">🃏 [問題卡] ${item.player} 提問：</span>
-                        <span class="font-bold">${item.text}</span>
-                        <div class="mt-1 font-black text-red-600">🎤 主持人回覆：「${item.reply}」</div>
-                      </div>
-                      ${isHumanHost && !gameEnded ? `
-                        <div class="flex gap-1.5">
-                          <input id="reply_inp_${item.id}" type="text" placeholder="輸入線索回覆..." class="doodle-input text-xs py-1 px-2" />
-                          <button onclick="window._hostReplyQuestion('${item.id}')" class="doodle-btn px-2.5 py-1 text-xs bg-[#ffe66d]">回覆</button>
-                        </div>
-                      ` : ''}
-                    </div>
-                  `;
-                }
-                return `
-                  <div class="flex items-center justify-between p-2 rounded-xl border-2 border-[#1e1e1e] ${item.isCorrect ? 'bg-[#d4edda]' : 'bg-neutral-50'}">
-                    <div class="text-sm font-bold">
-                      <span class="font-black text-xs bg-neutral-200 px-1.5 py-0.5 rounded mr-1">#${i + 1}</span>
-                      <strong>${item.player}</strong> 搶答：<span class="underline">${item.text}</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                      ${isHumanHost && !item.isCorrect && !gameEnded ? `
-                        <button onclick="window._hostJudgeCorrect('${item.id}')" class="doodle-btn px-2 py-0.5 text-xs bg-[#d4edda]">
-                          ⭕ 算他答對
-                        </button>
-                      ` : ''}
-                      <span class="font-black text-sm ${item.isCorrect ? 'text-green-700' : 'text-red-600'}">
-                        ${item.isCorrect ? '⭕ 搶答成功 (+7分!)' : '❌ 猜錯'}
-                      </span>
-                    </div>
-                  </div>
-                `;
-              }).join('')}
+            <div id="brainHistoryBox" class="doodle-box-sm p-3 bg-white h-56 overflow-y-auto space-y-2 w-full">
+              <div id="brainEmptyPlaceholder" class="text-center text-neutral-400 font-bold py-14">
+                ${wordConfirmed ? '搶答開始！不用輪流，誰先輸入正確答案直接拿 7 分！' : '等待主持人鎖定題目...'}
+              </div>
             </div>
 
-            ${canAskQuestion && !gameEnded && wordConfirmed ? `
+            <div id="brainQuestionCardZone" class="w-full"></div>
+
+            <div id="brainActionInputZone" class="w-full max-w-full">
+              ${wordConfirmed ? (
+                isHumanHost ? `
+                  <div class="p-3 bg-[#ffe66d]/40 border-2 border-[#1e1e1e] rounded-xl flex flex-wrap items-center justify-between gap-2">
+                    <span class="text-xs font-black">🎤 你是主持人（不參與猜題），所有玩家正在不用輪流同步搶答中！若有人打出同義詞你也可直接點「⭕ 算他答對」。</span>
+                  </div>
+                ` : `
+                  <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full max-w-full">
+                    <input id="brainGuessInput" type="text" placeholder="不用輪流，快輸入你猜的物品搶答..." class="doodle-input flex-1 w-full min-w-0 text-base" onkeydown="if(event.key==='Enter') window._submitBrainGuess()" />
+                    <button id="brainGuessSubmitBtn" onclick="window._submitBrainGuess()" class="doodle-btn px-5 py-2.5 text-base bg-[#ffe66d] flex-shrink-0">
+                      ⚡ 立即搶答
+                    </button>
+                  </div>
+                `
+              ) : ''}
+            </div>
+
+            <div id="brainEndZone" class="w-full"></div>
+          </div>
+        `;
+
+        renderAvatarToCanvas(document.getElementById('brainHostCanvas'), host.avatar);
+        updateBrainDynamicZones();
+      }
+
+      // 採用增量 appendChild 寫入新訊息，完全不觸碰既有 DOM 與輸入框焦點，徹底根除打字被打斷的問題！
+      function updateBrainDynamicZones() {
+        const canAskQuestion = (!isHumanHost && myWrongCount >= 3);
+        const remainingTries = Math.max(0, 10 - myWrongCount);
+
+        const headerTextEl = document.getElementById('brainHeaderStatusText');
+        if (headerTextEl) {
+          headerTextEl.innerHTML = !wordConfirmed
+            ? (isHumanHost
+                ? '✍️ 請輸入你心中目視所及的物品名稱！'
+                : '⏳ 主持人正在輸入目視物品，請稍候...')
+            : (isHumanHost
+                ? `💭 你的題目：「<span class="text-red-600 underline">${secretWord}</span>」`
+                : `💭 神秘目視物品：「<span class="bg-[#ffe66d] px-2 py-0.5 rounded border border-black">❓❓❓（共 ${secretWord.length} 個字）</span>」`);
+        }
+
+        const triesBadge = document.getElementById('brainTriesBadge');
+        if (triesBadge) {
+          triesBadge.textContent = `⚡ 剩餘 ${remainingTries} 次機會 (已錯 ${myWrongCount} 次)`;
+        }
+
+        const box = document.getElementById('brainHistoryBox');
+        if (box) {
+          if (guessHistory.length > 0) {
+            const emptyEl = document.getElementById('brainEmptyPlaceholder');
+            if (emptyEl) emptyEl.remove();
+          }
+
+          while (renderedCount < guessHistory.length) {
+            const item = guessHistory[renderedCount];
+            const idxNum = renderedCount + 1;
+            const row = document.createElement('div');
+
+            if (item.isQuestion) {
+              row.className = 'p-2.5 rounded-xl bg-purple-50 border-2 border-[#1e1e1e] text-xs md:text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-2';
+              row.innerHTML = `
+                <div class="min-w-0 flex-1">
+                  <span class="font-black text-purple-800">🃏 [問題卡] ${item.player} 提問：</span>
+                  <span class="font-bold">${item.text}</span>
+                  <div id="reply_text_${item.id}" class="mt-1 font-black text-red-600">🎤 主持人回覆：「${item.reply}」</div>
+                </div>
+                ${isHumanHost && !gameEnded ? `
+                  <div class="flex gap-1.5 w-full sm:w-auto">
+                    <input id="reply_inp_${item.id}" type="text" placeholder="輸入線索回覆..." class="doodle-input text-xs py-1 px-2 flex-1 min-w-0" onkeydown="if(event.key==='Enter') window._hostReplyQuestion('${item.id}')" />
+                    <button onclick="window._hostReplyQuestion('${item.id}')" class="doodle-btn px-2.5 py-1 text-xs bg-[#ffe66d] flex-shrink-0">回覆</button>
+                  </div>
+                ` : ''}
+              `;
+            } else {
+              row.className = `flex flex-wrap items-center justify-between gap-2 p-2 rounded-xl border-2 border-[#1e1e1e] ${item.isCorrect ? 'bg-[#d4edda]' : 'bg-neutral-50'}`;
+              row.innerHTML = `
+                <div class="text-sm font-bold break-all">
+                  <span class="font-black text-xs bg-neutral-200 px-1.5 py-0.5 rounded mr-1">#${idxNum}</span>
+                  <strong>${item.player}</strong> 搶答：<span class="underline">${item.text}</span>
+                </div>
+                <div class="flex items-center gap-2 flex-shrink-0">
+                  ${isHumanHost && !item.isCorrect && !gameEnded ? `
+                    <button onclick="window._hostJudgeCorrect('${item.id}')" class="doodle-btn px-2 py-0.5 text-xs bg-[#d4edda]">
+                      ⭕ 算他答對
+                    </button>
+                  ` : ''}
+                  <span id="guess_status_${item.id}" class="font-black text-sm ${item.isCorrect ? 'text-green-700' : 'text-red-600'}">
+                    ${item.isCorrect ? '⭕ 搶答成功 (+7分!)' : '❌ 猜錯'}
+                  </span>
+                </div>
+              `;
+            }
+
+            box.appendChild(row);
+            renderedCount++;
+          }
+          box.scrollTop = box.scrollHeight;
+        }
+
+        const qZone = document.getElementById('brainQuestionCardZone');
+        if (qZone) {
+          const shouldShowQ = (canAskQuestion && !gameEnded && wordConfirmed);
+          if (shouldShowQ && !qZone.hasChildNodes()) {
+            qZone.innerHTML = `
               <div class="p-3 rounded-xl bg-[#a29bfe]/30 border-2 border-[#1e1e1e] flex flex-wrap items-center justify-between gap-2">
                 <span class="text-xs font-black">🃏 你已猜錯滿 3 次！解鎖「發送問題卡」逼問主持人線索：</span>
                 <div class="flex flex-wrap gap-1.5">
@@ -3184,36 +3500,34 @@
                   `).join('')}
                 </div>
               </div>
-            ` : ''}
+            `;
+          } else if (!shouldShowQ) {
+            qZone.innerHTML = '';
+          }
+        }
 
-            ${!gameEnded && wordConfirmed ? (
-              isHumanHost ? `
-                <div class="p-3 bg-[#ffe66d]/40 border-2 border-[#1e1e1e] rounded-xl flex flex-wrap items-center justify-between gap-2">
-                  <span class="text-xs font-black">🎤 你是主持人（不參與猜題），所有玩家正在不用輪流同步搶答中！若有人打出同義詞你也可直接點「⭕ 算他答對」。</span>
-                </div>
-              ` : `
-                <div class="flex flex-col sm:flex-row gap-2">
-                  <input id="brainGuessInput" ${remainingTries <= 0 ? 'disabled' : ''} type="text" placeholder="${remainingTries > 0 ? '不用輪流，快輸入你猜的物品搶答...' : '已用完 10 次猜測機會'}" class="doodle-input flex-1 text-base" onkeydown="if(event.key==='Enter') window._submitBrainGuess()" />
-                  <button ${remainingTries <= 0 ? 'disabled' : ''} onclick="window._submitBrainGuess()" class="doodle-btn px-6 py-2.5 text-base bg-[#ffe66d]">
-                    ⚡ 立即搶答
-                  </button>
-                </div>
-              `
-            ) : ''}
+        const guessInput = document.getElementById('brainGuessInput');
+        const guessBtn = document.getElementById('brainGuessSubmitBtn');
+        if (guessInput && guessBtn && remainingTries <= 0) {
+          guessInput.disabled = true;
+          guessInput.placeholder = '已用完 10 次猜測機會';
+          guessBtn.disabled = true;
+        }
 
-            ${gameEnded ? `
+        const actionZone = document.getElementById('brainActionInputZone');
+        const endZone = document.getElementById('brainEndZone');
+        if (gameEnded) {
+          if (actionZone) actionZone.classList.add('hidden');
+          if (endZone) {
+            endZone.innerHTML = `
               <div class="text-center pt-2">
                 <button onclick="finishMiniGameAndShowRoundResult()" class="doodle-btn px-8 py-3 text-lg bg-[#ff6b6b] text-white">
                   🎉 答案揭曉：「${secretWord}」！進入計分台 ➔
                 </button>
               </div>
-            ` : ''}
-          </div>
-        `;
-
-        renderAvatarToCanvas(document.getElementById('brainHostCanvas'), host.avatar);
-        const box = document.getElementById('brainHistoryBox');
-        if (box) box.scrollTop = box.scrollHeight;
+            `;
+          }
+        }
       }
 
       window._confirmHostSecret = () => {
@@ -3225,6 +3539,7 @@
       window._hostReplyQuestion = (qId) => {
         const inp = document.getElementById(`reply_inp_${qId}`);
         const rep = (inp?.value || '').trim() || '啊齁你說的都對';
+        if (inp) inp.value = '';
         NetSync.sendGameAction('BRAIN_REPLY', { qId, reply: rep });
       };
 
@@ -3238,6 +3553,8 @@
         const input = document.getElementById('brainGuessInput');
         const guess = input ? input.value.trim() : '';
         if (!guess) return;
+        input.value = '';
+        input.focus();
         NetSync.sendGameAction('BRAIN_GUESS', {
           gId: 'g_' + Date.now() + '_' + human.id,
           playerName: human.name,
@@ -3254,11 +3571,13 @@
         });
       };
 
-      renderBrainView();
+      renderBrainLayout();
     }
 
     /**************************************************************
-     * 遊戲 4：記憶考驗 (全員同步主題、同步主持人出詞、同步等待所有人作答完才進入下一回合)
+     * 遊戲 4：記憶考驗
+     * - 前幾回合 (1~3回合) 所有人都點擊「記住了」或者時間到才會進入下一題
+     * - 即時顯示並加強回答正確與否的視覺橫幅特效
      **************************************************************/
     function startMiniGame3_MemoryTest() {
       const mount = document.getElementById('miniGameMountPoint');
@@ -3274,7 +3593,9 @@
       let currentTurn = 1;
       let myCorrectCount = 0;
       let stepTimeLeft = 30;
-      let turnAnswers = {}; // { playerId: answerStr }
+      let turnAnswers = {};     // 第 4~10 回合 { playerId: answerStr }
+      let turnRemembered = {};  // 第 1~3 回合 { playerId: true }
+      let lastFeedbackBanner = null; // { isCorrect: bool, expected: str, myAns: str }
 
       function getAutoPresetWord() {
         const pool = QUESTION_BANKS.testMemoryWords;
@@ -3309,22 +3630,32 @@
         const playersNeedToAnswer = (currentTurn >= 4);
         if (hostNeedsToPrompt && wordHistory.length < currentTurn) return;
 
-        if (playersNeedToAnswer) {
-          const guessers = GameState.players.filter(p => p.id !== host.id);
-          const allAnswered = guessers.every(p => turnAnswers[p.id] !== undefined);
-          if (!allAnswered) return;
+        const guessers = GameState.players.filter(p => p.id !== host.id);
 
-          // 全員皆已作答，統一結算本回合並前進
-          const recallIdx = currentTurn - 4;
-          const expectedWord = wordHistory[recallIdx];
-          guessers.forEach(p => {
-            if (turnAnswers[p.id] === expectedWord) {
-              awardPoints(p.id, 1, host.id);
-              if (p.id === me.id) myCorrectCount++;
-            }
-          });
-          initTurnStep(currentTurn + 1);
+        if (!playersNeedToAnswer) {
+          // 第 1~3 回合：所有非主持人玩家都點擊「記住了」才進入下一題
+          const allRemembered = guessers.every(p => !!turnRemembered[p.id]);
+          if (allRemembered) {
+            initTurnStep(currentTurn + 1);
+          }
+          return;
         }
+
+        // 第 4~10 回合：所有非主持人玩家都已作答
+        const allAnswered = guessers.every(p => turnAnswers[p.id] !== undefined);
+        if (!allAnswered) return;
+
+        const recallIdx = currentTurn - 4;
+        const expectedWord = wordHistory[recallIdx];
+        guessers.forEach(p => {
+          if (turnAnswers[p.id] === expectedWord) {
+            awardPoints(p.id, 1, host.id);
+            if (p.id === me.id) myCorrectCount++;
+          }
+        });
+        setTimeout(() => {
+          initTurnStep(currentTurn + 1);
+        }, 1200);
       }
 
       window._onGameEvent = (action, payload) => {
@@ -3333,6 +3664,10 @@
             wordHistory.push(payload.word);
           }
           SoundFX.pop();
+          renderMemoryView();
+          checkTurnReadyToAdvance();
+        } else if (action === 'MEM_REMEMBER_CLICK' && payload.turn === currentTurn) {
+          turnRemembered[payload.playerId] = true;
           renderMemoryView();
           checkTurnReadyToAdvance();
         } else if (action === 'MEM_PLAYER_ANS' && payload.turn === currentTurn) {
@@ -3367,6 +3702,8 @@
         }
         currentTurn = turnNum;
         turnAnswers = {};
+        turnRemembered = {};
+        lastFeedbackBanner = null;
         const hostNeedsToPrompt = (currentTurn <= 7);
         const playersNeedToAnswer = (currentTurn >= 4);
 
@@ -3374,15 +3711,16 @@
           wordHistory.push(getAutoPresetWord());
         }
 
-        if (playersNeedToAnswer) {
-          const recallIdx = currentTurn - 4;
-          const expectedWord = wordHistory[recallIdx];
-          GameState.players.forEach(p => {
-            if (p.isAI && p.id !== host.id) {
+        GameState.players.forEach(p => {
+          if (p.isAI && p.id !== host.id) {
+            turnRemembered[p.id] = true;
+            if (playersNeedToAnswer) {
+              const recallIdx = currentTurn - 4;
+              const expectedWord = wordHistory[recallIdx];
               turnAnswers[p.id] = (rng() < 0.65) ? expectedWord : '忘記了';
             }
-          });
-        }
+          }
+        });
 
         renderMemoryView();
 
@@ -3412,6 +3750,10 @@
         const expectedWord = playersNeedToAnswer ? wordHistory[recallIdx] : null;
         const hasHostPromptedThisTurn = !hostNeedsToPrompt || (wordHistory.length >= currentTurn);
         const myAnsSubmitted = turnAnswers[me.id] !== undefined;
+        const myRememberClicked = !!turnRemembered[me.id];
+        const guessers = GameState.players.filter(p => p.id !== host.id);
+        const rememberedCount = guessers.filter(p => !!turnRemembered[p.id]).length;
+        const answeredCount = guessers.filter(p => turnAnswers[p.id] !== undefined).length;
 
         document.getElementById('playSubProgress').textContent = `回合 ${currentTurn} / 10 ｜ 主題：${chosenTheme} ${playersNeedToAnswer ? `｜作答第 ${recallIdx + 1}/7 題` : ''}`;
 
@@ -3470,6 +3812,18 @@
               </div>
             </div>
 
+            ${lastFeedbackBanner ? `
+              <!-- 即時強化回答正確與否的動態特效橫幅 -->
+              <div class="theme-cut-in doodle-box-sm p-4 text-center border-4 ${lastFeedbackBanner.isCorrect ? 'bg-[#d4edda] border-green-600 text-green-900' : 'bg-red-100 border-red-600 text-red-900 shake-screen'}">
+                <div class="text-2xl md:text-3xl font-black">
+                  ${lastFeedbackBanner.isCorrect ? '⭕ 記憶超群！回答正確 (+1分)！' : `❌ 答錯了！正確答案是「${lastFeedbackBanner.expected}」`}
+                </div>
+                <div class="text-xs font-bold mt-1">
+                  你的回答：「${lastFeedbackBanner.myAns || '(未填寫)'}」｜目前已作答：${answeredCount}/${guessers.length} 人
+                </div>
+              </div>
+            ` : ''}
+
             <div class="doodle-box-sm p-5 bg-white text-center">
               ${isHumanHost ? (
                 hostNeedsToPrompt && !hasHostPromptedThisTurn ? `
@@ -3491,17 +3845,12 @@
                     </div>
                   </div>
                 ` : `
-                  <div class="space-y-3 py-3">
+                  <div class="space-y-2 py-3">
                     <div class="text-base font-black text-teal-800">
                       ${!playersNeedToAnswer
-                        ? `✅ 已出完第 ${currentTurn} 詞！請點下方按鈕讓全場進入下一回合：`
-                        : `⏳ 等待其他玩家回想並填寫第 ${recallIdx + 1} 題答案...`}
+                        ? `✅ 已出完第 ${currentTurn} 詞！等待全體玩家點擊「記住了」(${rememberedCount}/${guessers.length}人)...`
+                        : `⏳ 等待全體玩家回想並填寫第 ${recallIdx + 1} 題答案 (${answeredCount}/${guessers.length}人)...`}
                     </div>
-                    ${!playersNeedToAnswer ? `
-                      <button onclick="window._nextMemoryTurn()" class="doodle-btn px-8 py-3 text-base bg-[#ffe66d]">
-                        ➡️ 全員進入第 ${currentTurn + 1} 回合
-                      </button>
-                    ` : ''}
                   </div>
                 `
               ) : (
@@ -3510,23 +3859,23 @@
                 ` : !playersNeedToAnswer ? `
                   <div class="py-3 space-y-3">
                     <div class="inline-block bg-neutral-200 border-2 border-[#1e1e1e] px-3 py-1 rounded-full text-xs font-black">
-                      🔒 第 1 ~ 3 回合記憶累積期（作答區鎖定中）
+                      🔒 第 1 ~ 3 回合記憶累積期（已確認記住：${rememberedCount}/${guessers.length} 人）
                     </div>
                     <p class="text-sm font-bold text-neutral-600">
-                      請記住上方第 ${currentTurn} 回合主持人的詞語「<strong>${wordHistory[currentTurn - 1]}</strong>」！第 4 回合開始回答第 1 題。
+                      請記住上方第 ${currentTurn} 回合主持人的詞語「<strong>${wordHistory[currentTurn - 1]}</strong>」！全員點擊記住後自動進入下一題。
                     </p>
-                    <button onclick="window._nextMemoryTurn()" class="doodle-btn px-8 py-3 text-base bg-[#ffe66d]">
-                      🧠 記住了！進入第 ${currentTurn + 1} 回合 ➔
+                    <button ${myRememberClicked ? 'disabled' : ''} onclick="window._clickRememberedWord()" class="doodle-btn px-8 py-3 text-base bg-[#ffe66d]">
+                      ${myRememberClicked ? '✅ 已確認記住！等待其他人...' : `🧠 記住了！(${rememberedCount}/${guessers.length}) ➔`}
                     </button>
                   </div>
                 ` : myAnsSubmitted ? `
-                  <div class="py-6 text-base font-black text-teal-700">
-                    ✅ 你已送出答案（「${turnAnswers[me.id]}」），等待其他玩家作答完畢後同步進入下一題...
+                  <div class="py-4 text-base font-black text-teal-700">
+                    ⏳ 等待其他玩家作答完畢 (${answeredCount}/${guessers.length} 人)...
                   </div>
                 ` : `
                   <div class="space-y-3">
                     <div class="inline-block bg-[#4ecdc4] border-2 border-[#1e1e1e] px-3 py-1 rounded-full text-xs font-black">
-                      ✍️ 玩家作答區（第 ${recallIdx + 1} / 7 題｜限時 30 秒）
+                      ✍️ 玩家作答區（第 ${recallIdx + 1} / 7 題｜限時 30 秒｜已答 ${answeredCount}/${guessers.length} 人）
                     </div>
                     <h4 class="text-lg font-black">
                       請輸入主持人在「第 ${recallIdx + 1} 回合（前三個）」說過的詞語：
@@ -3565,8 +3914,10 @@
         NetSync.sendGameAction('MEM_HOST_WORD', { turn: currentTurn, word: w });
       };
 
-      window._nextMemoryTurn = () => {
-        NetSync.sendGameAction('MEM_NEXT_TURN', { nextTurn: currentTurn + 1 });
+      window._clickRememberedWord = () => {
+        if (turnRemembered[me.id]) return;
+        SoundFX.pop();
+        NetSync.sendGameAction('MEM_REMEMBER_CLICK', { turn: currentTurn, playerId: me.id });
       };
 
       window._submitMemoryAns = (quickWord = null) => {
@@ -3574,13 +3925,18 @@
         const inp = document.getElementById('memAnswerInput');
         const ans = quickWord !== null ? quickWord : (inp ? inp.value.trim() : '');
         const recallIdx = currentTurn - 4;
-        if (ans === wordHistory[recallIdx]) SoundFX.correct(); else SoundFX.wrong();
+        const expected = wordHistory[recallIdx];
+        const isCorrect = (ans === expected);
+        lastFeedbackBanner = { isCorrect, expected, myAns: ans };
+        if (isCorrect) SoundFX.correct(); else SoundFX.wrong();
         NetSync.sendGameAction('MEM_PLAYER_ANS', { turn: currentTurn, playerId: me.id, ans });
       };
     }
 
     /**************************************************************
-     * 遊戲 5：殘酷二選一 (全員同步題目、同步收集畫作、全員同步觀看主持人二選一與金光勝字)
+     * 遊戲 5：殘酷二選一
+     * - 修復無法畫圖直接跳評分的問題，移除提前跳過按鈕，強制等待所有非主持人玩家畫完才開始評分
+     * - 評分與冠軍畫面完成後自動跳轉
      **************************************************************/
     function startMiniGame4_CruelBinary() {
       const mount = document.getElementById('miniGameMountPoint');
@@ -3644,6 +4000,9 @@
       });
 
       function renderCruelDrawPhase() {
+        const drawers = GameState.players.filter(p => p.id !== host.id);
+        const doneCount = drawers.filter(p => !!submittedDrawings[p.id]).length;
+
         if (isHumanHost) {
           mount.innerHTML = `
             <div class="space-y-4 text-center py-6">
@@ -3655,11 +4014,8 @@
                 <div class="text-3xl">🎤</div>
                 <h4 class="text-lg font-black">你是本局主持人，不用繪圖！</h4>
                 <p class="text-xs font-bold text-neutral-600">
-                  其他玩家正在限時 1 分鐘內作畫（剩餘 <span id="cruelDrawTimer">${drawTimeLeft}s</span>），所有人交卷後將自動進入二選一！
+                  其他玩家正在限時 1 分鐘內作畫（剩餘 <span id="cruelDrawTimer">${drawTimeLeft}s</span>｜已完成 ${doneCount}/${drawers.length} 人），待所有人畫完後將自動開始二選一評分！
                 </p>
-                <button onclick="window._hostForceCruelBattle()" class="doodle-btn px-6 py-3 text-base bg-[#ff6b6b] text-white">
-                  ⚡ 立即收集所有玩家畫作並開始二選一 ➔
-                </button>
               </div>
             </div>
           `;
@@ -3667,7 +4023,7 @@
           mount.innerHTML = `
             <div class="py-12 text-center space-y-3 doodle-box-sm bg-[#fffdf7]">
               <div class="text-3xl">✅</div>
-              <h4 class="text-lg font-black text-teal-800">你的畫作已送出！等待其他玩家完成後同步進入殘酷二選一...</h4>
+              <h4 class="text-lg font-black text-teal-800">你的畫作已送出！（已完成 ${doneCount}/${drawers.length} 人）等待其他玩家畫完後自動進入殘酷二選一...</h4>
             </div>
           `;
         } else {
@@ -3684,7 +4040,7 @@
                 </span>
                 <button onclick="window._clearCruelCanvas()" class="doodle-btn px-3 py-1 text-xs bg-white">🗑️ 清空畫布</button>
                 <button onclick="window._submitMyCruelDrawing()" class="doodle-btn px-4 py-1.5 text-sm bg-[#ff6b6b] text-white">
-                  ✅ 完成畫作並交卷 ➔
+                  ✅ 完成畫作並交卷 (${doneCount}/${drawers.length}) ➔
                 </button>
               </div>
 
@@ -3876,20 +4232,24 @@
                 <span class="text-2xl font-black text-[#d4af37]">勝</span>
               </div>
             </div>
-            <div>
-              <button onclick="finishMiniGameAndShowRoundResult()" class="doodle-btn px-8 py-3 text-lg bg-[#ff6b6b] text-white">
-                查看本局計分台 ➔
-              </button>
-            </div>
+            <div class="text-xs font-black text-neutral-500">✨ 即將自動跳轉至本局計分台...</div>
           </div>
         `;
+        if (GameState.isRoomHost) {
+          const endTimer = setTimeout(() => {
+            finishMiniGameAndShowRoundResult();
+          }, 2600);
+          GameState.activeTimers.push(endTimer);
+        }
       }
 
       renderCruelDrawPhase();
     }
 
     /**************************************************************
-     * 遊戲 6：這是我的回答 (全員同步題目、全員提交後才顯示選項、全員猜完才揭曉)
+     * 遊戲 6：這是我的回答
+     * - 沒有輸入就會寫「(空白)」
+     * - 倒數 60 秒或者所有玩家都完成選擇後才會公布答案，並自動進入下一題
      **************************************************************/
     function startMiniGame5_MyAnswer() {
       const mount = document.getElementById('miniGameMountPoint');
@@ -3903,10 +4263,26 @@
       const roundScores = [3, 3, 5];
 
       let qIdx = 0;
+      let phaseTimeLeft = 60;
       let step = 'input'; // 'input' | 'vote' | 'reveal'
       let textMap = {};   // { playerId: text }
       let voteMap = {};   // { voterId: pickedPlayerId }
       let submissions = [];
+
+      function startPhase60sTimer(onTimeout) {
+        clearAllGameTimers();
+        phaseTimeLeft = 60;
+        const tId = setInterval(() => {
+          phaseTimeLeft--;
+          const tEl = document.getElementById('myAnsTimerText');
+          if (tEl) tEl.textContent = `${phaseTimeLeft}s`;
+          if (phaseTimeLeft <= 0) {
+            clearInterval(tId);
+            onTimeout();
+          }
+        }, 1000);
+        GameState.activeTimers.push(tId);
+      }
 
       function checkAllTextsSubmitted() {
         if (step !== 'input') return;
@@ -3915,13 +4291,19 @@
           const rawList = GameState.players.map(p => ({
             playerId: p.id,
             playerName: p.name,
-            text: textMap[p.id],
+            text: textMap[p.id] || '(空白)',
             isHost: p.id === host.id
           }));
           submissions = deterministicShuffle(rawList, rng);
           step = 'vote';
           SoundFX.pop();
           renderMyAnswerView();
+          checkAllVotesSubmitted();
+          startPhase60sTimer(() => {
+            if (GameState.isRoomHost && step === 'vote') {
+              NetSync.sendGameAction('MYANS_FORCE_REVEAL', { qIdx });
+            }
+          });
         }
       }
 
@@ -3937,6 +4319,7 @@
       function revealVotesForCurrentRound() {
         if (step === 'reveal') return;
         step = 'reveal';
+        clearAllGameTimers();
         const pts = roundScores[qIdx];
         let anyRight = false;
 
@@ -3956,11 +4339,19 @@
 
         if (anyRight) SoundFX.correct(); else SoundFX.wrong();
         renderMyAnswerView();
+
+        // 公布答案 2.8 秒後自動同步進入下一題
+        if (GameState.isRoomHost) {
+          const nextTimer = setTimeout(() => {
+            NetSync.sendGameAction('MYANS_NEXT_ROUND', { nextIdx: qIdx + 1 });
+          }, 2800);
+          GameState.activeTimers.push(nextTimer);
+        }
       }
 
       window._onGameEvent = (action, payload) => {
         if (action === 'MYANS_SUBMIT_TEXT' && payload.qIdx === qIdx) {
-          textMap[payload.playerId] = payload.text;
+          textMap[payload.playerId] = payload.text || '(空白)';
           renderMyAnswerView();
           checkAllTextsSubmitted();
         } else if (action === 'MYANS_SUBMIT_VOTE' && payload.qIdx === qIdx) {
@@ -3975,6 +4366,7 @@
       };
 
       function startQuestionRound(idx) {
+        clearAllGameTimers();
         if (idx >= 3) {
           finishMiniGameAndShowRoundResult();
           return;
@@ -3997,6 +4389,23 @@
 
         document.getElementById('playSubProgress').textContent = `第 ${qIdx + 1} / 3 題 (猜中主持人得 ${roundScores[qIdx]} 分)`;
         renderMyAnswerView();
+
+        startPhase60sTimer(() => {
+          if (step === 'input') {
+            if (textMap[me.id] === undefined) {
+              const inp = document.getElementById('myAnsTextInput');
+              const myText = (inp?.value || '').trim() || '(空白)';
+              NetSync.sendGameAction('MYANS_SUBMIT_TEXT', { qIdx, playerId: me.id, text: myText });
+            }
+            if (GameState.isRoomHost) {
+              GameState.players.forEach(p => {
+                if (textMap[p.id] === undefined) {
+                  NetSync.sendGameAction('MYANS_SUBMIT_TEXT', { qIdx, playerId: p.id, text: '(空白)' });
+                }
+              });
+            }
+          }
+        });
       }
 
       function renderMyAnswerView() {
@@ -4010,9 +4419,14 @@
           mount.innerHTML = `
             <div class="space-y-4">
               <div class="doodle-box-sm p-4 bg-[#fffdf7] text-center">
-                <span class="text-xs font-black bg-[#ffe66d] px-2.5 py-0.5 rounded border border-black">
-                  靈魂情境題 #${qIdx + 1}（本題價值 ${pts} 分｜已交卷 ${submittedCount}/${GameState.players.length} 人）
-                </span>
+                <div class="flex items-center justify-center gap-2 mb-1">
+                  <span class="text-xs font-black bg-[#ffe66d] px-2.5 py-0.5 rounded border border-black">
+                    靈魂情境題 #${qIdx + 1}（價值 ${pts} 分｜已交卷 ${submittedCount}/${GameState.players.length} 人）
+                  </span>
+                  <span class="text-xs font-mono font-black bg-[#1e1e1e] text-[#ffe66d] px-2.5 py-0.5 rounded">
+                    ⏱️ <span id="myAnsTimerText">${phaseTimeLeft}s</span>
+                  </span>
+                </div>
                 <h3 class="text-lg md:text-2xl font-black mt-2">${promptText}</h3>
               </div>
 
@@ -4023,7 +4437,7 @@
               ` : `
                 <div class="doodle-box-sm p-5 bg-white space-y-3">
                   <label class="block text-sm font-black">
-                    ✏️ 請輸入你的靈魂回答${isHumanHost ? '（你是主持人，大家待會要猜出你寫的這句話！）' : ''}：
+                    ✏️ 請輸入你的靈魂回答${isHumanHost ? '（你是主持人，大家待會要猜出你寫的這句話！）' : ''}（未輸入將顯示為 (空白)）：
                   </label>
                   <input id="myAnsTextInput" type="text" value="" placeholder="請在此輸入你的回答..." class="doodle-input w-full text-base" onkeydown="if(event.key==='Enter') window._submitMyAnswerText()" />
                   <div class="flex justify-end pt-2">
@@ -4041,11 +4455,14 @@
           mount.innerHTML = `
             <div class="space-y-4">
               <div class="doodle-box-sm p-3 bg-[#fffdf7] text-center">
-                <div class="text-xs font-black text-neutral-500">題目：${promptText}（已盲猜 ${votedCount}/${voters.length} 人）</div>
+                <div class="flex items-center justify-center gap-2">
+                  <span class="text-xs font-black text-neutral-500">題目：${promptText}（已盲猜 ${votedCount}/${voters.length} 人）</span>
+                  ${step === 'vote' ? `<span class="text-xs font-mono font-black bg-[#1e1e1e] text-[#ffe66d] px-2 py-0.5 rounded">⏱️ <span id="myAnsTimerText">${phaseTimeLeft}s</span></span>` : ''}
+                </div>
                 <h4 class="text-base md:text-lg font-black mt-1 text-red-600">
                   ${isHumanHost
-                    ? `🎤 你是本局主持人（不參與猜題），大家選完將自動揭曉！`
-                    : `🕵️ 所有人的回答已打散！請猜哪一句才是主持人【${host.name}】寫的？（猜中 +${pts} 分）`}
+                    ? `🎤 你是本局主持人（不參與猜題），60秒倒數結束或大家選完將自動公布答案！`
+                    : `🕵️ 所有人的回答已打散！請在 60 秒內猜哪一句才是主持人【${host.name}】寫的？（猜中 +${pts} 分）`}
                 </h4>
               </div>
 
@@ -4075,19 +4492,9 @@
                 }).join('')}
               </div>
 
-              ${isHumanHost && step === 'vote' ? `
-                <div class="text-center pt-2">
-                  <button onclick="window._hostRevealMyAnsVote()" class="doodle-btn px-8 py-3 text-base bg-[#4ecdc4]">
-                    👀 立即公布全場猜測結果
-                  </button>
-                </div>
-              ` : ''}
-
               ${step === 'reveal' ? `
-                <div class="text-center pt-2">
-                  <button onclick="window._nextMyAnsRound()" class="doodle-btn px-8 py-3 text-lg bg-[#ffe66d]">
-                    ${qIdx + 1 < 3 ? '下一題情境 (全員同步) ➔' : '查看本局計分台 ➔'}
-                  </button>
+                <div class="text-center py-2 font-black text-sm text-teal-800 bg-[#d4edda] rounded-xl border-2 border-[#1e1e1e]">
+                  ✨ 答案已揭曉！即將自動進入${qIdx + 1 < 3 ? '下一題' : '計分台'}...
                 </div>
               ` : ''}
             </div>
@@ -4098,23 +4505,15 @@
       window._submitMyAnswerText = () => {
         if (textMap[me.id] !== undefined) return;
         const inp = document.getElementById('myAnsTextInput');
-        const myText = (inp?.value || '').trim() || '（沉默是金）';
+        const myText = (inp?.value || '').trim() || '(空白)';
         SoundFX.pop();
         NetSync.sendGameAction('MYANS_SUBMIT_TEXT', { qIdx, playerId: me.id, text: myText });
-      };
-
-      window._hostRevealMyAnsVote = () => {
-        NetSync.sendGameAction('MYANS_FORCE_REVEAL', { qIdx });
       };
 
       window._voteHostAnswer = (pickedPlayerId) => {
         if (step !== 'vote' || isHumanHost) return;
         SoundFX.pop();
         NetSync.sendGameAction('MYANS_SUBMIT_VOTE', { qIdx, voterId: me.id, pickedPlayerId });
-      };
-
-      window._nextMyAnsRound = () => {
-        NetSync.sendGameAction('MYANS_NEXT_ROUND', { nextIdx: qIdx + 1 });
       };
 
       startQuestionRound(0);
@@ -4464,10 +4863,8 @@
 
     /**************************************************************
      * 遊戲 8：超級找找王
-     * - 限時 45 秒、主持人不能猜
-     * - 共 30 個頭像：5 個正版 (17%)、4 個錯1部位 (13%)、6 個錯2部位 (20%)、15 個超級不像 (50%)
-     * - 改成「第一個把 5 個正版全部找到」才遊戲結束（或 45 秒時間到結束）
-     * - 計分規則：第 1 個正版得 1 分；找到第 2 個以上，每個得 2 分！（即 1->1分, 2->3分, 3->5分, 4->7分, 5->9分）
+     * - 數量分配：正解 5 個、錯 1 部位 9 個、錯 2 部位 8 個、超級不像 8 個（共 30 個）
+     * - 主持人面板即時顯示每位玩家找到幾個，並提供 1 次「懲罰（指定玩家 5 秒不能選）」與 1 次「祝福（直接幫指定玩家公布 1 個答案）」
      **************************************************************/
     function startMiniGame7_SuperFinder() {
       const mount = document.getElementById('miniGameMountPoint');
@@ -4478,6 +4875,8 @@
 
       let finderTimeLeft = 45;
       let roundEnded = false;
+      let hostUsedPunish = false;
+      let hostUsedBless = false;
       const behaviors = [
         'behavior-spin',
         'behavior-pulse',
@@ -4513,11 +4912,12 @@
         return clone;
       }
 
+      // 正解 5 個、錯 1 個部位 9 個、錯 2 個部位 8 個、超級不像 8 個（共 30 個）
       const rawRoleTypes = [
         ...Array(5).fill('real'),
-        ...Array(4).fill('wrong1'),
-        ...Array(6).fill('wrong2'),
-        ...Array(15).fill('super_unlike')
+        ...Array(9).fill('wrong1'),
+        ...Array(8).fill('wrong2'),
+        ...Array(8).fill('super_unlike')
       ];
       const roleTypes = deterministicShuffle(rawRoleTypes, rng);
 
@@ -4564,6 +4964,24 @@
       });
       const startTimeMs = Date.now();
 
+      function triggerPenaltyOverlay(seconds, titleMsg) {
+        SoundFX.wrong();
+        isPenaltyLocked = true;
+        const grid = document.getElementById('finderPanoramaGrid');
+        const overlay = document.getElementById('finderPenaltyOverlay');
+        const titleEl = document.getElementById('finderPenaltyTitle');
+        if (titleEl) titleEl.textContent = titleMsg;
+        if (grid) grid.classList.add('shake-screen');
+        if (overlay) overlay.classList.remove('hidden');
+
+        const tId = setTimeout(() => {
+          isPenaltyLocked = false;
+          if (grid) grid.classList.remove('shake-screen');
+          if (overlay) overlay.classList.add('hidden');
+        }, seconds * 1000);
+        GameState.activeTimers.push(tId);
+      }
+
       window._onGameEvent = (action, payload) => {
         if (action === 'FINDER_FOUND_ONE') {
           const pid = payload.playerId;
@@ -4573,12 +4991,39 @@
           if (payload.quickHit) {
             GameState.stats.quickFinderHit[pid][host.id] = true;
           }
+          if (isHumanHost) renderFinderView();
           if (playerFoundCounts[pid] >= 5 && !roundEnded) {
             SoundFX.fanfare();
             setTimeout(() => {
               window._completeFinderRound();
             }, 600);
           }
+        } else if (action === 'FINDER_HOST_PUNISH') {
+          hostUsedPunish = true;
+          if (payload.targetPlayerId === human.id && !isHumanHost) {
+            triggerPenaltyOverlay(5, `⚡ 遭到主持人【${host.name}】降下懲罰！罰站鎖定 5 秒不能選擇！`);
+          }
+          if (isHumanHost) renderFinderView();
+        } else if (action === 'FINDER_HOST_BLESS') {
+          hostUsedBless = true;
+          if (payload.targetPlayerId === human.id && !isHumanHost) {
+            const unfoundReal = crowdList.find(c => c.isReal && !c.found);
+            if (unfoundReal) {
+              unfoundReal.found = true;
+              myFoundCount++;
+              const pts = (myFoundCount === 1) ? 1 : 2;
+              myEarnedScore += pts;
+              SoundFX.fanfare();
+              renderFinderView();
+              NetSync.sendGameAction('FINDER_FOUND_ONE', { playerId: human.id, quickHit: false });
+            }
+          } else if (GameState.isRoomHost) {
+            const targetP = GameState.players.find(p => p.id === payload.targetPlayerId);
+            if (targetP && targetP.isAI && (playerFoundCounts[targetP.id] || 0) < 5) {
+              NetSync.sendGameAction('FINDER_FOUND_ONE', { playerId: targetP.id, quickHit: false });
+            }
+          }
+          if (isHumanHost) renderFinderView();
         } else if (action === 'FINDER_END_ROUND') {
           if (!roundEnded) {
             roundEnded = true;
@@ -4591,6 +5036,8 @@
       document.getElementById('playSubProgress').textContent = `限時 45 秒｜找齊全部 5 個正版【${host.name}】即結束 (第1個1分，第2個起每個2分)`;
 
       function renderFinderView() {
+        const nonHostPlayers = GameState.players.filter(p => p.id !== host.id);
+
         mount.innerHTML = `
           <div class="space-y-3 relative">
             <!-- 頂部：正版主持人通緝令與進度 -->
@@ -4612,8 +5059,8 @@
                   </div>
                   <p class="text-xs font-bold text-neutral-600 mt-1">
                     ${isHumanHost
-                      ? '🎤 你是本局主持人（不參與猜題），第一個找齊全部 5 個正版的玩家將直接結束遊戲！'
-                      : '找到第 1 個得 1 分，第 2~5 個每個得 2 分（全找齊共 9 分）！第一位找齊 5 個正版直接結束本局！'}
+                      ? '🎤 主持人專屬控制台：即時監看大家找到幾個，並可發動 1 次懲罰(禁選5秒)與 1 次祝福(直接公布1個答案)！'
+                      : '找到第 1 個得 1 分，第 2~5 個每個得 2 分！第一位找齊 5 個正版直接結束本局！'}
                   </p>
                 </div>
               </div>
@@ -4626,23 +5073,56 @@
                     🤖 提示 5 個正解
                   </button>
                 ` : ''}
-                ${isHumanHost ? `
-                  <button onclick="window._completeFinderRound()" class="doodle-btn px-3 py-1.5 text-xs bg-[#ff6b6b] text-white">
-                    ⚡ 提前結束並結算
-                  </button>
-                ` : ''}
               </div>
             </div>
 
-            <!-- 點錯 3 秒懲罰遮罩 -->
+            ${isHumanHost ? `
+              <!-- 主持人專屬即時進度與懲罰/祝福面板 -->
+              <div class="doodle-box-sm p-4 bg-[#fff9db] space-y-3">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b-2 border-dashed border-neutral-400 pb-2">
+                  <span class="font-black text-sm">📊 玩家即時尋找進度與神力操作</span>
+                  <div class="flex gap-2 text-xs font-black">
+                    <span class="px-2 py-0.5 rounded border border-black ${hostUsedPunish ? 'bg-neutral-200 text-neutral-500' : 'bg-[#ff6b6b] text-white'}">
+                      ⚡ 懲罰機會(禁選5秒)：${hostUsedPunish ? '已使用' : '可使用 1 次'}
+                    </span>
+                    <span class="px-2 py-0.5 rounded border border-black ${hostUsedBless ? 'bg-neutral-200 text-neutral-500' : 'bg-[#4ecdc4] text-[#1e1e1e]'}">
+                      ✨ 祝福機會(送1正解)：${hostUsedBless ? '已使用' : '可使用 1 次'}
+                    </span>
+                  </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
+                  ${nonHostPlayers.map(p => {
+                    const cnt = playerFoundCounts[p.id] || 0;
+                    return `
+                      <div class="p-2.5 bg-white border-2 border-[#1e1e1e] rounded-xl flex items-center justify-between gap-2">
+                        <div>
+                          <div class="font-black text-sm">${p.name}</div>
+                          <div class="text-xs font-bold text-red-600">已找到：${cnt} / 5 個</div>
+                        </div>
+                        <div class="flex gap-1.5">
+                          <button ${hostUsedPunish ? 'disabled' : ''} onclick="window._hostPunishPlayer('${p.id}')" class="doodle-btn px-2 py-1 text-xs bg-[#ff6b6b] text-white">
+                            ⚡ 懲罰5秒
+                          </button>
+                          <button ${(hostUsedBless || cnt >= 5) ? 'disabled' : ''} onclick="window._hostBlessPlayer('${p.id}')" class="doodle-btn px-2 py-1 text-xs bg-[#4ecdc4]">
+                            ✨ 祝福+1
+                          </button>
+                        </div>
+                      </div>
+                    `;
+                  }).join('')}
+                </div>
+              </div>
+            ` : ''}
+
+            <!-- 點錯或被主持人懲罰遮罩 -->
             <div id="finderPenaltyOverlay" class="hidden absolute inset-0 z-30 bg-red-600/80 backdrop-blur-sm rounded-2xl flex flex-col items-center justify-center text-white p-6 text-center">
               <div class="text-6xl mb-2">🚫</div>
-              <h4 class="text-2xl font-black">點錯冒牌貨了！罰站鎖定 3 秒！</h4>
-              <p class="text-sm font-bold mt-1">千萬別亂點，請仔細比對臉型、膚色與四個五官部位！</p>
+              <h4 id="finderPenaltyTitle" class="text-2xl font-black">點錯冒牌貨了！罰站鎖定 3 秒！</h4>
+              <p class="text-sm font-bold mt-1">請仔細比對臉型、膚色與四個五官部位！</p>
             </div>
 
             <!-- 縮小鏡頭全景網格 (30格) -->
-            <div id="finderPanoramaGrid" class="doodle-box-sm p-3 bg-white grid grid-cols-5 sm:grid-cols-6 gap-2.5 place-items-center min-h-[320px]">
+            <div id="finderPanoramaGrid" class="doodle-box-sm p-3 bg-white grid grid-cols-5 sm:grid-cols-6 gap-2.5 place-items-center min-h-[300px]">
               ${crowdList.map(item => `
                 <button id="finder_cell_${item.idx}" ${(isHumanHost || item.found) ? 'disabled' : ''} onclick="window._clickFinderCharacter(${item.idx})" class="w-14 h-14 sm:w-20 sm:h-20 rounded-xl border-2 ${item.found ? 'border-green-600 bg-green-100 ring-4 ring-green-500' : 'border-neutral-300 hover:border-[#1e1e1e] bg-[#fffdf9]'} p-1 flex items-center justify-center transition relative overflow-hidden">
                   <canvas id="finder_cv_${item.idx}" width="110" height="110" class="w-full h-full ${item.behaviorClass}"></canvas>
@@ -4666,19 +5146,15 @@
         const tEl = document.getElementById('finderTimerText');
         if (tEl) tEl.textContent = `${finderTimeLeft}s`;
 
-        // 模擬 AI 玩家每秒有機會找到正版（找到第1個+1分，第2~5個每個+2分）
-        GameState.players.forEach(p => {
-          if (p.isAI && p.id !== host.id && !roundEnded) {
-            if (Math.random() < 0.085 && aiFoundCounts[p.id] < 5) {
-              aiFoundCounts[p.id]++;
-              const pts = aiFoundCounts[p.id] === 1 ? 1 : 2;
-              awardPoints(p.id, pts, host.id);
-              if (aiFoundCounts[p.id] >= 5) {
-                window._completeFinderRound();
+        if (GameState.isRoomHost) {
+          GameState.players.forEach(p => {
+            if (p.isAI && p.id !== host.id && !roundEnded) {
+              if (Math.random() < 0.085 && (playerFoundCounts[p.id] || 0) < 5) {
+                NetSync.sendGameAction('FINDER_FOUND_ONE', { playerId: p.id, quickHit: false });
               }
             }
-          }
-        });
+          });
+        }
 
         if (finderTimeLeft <= 0 && !roundEnded) {
           clearInterval(timerId);
@@ -4686,6 +5162,18 @@
         }
       }, 1000);
       GameState.activeTimers.push(timerId);
+
+      window._hostPunishPlayer = (targetPlayerId) => {
+        if (!isHumanHost || hostUsedPunish || roundEnded) return;
+        SoundFX.pop();
+        NetSync.sendGameAction('FINDER_HOST_PUNISH', { targetPlayerId });
+      };
+
+      window._hostBlessPlayer = (targetPlayerId) => {
+        if (!isHumanHost || hostUsedBless || roundEnded) return;
+        SoundFX.pop();
+        NetSync.sendGameAction('FINDER_HOST_BLESS', { targetPlayerId });
+      };
 
       window._highlightRealTargetForTest = () => {
         crowdList.forEach(item => {
@@ -4718,19 +5206,7 @@
           renderFinderView();
           NetSync.sendGameAction('FINDER_FOUND_ONE', { playerId: human.id, quickHit });
         } else {
-          SoundFX.wrong();
-          isPenaltyLocked = true;
-          const grid = document.getElementById('finderPanoramaGrid');
-          const overlay = document.getElementById('finderPenaltyOverlay');
-          if (grid) grid.classList.add('shake-screen');
-          if (overlay) overlay.classList.remove('hidden');
-
-          const tId = setTimeout(() => {
-            isPenaltyLocked = false;
-            if (grid) grid.classList.remove('shake-screen');
-            if (overlay) overlay.classList.add('hidden');
-          }, 3000);
-          GameState.activeTimers.push(tId);
+          triggerPenaltyOverlay(3, '🚫 點錯冒牌貨了！罰站鎖定 3 秒！');
         }
       };
 
