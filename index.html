@@ -322,7 +322,7 @@
             </div>
           </div>
 
-          <!-- 建立房間專屬設定 (已移除密碼自動填入與提示字) -->
+          <!-- 建立房間專屬設定 -->
           <div id="hostSettingsBlock" class="space-y-4 pt-2 border-t-2 border-dashed border-neutral-400">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
@@ -421,7 +421,7 @@
           </p>
         </div>
 
-        <!-- Step 1: 僅顯示選擇臉型與選擇膚色 (無左側預覽、無括號字、無小佛/帥哥附註) -->
+        <!-- Step 1: 僅顯示選擇臉型與選擇膚色 -->
         <div id="creatorStep1" class="space-y-6">
           <div class="bg-[#ffe66d]/40 border-3 border-[#1e1e1e] rounded-2xl p-4">
             <h3 class="font-black text-lg mb-3">STEP 1. 選擇臉型</h3>
@@ -455,7 +455,7 @@
           </div>
         </div>
 
-        <!-- Step 2: 直接以臉型為底圖進行限時手繪 (無預設圖案按鈕) -->
+        <!-- Step 2: 直接以臉型為底圖進行限時手繪 -->
         <div id="creatorStep2" class="hidden space-y-4">
           <div class="flex items-center justify-between bg-[#1e1e1e] text-white px-4 py-2.5 rounded-xl">
             <div>
@@ -504,7 +504,7 @@
         </div>
         <h2 class="text-2xl md:text-4xl font-black mb-2">✨ 參賽玩家登場 ✨</h2>
         <p class="text-sm font-bold text-neutral-600 mb-6">
-          四人一排綜藝攝影棚舞台（已精簡移除問候語環節，直接展示各位的靈魂畫作！）
+          跟在場的朋友們打招呼吧！（別忘了好朋友者怎樣喔）
         </p>
 
         <!-- 四人一排、最多三排舞台 -->
@@ -512,8 +512,11 @@
           <!-- JS 動態渲染玩家立繪與手繪計分桌 -->
         </div>
 
-        <div class="mt-8 flex justify-center">
-          <button onclick="enterRoundLoop()" class="doodle-btn px-8 py-4 text-xl bg-[#ff6b6b] text-white">
+        <div class="mt-8 flex flex-col items-center justify-center gap-2">
+          <div id="showcaseWaitNotice" class="hidden text-xs font-black text-amber-800 bg-amber-100 border-2 border-[#1e1e1e] px-3 py-1 rounded-full">
+            ⏳ 還有玩家正在繪製五官，請稍候全員完成...
+          </div>
+          <button id="btnShowcaseEnterRound" onclick="enterRoundLoop()" class="doodle-btn px-8 py-4 text-xl bg-[#ff6b6b] text-white">
             🎬 進入第一回合問答！ ➔
           </button>
         </div>
@@ -535,7 +538,7 @@
           </div>
         </div>
 
-        <!-- 主持人展示 (已移除主持人在本局不會得分之提示文字) -->
+        <!-- 主持人展示 -->
         <div class="flex flex-col items-center my-4">
           <div class="text-xs font-bold text-[#ffe66d] mb-1">🎤 本回合主持人</div>
           <div id="introHostAvatarBox" class="w-24 h-24 bg-white rounded-full border-4 border-[#ffe66d] overflow-hidden flex items-center justify-center shadow-lg"></div>
@@ -628,7 +631,7 @@
         <p class="text-sm font-bold mt-2">向下滑動檢視【關係相性】、【人氣王排行榜】與【最佳拍檔】</p>
       </div>
 
-      <!-- 區塊 1：｜關係相性 (已刪除下方紅藍圖例說明文字) -->
+      <!-- 區塊 1：｜關係相性 -->
       <div class="doodle-box p-5 md:p-8 bg-white">
         <div class="flex flex-wrap items-center justify-between gap-2 pb-3 mb-4 border-b-4 border-[#1e1e1e]">
           <div>
@@ -645,7 +648,7 @@
         <!-- 2人局專屬顯示 -->
         <div id="relation2PContainer" class="hidden py-6 text-center"></div>
 
-        <!-- 3人以上動態關係圖 Canvas (不顯示圖例說明文字) -->
+        <!-- 3人以上動態關係圖 Canvas -->
         <div id="relationMultiContainer" class="flex flex-col items-center">
           <div class="w-full max-w-2xl bg-[#fffdf9] border-3 border-[#1e1e1e] rounded-2xl p-2 overflow-hidden">
             <canvas id="relationshipGraphCanvas" width="680" height="460" class="w-full h-auto block"></canvas>
@@ -653,13 +656,13 @@
         </div>
       </div>
 
-      <!-- 區塊 2 & 3：｜排行榜 (人氣王特寫不顯示分數數字) 與 ｜最佳拍檔 -->
+      <!-- 區塊 2 & 3：｜排行榜 與 ｜最佳拍檔 -->
       <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
         <!-- 排行榜 -->
         <div class="md:col-span-7 doodle-box p-5 md:p-6 bg-white">
           <h3 class="text-2xl font-black pb-3 mb-4 border-b-4 border-[#1e1e1e]">｜排行榜</h3>
           
-          <!-- 第一名人氣王特寫卡片 (刪除特寫分數數字) -->
+          <!-- 第一名人氣王特寫卡片 -->
           <div id="topWinnerHighlight" class="doodle-box-sm p-4 bg-[#fff9db] mb-4 flex items-center gap-4 relative overflow-hidden">
             <!-- 動態填入第一名 -->
           </div>
@@ -760,7 +763,7 @@
     const ALL_GAMES_META = [
       { id: 0, title: "默契感應", minPlayers: 2, desc: "10 秒內快問快答，靠你對主持人的了解選出主持人的選擇，我們是最好的朋友對吧？" },
       { id: 1, title: "猜猜我是誰", minPlayers: 2, desc: "主持人的臉孔被神秘馬賽克遮蔽，逐一選擇真正屬於他的臉型、眼睛、鼻子、嘴巴與髮型，幫助主持人找回臉吧！" },
-      { id: 2, title: "大腦裝什麼", minPlayers: 2, desc: "主持人輸入一樣目視所及的物品，大家盲猜！主持人不參與猜題。猜錯累積三次會解鎖「問題卡」逼問線索，搶先猜中本尊所想的物品。" },
+      { id: 2, title: "大腦裝什麼", minPlayers: 2, desc: "主持人輸入一樣目視所及的物品，大家盲猜！主持人不參與猜題。每猜錯三次會隨機抽出兩張「問題卡」讓你二擇一發問線索，搶先猜中本尊所想的物品。" },
       { id: 3, title: "記憶考驗", minPlayers: 2, desc: "考驗短暫記憶！主持人每回合都會丟出一個新詞語。從第 4 題開始，你必須準確回想並填出主持人「前三個」說過的話。" },
       { id: 4, title: "殘酷二選一", minPlayers: 3, desc: "限時 1 分鐘，根據荒謬題目畫出你的作品！主持人會把大家的畫兩兩捉對廝殺，只有被看上眼的那幅才能晉級。" },
       { id: 5, title: "這是我的回答", minPlayers: 3, desc: "面對情境題，每個人都要交出一句靈魂回答。所有答案打散混在一起，請靠直覺抓出哪一句才是主持人的真心話。" },
@@ -917,6 +920,7 @@
             id: newPid,
             name: nickname,
             isAI: false,
+            creatorDone: false,
             totalScore: 0,
             roundDelta: 0,
             avatar: {
@@ -987,6 +991,7 @@
           id: p.id,
           name: p.name,
           isAI: p.isAI,
+          creatorDone: !!p.creatorDone,
           totalScore: p.totalScore,
           roundDelta: p.roundDelta,
           avatar: {
@@ -994,10 +999,10 @@
             skinColor: p.avatar.skinColor,
             hairColor: p.avatar.hairColor,
             parts: {
-              eyes:  { mode: p.avatar.parts.eyes?.mode || 'preset', presetIndex: p.avatar.parts.eyes?.presetIndex ?? 0, dataUrl: p.avatar.parts.eyes?.dataUrl || null },
-              nose:  { mode: p.avatar.parts.nose?.mode || 'preset', presetIndex: p.avatar.parts.nose?.presetIndex ?? 0, dataUrl: p.avatar.parts.nose?.dataUrl || null },
-              mouth: { mode: p.avatar.parts.mouth?.mode || 'preset', presetIndex: p.avatar.parts.mouth?.presetIndex ?? 0, dataUrl: p.avatar.parts.mouth?.dataUrl || null },
-              hair:  { mode: p.avatar.parts.hair?.mode || 'preset', presetIndex: p.avatar.parts.hair?.presetIndex ?? 0, dataUrl: p.avatar.parts.hair?.dataUrl || null }
+              eyes:  p.avatar.parts.eyes  ? { mode: p.avatar.parts.eyes.mode,  presetIndex: p.avatar.parts.eyes.presetIndex ?? 0,  dataUrl: p.avatar.parts.eyes.dataUrl || null } : null,
+              nose:  p.avatar.parts.nose  ? { mode: p.avatar.parts.nose.mode,  presetIndex: p.avatar.parts.nose.presetIndex ?? 0,  dataUrl: p.avatar.parts.nose.dataUrl || null } : null,
+              mouth: p.avatar.parts.mouth ? { mode: p.avatar.parts.mouth.mode, presetIndex: p.avatar.parts.mouth.presetIndex ?? 0, dataUrl: p.avatar.parts.mouth.dataUrl || null } : null,
+              hair:  p.avatar.parts.hair  ? { mode: p.avatar.parts.hair.mode,  presetIndex: p.avatar.parts.hair.presetIndex ?? 0,  dataUrl: p.avatar.parts.hair.dataUrl || null } : null
             }
           }
         }));
@@ -1005,11 +1010,26 @@
 
       hydratePlayers(serializedList, doneCallback) {
         let pendingImages = 0;
+        const oldPlayerMap = {};
+        GameState.players.forEach(p => { oldPlayerMap[p.id] = p; });
+
         const nextPlayers = serializedList.map(sp => {
+          // 重要修正：若此玩家是本機玩家，且正在創角中，保留本機最新狀態，不被房主較舊的廣播覆蓋！
+          const existingLocal = oldPlayerMap[sp.id];
+          if (sp.id === GameState.myPlayerId && existingLocal) {
+            const isCurrentlyInCreator = !document.getElementById('screen-creator')?.classList.contains('hidden');
+            if (isCurrentlyInCreator) {
+              existingLocal.totalScore = sp.totalScore;
+              existingLocal.roundDelta = sp.roundDelta;
+              return existingLocal;
+            }
+          }
+
           const pObj = {
             id: sp.id,
             name: sp.name,
             isAI: sp.isAI,
+            creatorDone: sp.isAI ? true : !!sp.creatorDone,
             totalScore: sp.totalScore,
             roundDelta: sp.roundDelta,
             avatar: {
@@ -1019,18 +1039,36 @@
               parts: {}
             }
           };
+
+          // 若本機玩家已經有較新的外型設定，優先保留本機的臉型與膚色
+          if (sp.id === GameState.myPlayerId && existingLocal && existingLocal.avatar) {
+            pObj.creatorDone = existingLocal.creatorDone || pObj.creatorDone;
+            pObj.avatar.faceShape = existingLocal.avatar.faceShape || sp.avatar.faceShape;
+            pObj.avatar.skinColor = existingLocal.avatar.skinColor || sp.avatar.skinColor;
+            pObj.avatar.hairColor = existingLocal.avatar.hairColor || sp.avatar.hairColor;
+          }
+
           ['eyes', 'nose', 'mouth', 'hair'].forEach(k => {
             const partInfo = sp.avatar.parts?.[k];
-            if (partInfo && partInfo.mode === 'custom' && partInfo.dataUrl) {
-              pendingImages++;
-              const img = new Image();
-              img.onload = () => {
-                pendingImages--;
-                if (pendingImages <= 0 && doneCallback) doneCallback();
-              };
-              img.src = partInfo.dataUrl;
-              pObj.avatar.parts[k] = { mode: 'custom', dataUrl: partInfo.dataUrl, imgElement: img, presetIndex: 0 };
-            } else {
+            const localPart = (sp.id === GameState.myPlayerId && existingLocal) ? existingLocal.avatar?.parts?.[k] : null;
+            const existingRemotePart = existingLocal ? existingLocal.avatar?.parts?.[k] : null;
+
+            if (localPart && localPart.mode === 'custom' && localPart.dataUrl) {
+              pObj.avatar.parts[k] = localPart;
+            } else if (partInfo && partInfo.mode === 'custom' && partInfo.dataUrl) {
+              if (existingRemotePart && existingRemotePart.dataUrl === partInfo.dataUrl && existingRemotePart.imgElement) {
+                pObj.avatar.parts[k] = existingRemotePart;
+              } else {
+                pendingImages++;
+                const img = new Image();
+                img.onload = () => {
+                  pendingImages--;
+                  if (pendingImages <= 0 && doneCallback) doneCallback();
+                };
+                img.src = partInfo.dataUrl;
+                pObj.avatar.parts[k] = { mode: 'custom', dataUrl: partInfo.dataUrl, imgElement: img, presetIndex: 0 };
+              }
+            } else if (sp.isAI) {
               pObj.avatar.parts[k] = { mode: 'preset', presetIndex: partInfo?.presetIndex ?? 0 };
             }
           });
@@ -1111,18 +1149,32 @@
         } else if (data.type === 'UPDATE_AVATAR' && data.playerId && data.avatar) {
           const target = GameState.players.find(p => p.id === data.playerId);
           if (target) {
-            target.avatar.faceShape = data.avatar.faceShape;
-            target.avatar.skinColor = data.avatar.skinColor;
-            target.avatar.hairColor = data.avatar.hairColor;
+            if (data.creatorDone !== undefined) target.creatorDone = !!data.creatorDone;
+            if (data.avatar.faceShape) target.avatar.faceShape = data.avatar.faceShape;
+            if (data.avatar.skinColor) target.avatar.skinColor = data.avatar.skinColor;
+            if (data.avatar.hairColor) target.avatar.hairColor = data.avatar.hairColor;
+            if (!target.avatar.parts) target.avatar.parts = {};
+            let pendingCount = 0;
             ['eyes', 'nose', 'mouth', 'hair'].forEach(k => {
               const pInfo = data.avatar.parts?.[k];
               if (pInfo && pInfo.mode === 'custom' && pInfo.dataUrl) {
+                pendingCount++;
                 const img = new Image();
-                img.onload = () => renderShowcaseStage();
+                img.onload = () => {
+                  pendingCount--;
+                  if (pendingCount <= 0) {
+                    renderLobbyPlayers();
+                    renderShowcaseStage();
+                  }
+                };
                 img.src = pInfo.dataUrl;
                 target.avatar.parts[k] = { mode: 'custom', dataUrl: pInfo.dataUrl, imgElement: img };
               }
             });
+            if (pendingCount === 0) {
+              renderLobbyPlayers();
+              renderShowcaseStage();
+            }
             this.broadcastState();
           }
         } else if (data.type === 'GAME_EVENT') {
@@ -1166,11 +1218,21 @@
           GameState.currentHostIdx = data.currentHostIdx ?? GameState.currentHostIdx;
           if (data.roundSeed !== undefined) GameState.roundSeed = data.roundSeed;
 
+          const isCurrentlyInCreator = !document.getElementById('screen-creator')?.classList.contains('hidden');
+
           this.hydratePlayers(data.players || [], () => {
             renderLobbyPlayers();
+            // 重要修正：若非房主玩家還在創角畫面畫圖中，且房主已經先畫完進入 screen-showcase，不要強制打斷非房主玩家的畫圖！
             if (data.navigateScreen) {
-              switchScreen(data.navigateScreen, true);
+              if (data.navigateScreen === 'screen-showcase' && isCurrentlyInCreator && !GameState.hasCompletedCreator) {
+                // 保持在創角介面繼續完成繪製
+              } else {
+                switchScreen(data.navigateScreen, true);
+              }
+            } else if (!document.getElementById('screen-showcase')?.classList.contains('hidden')) {
+              renderShowcaseStage();
             }
+
             if (data.subAction === 'SHOW_INTRO') {
               showGameIntroCard(true);
             } else if (data.subAction === 'LAUNCH_GAME') {
@@ -1192,7 +1254,7 @@
     }
 
     /**************************************************************
-     * 1. 完整導入題庫 (B, C, D, E, I, J 及測試模式題庫)
+     * 1. 完整導入題庫 (B, C, D, E, I, J 及大腦裝什麼 30 張問題卡)
      **************************************************************/
     const QUESTION_BANKS = {
       // 【題庫B】偏食王（我吃不吃...）
@@ -1399,6 +1461,15 @@
         "假設你現在立刻中了頭獎一億元，你明天去上班對老闆說的第一句話是什麼？",
         "用一句話向三歲小孩解釋「什麼是上班」。"
       ],
+      // 大腦裝什麼 30 張問題卡池
+      brainQuestionCards: [
+        "❓它是什麼顏色？", "❓它的大小大概多大？", "❓它距離主持人有多遠？", "❓它的主要功能是什麼？", "❓現場總共有幾個？",
+        "❓它是什麼材質做的？", "❓它長什麼形狀？", "❓它大概多重？", "❓它摸起來是什麼觸感？", "❓它聞起來有什麼氣味？",
+        "❓它的透明度如何？", "❓它表面有光澤嗎？", "❓它上面有什麼圖案或文字？", "❓它現在是什麼溫度？", "❓它在地板上嗎？",
+        "❓它在桌上嗎？", "❓它在主持人的哪個方位？", "❓它是怎麼擺放的？", "❓它在現場顯眼嗎？", "❓它可以隨意移動嗎？",
+        "❓我現在看的到它嗎？", "❓它大概值多少錢？", "❓平常有多常使用它？", "❓它看起來有多新或多舊？", "❓它需要插電或用電池嗎？",
+        "❓它會發出什麼聲音？", "❓它是什麼品牌的？", "❓它是消耗品媽？", "❓平常都是誰在使用它？", "❓你剛剛有碰到它嗎？"
+      ],
       // 測試模式詞庫
       testBrainGuesses: ["橡皮擦", "電視", "白膠", "原子筆", "桌子"],
       testMemoryWords: ["筆記本", "白膠", "鉛筆", "橡皮擦", "尺", "電視", "布鞋", "垃圾桶"],
@@ -1446,21 +1517,17 @@
 
       ctx.beginPath();
       if (shape === 'square') {
-        // 小佛般的直立長方形
         ctx.roundRect(68, 48, 104, 152, 14);
       } else if (shape === 'round') {
-        // 正圓形
         ctx.arc(120, 126, 70, 0, Math.PI * 2);
       } else if (shape === 'vshape') {
-        // 學員帥哥超尖下巴
         ctx.moveTo(58, 72);
         ctx.quadraticCurveTo(120, 48, 182, 72);
         ctx.lineTo(168, 138);
-        ctx.lineTo(120, 206); // 超尖下巴頂點
+        ctx.lineTo(120, 206);
         ctx.lineTo(72, 138);
         ctx.closePath();
       } else {
-        // 鵝蛋臉 (尖端在上的鵝蛋)
         ctx.moveTo(120, 46);
         ctx.bezierCurveTo(165, 50, 186, 115, 172, 165);
         ctx.bezierCurveTo(158, 202, 82, 202, 68, 165);
@@ -1487,21 +1554,21 @@
 
       if (partType === 'eyes') {
         switch (idx) {
-          case 0: // (1)兩點
+          case 0:
             ctx.beginPath(); ctx.arc(-24, 0, 5, 0, Math.PI*2); ctx.arc(24, 0, 5, 0, Math.PI*2); ctx.fill(); break;
-          case 1: // (2)橫線
+          case 1:
             ctx.beginPath(); ctx.moveTo(-36, 0); ctx.lineTo(-14, 0); ctx.moveTo(14, 0); ctx.lineTo(36, 0); ctx.stroke(); break;
-          case 2: // (3)彎月
+          case 2:
             ctx.beginPath(); ctx.arc(-24, 4, 11, Math.PI*1.1, Math.PI*1.9); ctx.stroke();
             ctx.beginPath(); ctx.arc(24, 4, 11, Math.PI*1.1, Math.PI*1.9); ctx.stroke(); break;
-          case 3: // (4)大小眼
+          case 3:
             ctx.beginPath(); ctx.arc(-24, 0, 6, 0, Math.PI*2); ctx.stroke();
             ctx.beginPath(); ctx.arc(24, 0, 13, 0, Math.PI*2); ctx.stroke();
             ctx.beginPath(); ctx.arc(-24, 0, 2, 0, Math.PI*2); ctx.arc(24, 0, 4, 0, Math.PI*2); ctx.fill(); break;
-          case 4: // (5)驚恐眼
+          case 4:
             ctx.beginPath(); ctx.arc(-24, 0, 12, 0, Math.PI*2); ctx.arc(24, 0, 12, 0, Math.PI*2); ctx.stroke();
             ctx.beginPath(); ctx.arc(-24, 0, 3, 0, Math.PI*2); ctx.arc(24, 0, 3, 0, Math.PI*2); ctx.fill(); break;
-          case 5: // (6)愛心
+          case 5:
             [-24, 24].forEach(ox => {
               ctx.beginPath();
               ctx.moveTo(ox, 6);
@@ -1510,15 +1577,15 @@
               ctx.fill();
             });
             break;
-          case 6: // (7)叉叉
+          case 6:
             [-24, 24].forEach(ox => {
               ctx.beginPath(); ctx.moveTo(ox-8, -8); ctx.lineTo(ox+8, 8); ctx.moveTo(ox+8, -8); ctx.lineTo(ox-8, 8); ctx.stroke();
             });
             break;
-          case 7: // (8)斜眼 > <
+          case 7:
             ctx.beginPath(); ctx.moveTo(-32, -8); ctx.lineTo(-16, 0); ctx.lineTo(-32, 8);
             ctx.moveTo(32, -8); ctx.lineTo(16, 0); ctx.lineTo(32, 8); ctx.stroke(); break;
-          case 8: // (9)水滴眼
+          case 8:
             [-24, 24].forEach(ox => {
               ctx.beginPath(); ctx.arc(ox, 0, 9, 0, Math.PI*2); ctx.fill();
               ctx.fillStyle = '#ffffff';
@@ -1526,10 +1593,10 @@
               ctx.fillStyle = '#1e1e1e';
             });
             break;
-          case 9: // (10)單眼皮直線
+          case 9:
             ctx.beginPath(); ctx.moveTo(-36, -6); ctx.lineTo(-12, -6); ctx.moveTo(12, -6); ctx.lineTo(36, -6); ctx.stroke();
             ctx.beginPath(); ctx.arc(-24, 2, 4, 0, Math.PI*2); ctx.arc(24, 2, 4, 0, Math.PI*2); ctx.fill(); break;
-          case 10: // (11)漩渦眼
+          case 10:
             [-24, 24].forEach(ox => {
               ctx.beginPath();
               for (let a = 0; a < Math.PI * 4; a += 0.3) {
@@ -1544,78 +1611,78 @@
         }
       } else if (partType === 'nose') {
         switch (idx) {
-          case 0: // (1)小圓點
+          case 0:
             ctx.beginPath(); ctx.arc(0, 0, 4, 0, Math.PI*2); ctx.fill(); break;
-          case 1: // (2)小三角
+          case 1:
             ctx.beginPath(); ctx.moveTo(0, -8); ctx.lineTo(-8, 6); ctx.lineTo(8, 6); ctx.closePath(); ctx.stroke(); break;
-          case 2: // (3)豬鼻子
+          case 2:
             ctx.beginPath(); ctx.ellipse(0, 0, 14, 9, 0, 0, Math.PI*2); ctx.stroke();
             ctx.beginPath(); ctx.arc(-5, 0, 2.5, 0, Math.PI*2); ctx.arc(5, 0, 2.5, 0, Math.PI*2); ctx.fill(); break;
-          case 3: // (4)長方形
+          case 3:
             ctx.strokeRect(-6, -12, 12, 22); break;
-          case 4: // (5)L型鉤
+          case 4:
             ctx.beginPath(); ctx.moveTo(-2, -12); ctx.lineTo(-6, 6); ctx.lineTo(8, 6); ctx.stroke(); break;
-          case 5: // (6)大圓球
+          case 5:
             ctx.beginPath(); ctx.arc(0, 0, 11, 0, Math.PI*2); ctx.stroke(); break;
-          case 6: // (7)兩道鼻影
+          case 6:
             ctx.beginPath(); ctx.moveTo(-4, -10); ctx.lineTo(-4, 8); ctx.moveTo(4, -10); ctx.lineTo(4, 8); ctx.stroke(); break;
-          case 7: // (8)小U型
+          case 7:
             ctx.beginPath(); ctx.arc(0, 0, 7, 0, Math.PI); ctx.stroke(); break;
-          case 8: // (9)大蒜鼻
+          case 8:
             ctx.beginPath(); ctx.moveTo(-12, 4); ctx.quadraticCurveTo(0, -12, 12, 4); ctx.quadraticCurveTo(0, 12, -12, 4); ctx.stroke(); break;
-          case 9: // (10)OK繃
+          case 9:
             ctx.strokeRect(-16, -6, 32, 12);
             ctx.beginPath(); ctx.moveTo(-6, -6); ctx.lineTo(-6, 6); ctx.moveTo(6, -6); ctx.lineTo(6, 6); ctx.stroke(); break;
-          case 10: // (11)空缺(無鼻子，畫極淡小點代表佛地魔感)
+          case 10:
             ctx.beginPath(); ctx.moveTo(-3, -2); ctx.lineTo(-2, 2); ctx.moveTo(3, -2); ctx.lineTo(2, 2); ctx.stroke(); break;
         }
       } else if (partType === 'mouth') {
         switch (idx) {
-          case 0: // (1)微笑 U
+          case 0:
             ctx.beginPath(); ctx.arc(0, -4, 16, 0.15*Math.PI, 0.85*Math.PI); ctx.stroke(); break;
-          case 1: // (2)一字抿嘴
+          case 1:
             ctx.beginPath(); ctx.moveTo(-18, 0); ctx.lineTo(18, 0); ctx.stroke(); break;
-          case 2: // (3)大張嘴 O
+          case 2:
             ctx.beginPath(); ctx.arc(0, 0, 12, 0, Math.PI*2); ctx.stroke(); break;
-          case 3: // (4)貓咪嘴 w
+          case 3:
             ctx.beginPath(); ctx.moveTo(-16, -2); ctx.quadraticCurveTo(-8, 10, 0, -2); ctx.quadraticCurveTo(8, 10, 16, -2); ctx.stroke(); break;
-          case 4: // (5)波浪 ~
+          case 4:
             ctx.beginPath(); ctx.moveTo(-18, 0); ctx.bezierCurveTo(-6, -10, 6, 10, 18, 0); ctx.stroke(); break;
-          case 5: // (6)倒U不爽嘴
+          case 5:
             ctx.beginPath(); ctx.arc(0, 10, 15, Math.PI*1.15, Math.PI*1.85); ctx.stroke(); break;
-          case 6: // (7)流口水
+          case 6:
             ctx.beginPath(); ctx.moveTo(-16, 0); ctx.lineTo(16, 0); ctx.stroke();
             ctx.beginPath(); ctx.moveTo(8, 0); ctx.quadraticCurveTo(12, 14, 8, 16); ctx.quadraticCurveTo(4, 14, 8, 0); ctx.stroke(); break;
-          case 7: // (8)露單齒
+          case 7:
             ctx.beginPath(); ctx.moveTo(-16, 0); ctx.lineTo(16, 0); ctx.stroke();
             ctx.strokeRect(-4, 0, 8, 9); break;
-          case 8: // (9)香腸嘴
+          case 8:
             ctx.beginPath(); ctx.ellipse(0, -4, 18, 5, 0, 0, Math.PI*2); ctx.stroke();
             ctx.beginPath(); ctx.ellipse(0, 4, 18, 5, 0, 0, Math.PI*2); ctx.stroke(); break;
-          case 9: // (10)咬下唇
+          case 9:
             ctx.beginPath(); ctx.moveTo(-18, -2); ctx.lineTo(18, -2); ctx.stroke();
             ctx.beginPath(); ctx.arc(-6, -2, 6, 0, Math.PI); ctx.arc(6, -2, 6, 0, Math.PI); ctx.stroke(); break;
-          case 10: // (11)大笑露齒
+          case 10:
             ctx.beginPath(); ctx.arc(0, -4, 18, 0, Math.PI); ctx.closePath(); ctx.stroke();
             ctx.beginPath(); ctx.moveTo(-12, 3); ctx.lineTo(12, 3); ctx.stroke(); break;
         }
       } else if (partType === 'hair') {
         switch (idx) {
-          case 0: // (1)光頭反光弧線
+          case 0:
             ctx.lineWidth = 3;
             ctx.beginPath(); ctx.arc(-28, -4, 10, Math.PI*1.1, Math.PI*1.6); ctx.stroke(); break;
-          case 1: // (2)地中海
+          case 1:
             ctx.beginPath();
             ctx.arc(-58, 22, 14, 0, Math.PI*2);
             ctx.arc(58, 22, 14, 0, Math.PI*2);
             ctx.fill(); break;
-          case 2: // (3)沖天炮
+          case 2:
             ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-12, -36); ctx.moveTo(0, 0); ctx.lineTo(0, -42); ctx.moveTo(0, 0); ctx.lineTo(12, -36); ctx.stroke(); break;
-          case 3: // (4)雙馬尾
+          case 3:
             ctx.beginPath(); ctx.arc(0, 10, 52, Math.PI*1.1, Math.PI*1.9); ctx.stroke();
             ctx.beginPath(); ctx.moveTo(-52, 15); ctx.quadraticCurveTo(-78, 20, -70, 55);
             ctx.moveTo(52, 15); ctx.quadraticCurveTo(78, 20, 70, 55); ctx.stroke(); break;
-          case 4: // (5)爆炸頭
+          case 4:
             ctx.beginPath();
             for (let a = Math.PI * 0.85; a <= Math.PI * 2.15; a += 0.35) {
               const px = Math.cos(a) * 58;
@@ -1624,29 +1691,29 @@
               ctx.arc(px, py, 18, 0, Math.PI * 2);
             }
             ctx.fill(); break;
-          case 5: // (6)中分
+          case 5:
             ctx.beginPath();
             ctx.moveTo(0, -15); ctx.quadraticCurveTo(-45, -10, -58, 35);
             ctx.moveTo(0, -15); ctx.quadraticCurveTo(45, -10, 58, 35);
             ctx.stroke(); break;
-          case 6: // (7)平頭
+          case 6:
             ctx.fillRect(-52, -18, 104, 22); break;
-          case 7: // (8)旁分直髮
+          case 7:
             ctx.beginPath();
             ctx.moveTo(-20, -16); ctx.quadraticCurveTo(45, -10, 58, 45);
             ctx.moveTo(-20, -16); ctx.quadraticCurveTo(-50, 0, -56, 45);
             ctx.stroke(); break;
-          case 8: // (9)大波浪
+          case 8:
             ctx.beginPath();
             ctx.moveTo(-55, 45); ctx.bezierCurveTo(-70, 10, -40, -25, 0, -18);
             ctx.bezierCurveTo(40, -25, 70, 10, 55, 45);
             ctx.stroke(); break;
-          case 9: // (10)刺蝟頭
+          case 9:
             ctx.beginPath();
             ctx.moveTo(-55, 18); ctx.lineTo(-42, -25); ctx.lineTo(-22, 0);
             ctx.lineTo(0, -34); ctx.lineTo(22, 0); ctx.lineTo(42, -25); ctx.lineTo(55, 18);
             ctx.stroke(); break;
-          case 10: // (11)三根毛
+          case 10:
             ctx.beginPath();
             ctx.moveTo(-10, -5); ctx.quadraticCurveTo(-18, -32, -25, -28);
             ctx.moveTo(0, -8); ctx.quadraticCurveTo(0, -36, 6, -34);
@@ -1658,7 +1725,6 @@
     }
 
     // 渲染完整玩家角色頭像至指定 Canvas
-    // options: { maskedPart: 'eyes'|'nose'|'mouth'|'hair'|'face', maskAll: true, unmaskedParts: ['face','eyes'], hideParts: [] }
     function renderAvatarToCanvas(canvas, avatarConfig, options = {}) {
       if (!canvas || !avatarConfig) return;
       const ctx = canvas.getContext('2d');
@@ -1696,14 +1762,23 @@
           return;
         }
 
-        const partData = avatarConfig.parts[part];
-        if (partData && partData.mode === 'custom' && partData.imgElement) {
-          // 因為創角時直接在 240x240 臉部底圖上作畫，直接對齊 (0,0) 即可完美疊合；若指定偏移則加上偏移
-          const ox = partData.offsetX || 0;
-          const oy = partData.offsetY || 0;
-          ctx.drawImage(partData.imgElement, ox, oy, 240, 240);
+        const partData = avatarConfig.parts?.[part];
+
+        if (partData && partData.mode === 'custom') {
+          if (partData.imgElement && partData.imgElement.complete && partData.imgElement.naturalWidth > 0) {
+            const ox = partData.offsetX || 0;
+            const oy = partData.offsetY || 0;
+            ctx.drawImage(partData.imgElement, ox, oy, 240, 240);
+          } else if (partData.dataUrl) {
+            const img = new Image();
+            img.onload = () => {
+              partData.imgElement = img;
+              renderAvatarToCanvas(canvas, avatarConfig, options);
+            };
+            img.src = partData.dataUrl;
+          }
         } else {
-          const pIdx = partData ? partData.presetIndex : 0;
+          const pIdx = partData ? (partData.presetIndex ?? 0) : 0;
           const hColor = avatarConfig.hairColor || '#1e1e1e';
           drawPresetPart(ctx, part, pIdx, sock.x, sock.y, hColor, 1);
         }
@@ -1763,13 +1838,14 @@
           id: GameState.myPlayerId || 'p0',
           name: humanName,
           isAI: false,
+          creatorDone: false,
           totalScore: 0,
           roundDelta: 0,
           avatar: {
             faceShape: 'square',
             skinColor: SKIN_COLORS[0].hex,
             hairColor: HAIR_COLORS[0].hex,
-            parts: {} // 人類玩家不使用預設五官，於創角時手繪產生
+            parts: {}
           }
         }
       ];
@@ -1813,7 +1889,7 @@
     // 計分核心函式：【主持人在該局絕對不會得分】
     function awardPoints(playerId, points, hostId = null) {
       const activeHostId = hostId || getCurrentHost().id;
-      if (playerId === activeHostId) return; // 強制攔截：主持人在該局不會獲得任何分數！
+      if (playerId === activeHostId) return;
 
       const p = GameState.players.find(x => x.id === playerId);
       if (!p || points <= 0) return;
@@ -1835,10 +1911,6 @@
       return GameState.players[GameState.currentHostIdx % GameState.players.length] || GameState.players[0];
     }
 
-    // 依人數計算總回合數公式：
-    // 2-4人: 短=N*2, 中=N*3, 長=N*4
-    // 5-8人: 短=N*1, 中=N*2, 長=N*3
-    // 9-12人: 短=8, 中=16, 長=24
     function calculateTargetRounds(playerCount, lengthMode) {
       const n = Math.max(2, Math.min(12, playerCount));
       if (n <= 4) {
@@ -1902,6 +1974,8 @@
       if (GameState.players.length < 2) {
         initDefaultPlayers(document.getElementById('inputNickname')?.value || '玩家1', true);
       }
+      // 快速跳關時自動標記所有玩家已完成創角，避免展示台按鈕鎖死
+      GameState.players.forEach(p => { p.creatorDone = true; });
       if (val.startsWith('game-')) {
         const gId = parseInt(val.split('-')[1], 10);
         if (ALL_GAMES_META[gId].minPlayers >= 3 && GameState.players.length < 3) {
@@ -1927,6 +2001,7 @@
         id: 'p' + Date.now() + '_' + idx,
         name: availableName,
         isAI: true,
+        creatorDone: true,
         totalScore: 0,
         roundDelta: 0,
         avatar: createRandomAvatarConfig(idx + Math.floor(Math.random() * 10))
@@ -2025,7 +2100,6 @@
         GameState.kickedOut = false;
         errBox.classList.add('hidden');
         SoundFX.pop();
-        // 加入房間時絕不產生 AI 玩家，僅顯示自己並等待與房主同步清單
         GameState.players = [
           {
             id: 'p_joining',
@@ -2077,7 +2151,6 @@
       const n = GameState.players.length;
       countText.textContent = n;
 
-      // 權限控制：只有房主可以管理 AI 與點擊「開始遊戲」，從「加入房間」進來的玩家無法按開始
       if (GameState.isRoomHost) {
         if (hostControls) hostControls.classList.remove('hidden');
         startBtn.disabled = n < 2;
@@ -2124,6 +2197,7 @@
       SoundFX.correct();
       buildRoundQueueByLength();
       if (skipCreator) {
+        GameState.players.forEach(p => { p.creatorDone = true; });
         switchScreen('screen-showcase');
       } else {
         switchScreen('screen-creator');
@@ -2135,7 +2209,6 @@
       const validGames = ALL_GAMES_META.filter(g => playerCount >= g.minPlayers).map(g => g.id);
       const targetRounds = calculateTargetRounds(playerCount, GameState.gameLength);
 
-      // 1. 遊戲隨機輪替：全部出完一輪後才會跳下一輪，且第一輪「猜猜我是誰 (id=1)」固定排在後半段，跨輪邊界不重複
       GameState.roundQueue = [];
       let lastGameId = null;
       let cycleIndex = 0;
@@ -2144,14 +2217,12 @@
         let cycleGames = [...validGames].sort(() => Math.random() - 0.5);
 
         if (cycleIndex === 0 && cycleGames.includes(1) && cycleGames.length > 2) {
-          // 第一輪確保「猜猜我是誰(1)」在後半段才出現
           const withoutWho = cycleGames.filter(id => id !== 1);
           const minPos = Math.max(1, Math.floor(cycleGames.length / 2));
           const insertPos = minPos + Math.floor(Math.random() * (cycleGames.length - minPos));
           withoutWho.splice(insertPos, 0, 1);
           cycleGames = withoutWho;
         } else if (lastGameId !== null && cycleGames.length > 1 && cycleGames[0] === lastGameId) {
-          // 下一輪的第一個遊戲不跟上一輪最後一個重複
           const swapIdx = 1 + Math.floor(Math.random() * (cycleGames.length - 1));
           [cycleGames[0], cycleGames[swapIdx]] = [cycleGames[swapIdx], cycleGames[0]];
         }
@@ -2165,7 +2236,6 @@
         cycleIndex++;
       }
 
-      // 2. 主持人隨機輪替：全部當過一輪後才進入下一輪，且下一輪第一位主持人絕不與上一輪最後一位重複
       GameState.hostQueue = [];
       const playerIds = GameState.players.map(p => p.id);
       let lastHostId = null;
@@ -2191,7 +2261,7 @@
     }
 
     /**************************************************************
-     * 5. 【3】創角介面 (無初始預覽、無預設五官、直接在臉部底圖上繪製)
+     * 5. 【3】創角介面 (每個部位完成即同步，防止被房主覆蓋或變回預設)
      **************************************************************/
     const CreatorState = {
       stepIndex: 0,
@@ -2209,12 +2279,28 @@
       currentBrushColor: '#1e1e1e'
     };
 
+    function syncMyCreatorAvatarToHost(isCreatorDone = false) {
+      const me = getLocalPlayer();
+      if (!me) return;
+      if (isCreatorDone) me.creatorDone = true;
+      if (!GameState.isRoomHost) {
+        NetSync.sendToHost({
+          type: 'UPDATE_AVATAR',
+          playerId: me.id,
+          creatorDone: !!me.creatorDone,
+          avatar: NetSync.serializePlayers().find(x => x.id === me.id)?.avatar
+        });
+      } else {
+        NetSync.broadcastState();
+      }
+    }
+
     function initCreatorStudio() {
       const human = getLocalPlayer();
+      if (human) human.creatorDone = false;
       document.getElementById('creatorStep1').classList.remove('hidden');
       document.getElementById('creatorStep2').classList.add('hidden');
 
-      // 渲染 7 色膚色按鈕
       const skinWrap = document.getElementById('skinColorButtons');
       skinWrap.innerHTML = '';
       SKIN_COLORS.forEach(sc => {
@@ -2230,7 +2316,6 @@
         skinWrap.appendChild(btn);
       });
 
-      // 更新臉型按鈕高亮
       ['square', 'round', 'vshape', 'oval'].forEach(shape => {
         const b = document.getElementById(`faceBtn-${shape}`);
         if (b) {
@@ -2252,15 +2337,15 @@
       const bgCanvas = document.getElementById('partBgFaceCanvas');
       if (!bgCanvas) return;
       const human = getLocalPlayer();
-      // 將目前已畫好的部位與臉型底圖渲染在下層畫布，讓玩家直接看著臉畫五官
       const completedKeys = CreatorState.partsSequence.slice(0, CreatorState.stepIndex).map(p => p.key);
       const hideKeys = ['eyes', 'nose', 'mouth', 'hair'].filter(k => !completedKeys.includes(k));
       renderAvatarToCanvas(bgCanvas, human.avatar, { hideParts: hideKeys });
     }
 
     function startTimedDrawingSequence() {
-      // 清空人類舊部位，確保完全手繪無預設
       getLocalPlayer().avatar.parts = {};
+      // 確認臉型與膚色時立即同步給房主，確保臉型與膚色不會變回預設
+      syncMyCreatorAvatarToHost();
       document.getElementById('creatorStep1').classList.add('hidden');
       document.getElementById('creatorStep2').classList.remove('hidden');
       CreatorState.stepIndex = 0;
@@ -2270,6 +2355,8 @@
     function loadPartDrawingStep(idx) {
       clearAllGameTimers();
       if (idx >= CreatorState.partsSequence.length) {
+        GameState.hasCompletedCreator = true;
+        syncMyCreatorAvatarToHost(true);
         SoundFX.fanfare();
         switchScreen('screen-showcase');
         return;
@@ -2295,7 +2382,6 @@
       clearCurrentPartCanvas();
       renderUnderlyingFaceForCreator();
 
-      // 啟動倒數計時
       const timerId = setInterval(() => {
         CreatorState.timeLeft--;
         const timerEl = document.getElementById('drawTimerText');
@@ -2407,17 +2493,8 @@
           imgElement: img,
           dataUrl: dataUrl
         };
-        if (CreatorState.stepIndex + 1 >= CreatorState.partsSequence.length) {
-          if (!GameState.isRoomHost) {
-            NetSync.sendToHost({
-              type: 'UPDATE_AVATAR',
-              playerId: me.id,
-              avatar: NetSync.serializePlayers().find(x => x.id === me.id)?.avatar
-            });
-          } else {
-            NetSync.broadcastState();
-          }
-        }
+        // 每畫完一個五官部位就立即同步到房主，避免只有最後的髮型被同步而臉眼口鼻遺失！
+        syncMyCreatorAvatarToHost();
         loadPartDrawingStep(CreatorState.stepIndex + 1);
       };
       img.src = dataUrl;
@@ -2428,15 +2505,35 @@
      **************************************************************/
     function renderShowcaseStage() {
       const grid = document.getElementById('showcaseStageGrid');
+      if (!grid) return;
       grid.innerHTML = '';
+
+      const allCreatorDone = GameState.players.every(p => p.isAI || p.creatorDone);
+      const waitNotice = document.getElementById('showcaseWaitNotice');
+      const enterBtn = document.getElementById('btnShowcaseEnterRound');
+      if (waitNotice) {
+        if (allCreatorDone) waitNotice.classList.add('hidden');
+        else waitNotice.classList.remove('hidden');
+      }
+      if (enterBtn) {
+        if (!GameState.isRoomHost) {
+          enterBtn.disabled = true;
+          enterBtn.textContent = allCreatorDone ? '⏳ 等待房主進入第一回合...' : '⏳ 等待其他玩家完成創角...';
+        } else {
+          enterBtn.disabled = !allCreatorDone;
+          enterBtn.textContent = allCreatorDone ? '🎬 進入第一回合問答！ ➔' : '⏳ 等待全體玩家完成創角...';
+        }
+      }
 
       GameState.players.forEach((p, idx) => {
         const unit = document.createElement('div');
         unit.className = 'flex flex-col items-center p-3 doodle-box-sm bg-white transition transform hover:scale-105';
         const cid = `showcase_av_${p.id}`;
+        const isCreating = !p.isAI && !p.creatorDone;
         unit.innerHTML = `
           <div class="relative w-28 h-28 bg-[#fffdf7] border-3 border-[#1e1e1e] rounded-2xl overflow-hidden mb-2 shadow">
             <canvas id="${cid}" width="160" height="160" class="w-full h-full"></canvas>
+            ${isCreating ? `<div class="absolute inset-x-0 bottom-0 bg-black/70 text-[#ffe66d] text-[10px] font-black py-0.5">🎨 繪製中...</div>` : ''}
           </div>
           <!-- 手繪綜藝節目桌子 -->
           <div class="w-full bg-[#ffe66d] border-3 border-[#1e1e1e] rounded-lg py-1.5 px-2 shadow-[2px_2px_0px_#1e1e1e]">
@@ -2464,7 +2561,7 @@
     }
 
     /**************************************************************
-     * 7. 【5】遊戲說明黑板 & 回合結算綜藝台 (全員按開始或 20 秒倒數，未準備者踢出遊戲)
+     * 7. 【5】遊戲說明黑板 & 回合結算綜藝台
      **************************************************************/
     function renderIntroReadyStatus() {
       const listEl = document.getElementById('introReadyPlayersList');
@@ -2514,7 +2611,6 @@
       document.getElementById('subview-game-play').classList.add('hidden');
       document.getElementById('subview-round-result').classList.add('hidden');
 
-      // 重置本局加減分紀錄與準備表
       GameState.players.forEach(p => p.roundDelta = 0);
       GameState.introReadyMap = {};
       GameState.players.forEach(p => {
@@ -2532,7 +2628,6 @@
       document.getElementById('introGameDesc').textContent = meta.desc;
       document.getElementById('introHostName').textContent = host.name;
 
-      // 渲染主持人切換選單 (僅房主可切換)
       const sel = document.getElementById('hostSelectorDropdown');
       sel.innerHTML = '';
       sel.disabled = !GameState.isRoomHost;
@@ -2544,7 +2639,6 @@
         sel.appendChild(opt);
       });
 
-      // 渲染主持人頭像（若為「猜猜我是誰 gameId === 1」，一開始遊戲介紹畫面就遮住主持人的全部部位！）
       const avBox = document.getElementById('introHostAvatarBox');
       avBox.innerHTML = `<canvas id="introHostCanvas" width="120" height="120" class="w-full h-full"></canvas>`;
       if (gameId === 1) {
@@ -2574,7 +2668,6 @@
         if (introTimeLeft <= 0) {
           clearInterval(introTimer);
           if (GameState.isRoomHost) {
-            // 踢出 20 秒內未按準備的連線玩家（房主本人除外，避免房間直接解體）
             const kickedIds = [];
             GameState.players = GameState.players.filter(p => {
               if (p.isAI || p.id === GameState.myPlayerId || GameState.introReadyMap[p.id]) {
@@ -2583,7 +2676,6 @@
               kickedIds.push(p.id);
               return false;
             });
-            // 若玩家人數低於 2 人則補 1 名 AI 維持遊戲進行
             if (GameState.players.length < 2) {
               addAIPlayer(true);
             }
@@ -2702,7 +2794,6 @@
       }
     }
 
-    // 工具：依名次配分 [7, 4, 3, 2, 1, 1, 1, 1]，自動排除主持人，且最後一名固定 0 分
     function assignRankPoints(sortedPlayerIds, hostId = null) {
       const activeHostId = hostId || getCurrentHost().id;
       const nonHostIds = sortedPlayerIds.filter(id => id !== activeHostId);
@@ -2710,7 +2801,6 @@
       const total = nonHostIds.length;
       nonHostIds.forEach((pid, idx) => {
         if (idx === total - 1 && total > 1) {
-          // 最後一名不計分 (0分)
           return;
         }
         const pts = rankScores[idx] !== undefined ? rankScores[idx] : 1;
@@ -2720,8 +2810,6 @@
 
     /**************************************************************
      * 遊戲 1：默契感應
-     * - 確保所有人同步，加強主持人當題如何選擇的巨大舉牌畫面
-     * - 只在主持人點「進入下一題」後所有人畫面才會跳轉，玩家無法自行進入下一題
      **************************************************************/
     function startMiniGame0_Telepathy() {
       const mount = document.getElementById('miniGameMountPoint');
@@ -2840,13 +2928,11 @@
 
         mount.innerHTML = `
           <div class="space-y-4">
-            <!-- 10秒進度條 -->
             <div class="w-full bg-neutral-200 h-5 rounded-full border-2 border-[#1e1e1e] overflow-hidden relative">
               <div id="teleTimerBar" class="bg-[#ff6b6b] h-full transition-all duration-300" style="width: ${(timeLeft/10)*100}%"></div>
               <span id="teleTimerText" class="absolute inset-0 flex items-center justify-center text-xs font-black">${timeLeft}s</span>
             </div>
 
-            <!-- 題目卡 -->
             <div class="doodle-box-sm p-4 text-center bg-[#fffdf7]">
               <div class="inline-block px-3 py-0.5 rounded border border-black text-xs font-black bg-[#ffe66d]">
                 ${q.categoryTitle}
@@ -2855,7 +2941,6 @@
             </div>
 
             ${revealed ? `
-              <!-- 揭曉時：強烈突顯主持人當題選擇的巨大看板 -->
               <div class="theme-cut-in doodle-box-sm p-4 bg-[#ffe66d] border-4 border-[#1e1e1e] text-center shadow-lg">
                 <div class="text-xs font-black text-neutral-800">📢 主持人【${host.name}】本題的真實選擇是：</div>
                 <div class="text-2xl md:text-4xl font-black text-[#ff6b6b] mt-1 tracking-wide">
@@ -2864,7 +2949,6 @@
               </div>
             ` : ''}
 
-            <!-- 舞台中央：主持人舉牌與四周玩家頭像 -->
             <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
               <div class="md:col-span-4 flex flex-col items-center p-3 doodle-box-sm ${revealed ? 'bg-[#fff9db] ring-4 ring-[#ff6b6b]' : 'bg-[#ffe66d]/30'}">
                 <div class="text-xs font-black mb-1">🎤 主持人：${host.name}</div>
@@ -2880,7 +2964,6 @@
                 </div>
               </div>
 
-              <!-- 作答玩家環繞區 -->
               <div class="md:col-span-8 grid grid-cols-2 sm:grid-cols-3 gap-2.5">
                 ${GameState.players.filter(p => p.id !== host.id).map(p => {
                   const pPick = choices[p.id];
@@ -2904,7 +2987,6 @@
               </div>
             </div>
 
-            <!-- 底部：作答按鈕 或 僅限主持人點擊的下一題按鈕 -->
             <div class="pt-2">
               ${!revealed ? `
                 <div class="grid grid-cols-3 gap-3">
@@ -2961,7 +3043,6 @@
         if (anyMatch) SoundFX.correct(); else SoundFX.pop();
         renderTelepathyView();
 
-        // 若主持人為 AI，展示 2.6 秒後自動由房主觸發進入下一題
         if (host.isAI && GameState.isRoomHost) {
           const aiNextTimer = setTimeout(() => {
             NetSync.sendGameAction('TELE_NEXT_Q', { nextIdx: curIdx + 1 });
@@ -2986,8 +3067,6 @@
 
     /**************************************************************
      * 遊戲 2：猜猜我是誰
-     * - 各階段增加 15 秒時間限制
-     * - 所有人選完或 15 秒時間到後，自動揭曉並進入下一階段（徹底解決無法選擇或卡住問題）
      **************************************************************/
     function startMiniGame1_WhoAmI() {
       const mount = document.getElementById('miniGameMountPoint');
@@ -3008,7 +3087,7 @@
       let stepTimeLeft = 15;
       const unmaskedParts = [];
       let currentOptions = [];
-      let stepPicks = {}; // { playerId: optId }
+      let stepPicks = {};
       let stepRevealed = false;
 
       function buildStepOptions(targetPart) {
@@ -3023,7 +3102,6 @@
         const usedPresetIndices = new Set([opts[0].presetIndex]);
         const shapesPool = ['square', 'round', 'vshape', 'oval'].filter(s => s !== host.avatar.faceShape);
 
-        // 優先混入其他真實人類玩家在創角時手繪的部位與臉型
         const otherHumanPlayers = GameState.players.filter(p => !p.isAI && p.id !== host.id);
         otherHumanPlayers.forEach((hp, hIdx) => {
           if (opts.length >= 6) return;
@@ -3106,7 +3184,6 @@
         if (anyCorrect) SoundFX.correct(); else SoundFX.wrong();
         renderWhoStepView();
 
-        // 揭曉正解後停留 2.2 秒，自動同步進入下一階段！
         if (GameState.isRoomHost) {
           const autoAdvance = setTimeout(() => {
             NetSync.sendGameAction('WHO_NEXT_STEP', { nextIdx: stepIdx + 1 });
@@ -3140,7 +3217,6 @@
         const targetPart = partSteps[stepIdx];
         currentOptions = buildStepOptions(targetPart);
 
-        // AI 預先選擇
         GameState.players.forEach(p => {
           if (p.isAI && p.id !== host.id) {
             if (rng() < 0.55) {
@@ -3183,13 +3259,11 @@
 
         mount.innerHTML = `
           <div class="space-y-4">
-            <!-- 15秒進度條 -->
             <div class="w-full bg-neutral-200 h-5 rounded-full border-2 border-[#1e1e1e] overflow-hidden relative">
               <div id="whoTimerBar" class="bg-[#4ecdc4] h-full transition-all duration-300" style="width: ${(stepTimeLeft/15)*100}%"></div>
               <span id="whoTimerText" class="absolute inset-0 flex items-center justify-center text-xs font-black">${stepTimeLeft}s</span>
             </div>
 
-            <!-- 上方：全部遮住並逐一揭曉的主持人大頭貼 -->
             <div class="flex flex-col items-center doodle-box-sm p-4 bg-[#fffdf7]">
               <div class="text-xs font-black bg-[#ffe66d] px-3 py-0.5 rounded-full border border-black mb-2">
                 第 ${stepIdx + 1}/5 關：請在 15 秒內找出主持人【${host.name}】真正的「${targetPart.name}」（+${targetPart.points}分）
@@ -3208,7 +3282,6 @@
               </div>
             ` : ''}
 
-            <!-- 下方：6個選項網格 -->
             <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
               ${currentOptions.map((opt, idx) => {
                 const isPicked = myPickId === opt.id;
@@ -3283,8 +3356,7 @@
 
     /**************************************************************
      * 遊戲 3：大腦裝什麼
-     * - 修正輸入框超過介面的問題 (min-w-0 w-full box-border)
-     * - 採用增量附加 DOM 節點與保留焦點設計，其他玩家猜題時絕不重繪或打斷正在輸入的文字
+     * - 問題卡改成每猜錯三次 (3, 6, 9次) 就從 30 張題庫隨機抽兩個，二擇一發問一次
      **************************************************************/
     function startMiniGame2_BrainInside() {
       const mount = document.getElementById('miniGameMountPoint');
@@ -3295,12 +3367,23 @@
       let secretWord = host.isAI ? '鉛筆' : '';
       let wordConfirmed = host.isAI;
       let myWrongCount = 0;
+      let myQuestionTokens = 0;      // 可發問次數
+      let currentTwoCards = [];      // 當前隨機抽出的兩張問題卡
       let guessHistory = [];
       let renderedCount = 0;
       let gameEnded = false;
       let aiRaceInterval = null;
 
       document.getElementById('playSubProgress').textContent = `不須輪流・先搶先贏｜搶先猜中得 7 分`;
+
+      function drawTwoRandomQuestionCards() {
+        const pool = [...QUESTION_BANKS.brainQuestionCards];
+        const i1 = Math.floor(Math.random() * pool.length);
+        const c1 = pool.splice(i1, 1)[0];
+        const i2 = Math.floor(Math.random() * pool.length);
+        const c2 = pool[i2];
+        currentTwoCards = [c1, c2];
+      }
 
       function startAIRaceLoop() {
         if (!GameState.isRoomHost) return;
@@ -3356,6 +3439,13 @@
           SoundFX.wrong();
           if (playerId === human.id) {
             myWrongCount++;
+            // 每猜錯滿 3 的倍數次 (3, 6, 9次)，獲得一次二擇一問題卡抽卡機會！
+            if (myWrongCount % 3 === 0) {
+              myQuestionTokens++;
+              if (currentTwoCards.length === 0) {
+                drawTwoRandomQuestionCards();
+              }
+            }
           }
         }
         updateBrainDynamicZones();
@@ -3473,9 +3563,7 @@
         updateBrainDynamicZones();
       }
 
-      // 採用增量 appendChild 寫入新訊息，完全不觸碰既有 DOM 與輸入框焦點，徹底根除打字被打斷的問題！
       function updateBrainDynamicZones() {
-        const canAskQuestion = (!isHumanHost && myWrongCount >= 3);
         const remainingTries = Math.max(0, 10 - myWrongCount);
 
         const headerTextEl = document.getElementById('brainHeaderStatusText');
@@ -3549,21 +3637,24 @@
 
         const qZone = document.getElementById('brainQuestionCardZone');
         if (qZone) {
-          const shouldShowQ = (canAskQuestion && !gameEnded && wordConfirmed);
-          if (shouldShowQ && !qZone.hasChildNodes()) {
+          const shouldShowQ = (!isHumanHost && myQuestionTokens > 0 && !gameEnded && wordConfirmed);
+          if (shouldShowQ) {
+            if (currentTwoCards.length === 0) {
+              drawTwoRandomQuestionCards();
+            }
             qZone.innerHTML = `
-              <div class="p-3 rounded-xl bg-[#a29bfe]/30 border-2 border-[#1e1e1e] flex flex-wrap items-center justify-between gap-2">
-                <span class="text-xs font-black">🃏 你已猜錯滿 3 次！解鎖「發送問題卡」逼問主持人線索：</span>
-                <div class="flex flex-wrap gap-1.5">
-                  ${['它是什麼顏色？', '它的大小約多大？', '距離你有多遠？', '它的主要功能是？', '現場數量有幾個？'].map(qStr => `
-                    <button onclick="window._sendBrainQuestion('${qStr}')" class="doodle-btn px-2.5 py-1 text-xs bg-white">
-                      ❓ ${qStr}
+              <div class="p-3 rounded-xl bg-[#a29bfe]/30 border-2 border-[#1e1e1e] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <span class="text-xs font-black">🃏 已累積猜錯滿 3 次！請從隨機抽出的 2 張「問題卡」二擇一發問 1 次（剩餘 ${myQuestionTokens} 次機會）：</span>
+                <div class="flex flex-wrap gap-2">
+                  ${currentTwoCards.map((qStr, cIdx) => `
+                    <button onclick="window._sendBrainQuestion(${cIdx})" class="doodle-btn px-3 py-1.5 text-xs bg-white hover:bg-[#ffe66d]">
+                      ${qStr}
                     </button>
                   `).join('')}
                 </div>
               </div>
             `;
-          } else if (!shouldShowQ) {
+          } else {
             qZone.innerHTML = '';
           }
         }
@@ -3625,7 +3716,15 @@
         });
       };
 
-      window._sendBrainQuestion = (qText) => {
+      window._sendBrainQuestion = (cardIndex) => {
+        if (myQuestionTokens <= 0 || !currentTwoCards[cardIndex]) return;
+        const qText = currentTwoCards[cardIndex];
+        myQuestionTokens--;
+        currentTwoCards = [];
+        if (myQuestionTokens > 0) {
+          drawTwoRandomQuestionCards();
+        }
+        updateBrainDynamicZones();
         NetSync.sendGameAction('BRAIN_QUESTION', {
           qId: 'q_' + Date.now() + '_' + human.id,
           playerName: human.name,
@@ -3638,8 +3737,8 @@
 
     /**************************************************************
      * 遊戲 4：記憶考驗
-     * - 前幾回合 (1~3回合) 所有人都點擊「記住了」或者時間到才會進入下一題
-     * - 即時顯示並加強回答正確與否的視覺橫幅特效
+     * - 修正主持人輸入框過大超出邊框的問題 (加上 min-w-0 w-full 與彈性換行)
+     * - 第 4 回合起，在主持人輸入完新詞語後（或沒輸入時間到時），為該回合增加 20 秒作答時間
      **************************************************************/
     function startMiniGame3_MemoryTest() {
       const mount = document.getElementById('miniGameMountPoint');
@@ -3655,9 +3754,10 @@
       let currentTurn = 1;
       let myCorrectCount = 0;
       let stepTimeLeft = 30;
-      let turnAnswers = {};     // 第 4~10 回合 { playerId: answerStr }
-      let turnRemembered = {};  // 第 1~3 回合 { playerId: true }
-      let lastFeedbackBanner = null; // { isCorrect: bool, expected: str, myAns: str }
+      let bonus20sGrantedForTurn = false;
+      let turnAnswers = {};
+      let turnRemembered = {};
+      let lastFeedbackBanner = null;
 
       function getAutoPresetWord() {
         const pool = QUESTION_BANKS.testMemoryWords;
@@ -3675,7 +3775,7 @@
               【 ${chosenTheme} 】
             </div>
             <p class="text-xs font-bold text-neutral-700">
-              主持人前 7 回合負責出題（不用答題）；其他玩家從第 4 回合起回答前三個詞語（共 7 題，限時 30 秒）！
+              主持人前 7 回合負責出題（不用答題）；其他玩家從第 4 回合起回答前三個詞語（主持人出題後增加 20 秒作答時間）！
             </p>
           </div>
         </div>
@@ -3695,7 +3795,6 @@
         const guessers = GameState.players.filter(p => p.id !== host.id);
 
         if (!playersNeedToAnswer) {
-          // 第 1~3 回合：所有非主持人玩家都點擊「記住了」才進入下一題
           const allRemembered = guessers.every(p => !!turnRemembered[p.id]);
           if (allRemembered) {
             initTurnStep(currentTurn + 1);
@@ -3703,7 +3802,6 @@
           return;
         }
 
-        // 第 4~10 回合：所有非主持人玩家都已作答
         const allAnswered = guessers.every(p => turnAnswers[p.id] !== undefined);
         if (!allAnswered) return;
 
@@ -3725,6 +3823,11 @@
           if (wordHistory.length < currentTurn) {
             wordHistory.push(payload.word);
           }
+          // 重要修正：第 4 回合起，當主持人輸入新詞語後（或逾時自動出題時），自動增加 20 秒作答時間！
+          if (currentTurn >= 4 && !bonus20sGrantedForTurn) {
+            bonus20sGrantedForTurn = true;
+            stepTimeLeft += 20;
+          }
           SoundFX.pop();
           renderMemoryView();
           checkTurnReadyToAdvance();
@@ -3741,16 +3844,49 @@
         }
       };
 
-      function start30sStepTimer(onExpire) {
+      function startStepTimerLoop() {
         clearAllGameTimers();
-        stepTimeLeft = 30;
         const tId = setInterval(() => {
           stepTimeLeft--;
           const el = document.getElementById('memStepTimer');
           if (el) el.textContent = `${stepTimeLeft}s`;
           if (stepTimeLeft <= 0) {
+            const hostNeedsToPrompt = (currentTurn <= 7);
+            const playersNeedToAnswer = (currentTurn >= 4);
+
+            // 若第 4~7 回合主持人還沒出題就時間到，先自動出題並增加 20 秒讓玩家作答，不直接跳過玩家作答！
+            if (hostNeedsToPrompt && wordHistory.length < currentTurn) {
+              SoundFX.wrong();
+              if (playersNeedToAnswer && !bonus20sGrantedForTurn) {
+                bonus20sGrantedForTurn = true;
+                stepTimeLeft = 20;
+                if (GameState.isRoomHost) {
+                  NetSync.sendGameAction('MEM_HOST_WORD', { turn: currentTurn, word: getAutoPresetWord() });
+                }
+                return;
+              } else {
+                clearInterval(tId);
+                if (GameState.isRoomHost) {
+                  NetSync.sendGameAction('MEM_HOST_WORD', { turn: currentTurn, word: getAutoPresetWord() });
+                  NetSync.sendGameAction('MEM_NEXT_TURN', { nextTurn: currentTurn + 1 });
+                }
+                return;
+              }
+            }
+
             clearInterval(tId);
-            onExpire();
+            SoundFX.wrong();
+            if (GameState.isRoomHost) {
+              if (playersNeedToAnswer) {
+                GameState.players.forEach(p => {
+                  if (p.id !== host.id && turnAnswers[p.id] === undefined) {
+                    NetSync.sendGameAction('MEM_PLAYER_ANS', { turn: currentTurn, playerId: p.id, ans: '' });
+                  }
+                });
+              } else {
+                NetSync.sendGameAction('MEM_NEXT_TURN', { nextTurn: currentTurn + 1 });
+              }
+            }
           }
         }, 1000);
         GameState.activeTimers.push(tId);
@@ -3763,6 +3899,8 @@
           return;
         }
         currentTurn = turnNum;
+        stepTimeLeft = 30;
+        bonus20sGrantedForTurn = false;
         turnAnswers = {};
         turnRemembered = {};
         lastFeedbackBanner = null;
@@ -3771,6 +3909,10 @@
 
         if (hostNeedsToPrompt && host.isAI && wordHistory.length < currentTurn) {
           wordHistory.push(getAutoPresetWord());
+          if (currentTurn >= 4 && !bonus20sGrantedForTurn) {
+            bonus20sGrantedForTurn = true;
+            stepTimeLeft += 20;
+          }
         }
 
         GameState.players.forEach(p => {
@@ -3785,24 +3927,7 @@
         });
 
         renderMemoryView();
-
-        start30sStepTimer(() => {
-          SoundFX.wrong();
-          if (GameState.isRoomHost) {
-            if (hostNeedsToPrompt && wordHistory.length < currentTurn) {
-              NetSync.sendGameAction('MEM_HOST_WORD', { turn: currentTurn, word: getAutoPresetWord() });
-            }
-            if (playersNeedToAnswer) {
-              GameState.players.forEach(p => {
-                if (p.id !== host.id && turnAnswers[p.id] === undefined) {
-                  NetSync.sendGameAction('MEM_PLAYER_ANS', { turn: currentTurn, playerId: p.id, ans: '' });
-                }
-              });
-            } else {
-              NetSync.sendGameAction('MEM_NEXT_TURN', { nextTurn: currentTurn + 1 });
-            }
-          }
-        });
+        startStepTimerLoop();
       }
 
       function renderMemoryView() {
@@ -3820,21 +3945,22 @@
         document.getElementById('playSubProgress').textContent = `回合 ${currentTurn} / 10 ｜ 主題：${chosenTheme} ${playersNeedToAnswer ? `｜作答第 ${recallIdx + 1}/7 題` : ''}`;
 
         mount.innerHTML = `
-          <div class="space-y-4">
-            <div class="doodle-box-sm p-4 bg-[#fffdf7]">
+          <div class="space-y-4 w-full max-w-full overflow-hidden">
+            <div class="doodle-box-sm p-4 bg-[#fffdf7] w-full">
               <div class="flex flex-wrap items-center justify-between gap-2 mb-3 pb-2 border-b-2 border-dashed border-neutral-300">
-                <div class="flex items-center gap-2.5">
-                  <div class="w-12 h-12 rounded-full border-2 border-[#1e1e1e] bg-white overflow-hidden">
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <div class="w-12 h-12 rounded-full border-2 border-[#1e1e1e] bg-white overflow-hidden flex-shrink-0">
                     <canvas id="memHostCanvas" width="80" height="80" class="w-full h-full"></canvas>
                   </div>
-                  <div>
-                    <div class="text-xs font-black text-neutral-500">🎤 出題主持人：${host.name} (主持人只出題不答題)</div>
+                  <div class="min-w-0">
+                    <div class="text-xs font-black text-neutral-500 truncate">🎤 出題主持人：${host.name} (主持人只出題不答題)</div>
                     <div class="font-black text-sm">抽中主題：<span class="bg-[#ffe66d] px-2 py-0.5 rounded border border-black">${chosenTheme}</span></div>
                   </div>
                 </div>
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-3 flex-shrink-0">
                   <div class="bg-[#1e1e1e] text-[#ffe66d] px-3 py-1 rounded-lg font-mono font-black text-sm">
                     ⏱️ 限時：<span id="memStepTimer">${stepTimeLeft}s</span>
+                    ${bonus20sGrantedForTurn ? '<span class="text-[11px] text-[#4ecdc4] ml-1">(+20s!)</span>' : ''}
                   </div>
                   ${!isHumanHost ? `
                     <div class="text-right">
@@ -3849,7 +3975,7 @@
                 wordHistory[currentTurn - 1] ? `
                   <div class="p-3 rounded-xl bg-[#ffe66d] border-3 border-[#1e1e1e] text-center">
                     <div class="text-xs font-black">📢 第 ${currentTurn} / 7 題 主持人出題詞語：</div>
-                    <div class="text-2xl md:text-3xl font-black mt-1">「${wordHistory[currentTurn - 1]}」</div>
+                    <div class="text-2xl md:text-3xl font-black mt-1 break-words">「${wordHistory[currentTurn - 1]}」</div>
                   </div>
                 ` : `
                   <div class="p-3 rounded-xl bg-[#fff3cd] border-3 border-[#1e1e1e] text-center">
@@ -3875,7 +4001,6 @@
             </div>
 
             ${lastFeedbackBanner ? `
-              <!-- 即時強化回答正確與否的動態特效橫幅 -->
               <div class="theme-cut-in doodle-box-sm p-4 text-center border-4 ${lastFeedbackBanner.isCorrect ? 'bg-[#d4edda] border-green-600 text-green-900' : 'bg-red-100 border-red-600 text-red-900 shake-screen'}">
                 <div class="text-2xl md:text-3xl font-black">
                   ${lastFeedbackBanner.isCorrect ? '⭕ 記憶超群！回答正確 (+1分)！' : `❌ 答錯了！正確答案是「${lastFeedbackBanner.expected}」`}
@@ -3886,17 +4011,17 @@
               </div>
             ` : ''}
 
-            <div class="doodle-box-sm p-5 bg-white text-center">
+            <div class="doodle-box-sm p-5 bg-white text-center w-full max-w-full overflow-hidden">
               ${isHumanHost ? (
                 hostNeedsToPrompt && !hasHostPromptedThisTurn ? `
-                  <div class="space-y-3 max-w-md mx-auto">
+                  <div class="space-y-3 max-w-md w-full mx-auto">
                     <div class="inline-block bg-[#ffe66d] border-2 border-[#1e1e1e] px-3 py-0.5 rounded-full text-xs font-black">
                       🎤 主持人出題面板（第 ${currentTurn} / 7 詞）
                     </div>
-                    <p class="text-xs font-bold text-neutral-600">你是主持人，只需出題不用回答問題！</p>
-                    <div class="flex gap-2">
-                      <input id="hostMemoryWordInput" type="text" placeholder="輸入符合主題的新詞語..." class="doodle-input flex-1 text-base" onkeydown="if(event.key==='Enter') window._hostSubmitMemoryWord()" />
-                      <button onclick="window._hostSubmitMemoryWord()" class="doodle-btn px-5 py-2.5 text-sm bg-[#ff6b6b] text-white">
+                    <p class="text-xs font-bold text-neutral-600">你是主持人，只需出題不用回答問題！${currentTurn >= 4 ? '（出題後將為玩家增加 20 秒作答時間）' : ''}</p>
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full max-w-full">
+                      <input id="hostMemoryWordInput" type="text" placeholder="輸入符合主題的新詞語..." class="doodle-input flex-1 w-full min-w-0 text-base" onkeydown="if(event.key==='Enter') window._hostSubmitMemoryWord()" />
+                      <button onclick="window._hostSubmitMemoryWord()" class="doodle-btn px-5 py-2.5 text-sm bg-[#ff6b6b] text-white flex-shrink-0">
                         出題 ➔
                       </button>
                     </div>
@@ -3917,7 +4042,7 @@
                 `
               ) : (
                 !hasHostPromptedThisTurn ? `
-                  <div class="py-6 text-sm font-black text-neutral-500">⏳ 請稍候，主持人正在輸入本回合新詞語...</div>
+                  <div class="py-6 text-sm font-black text-neutral-500">⏳ 請稍候，主持人正在輸入本回合新詞語（輸入後將增加 20 秒作答時間）...</div>
                 ` : !playersNeedToAnswer ? `
                   <div class="py-3 space-y-3">
                     <div class="inline-block bg-neutral-200 border-2 border-[#1e1e1e] px-3 py-1 rounded-full text-xs font-black">
@@ -3935,16 +4060,16 @@
                     ⏳ 等待其他玩家作答完畢 (${answeredCount}/${guessers.length} 人)...
                   </div>
                 ` : `
-                  <div class="space-y-3">
+                  <div class="space-y-3 w-full max-w-full">
                     <div class="inline-block bg-[#4ecdc4] border-2 border-[#1e1e1e] px-3 py-1 rounded-full text-xs font-black">
-                      ✍️ 玩家作答區（第 ${recallIdx + 1} / 7 題｜限時 30 秒｜已答 ${answeredCount}/${guessers.length} 人）
+                      ✍️ 玩家作答區（第 ${recallIdx + 1} / 7 題｜已答 ${answeredCount}/${guessers.length} 人）
                     </div>
                     <h4 class="text-lg font-black">
                       請輸入主持人在「第 ${recallIdx + 1} 回合（前三個）」說過的詞語：
                     </h4>
-                    <div class="flex flex-col sm:flex-row gap-2 max-w-md mx-auto">
-                      <input id="memAnswerInput" type="text" placeholder="輸入第 ${recallIdx + 1} 回合的詞..." class="doodle-input flex-1 text-center text-lg" onkeydown="if(event.key==='Enter') window._submitMemoryAns()" />
-                      <button onclick="window._submitMemoryAns()" class="doodle-btn px-6 py-2.5 text-base bg-[#ffe66d]">
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 max-w-md w-full mx-auto">
+                      <input id="memAnswerInput" type="text" placeholder="輸入第 ${recallIdx + 1} 回合的詞..." class="doodle-input flex-1 w-full min-w-0 text-center text-lg" onkeydown="if(event.key==='Enter') window._submitMemoryAns()" />
+                      <button onclick="window._submitMemoryAns()" class="doodle-btn px-6 py-2.5 text-base bg-[#ffe66d] flex-shrink-0">
                         送出答案
                       </button>
                     </div>
@@ -3997,8 +4122,7 @@
 
     /**************************************************************
      * 遊戲 5：殘酷二選一
-     * - 修復無法畫圖直接跳評分的問題，移除提前跳過按鈕，強制等待所有非主持人玩家畫完才開始評分
-     * - 評分與冠軍畫面完成後自動跳轉
+     * - 修正沒有送出畫作時圖片無法顯示的問題：生成預設有效空白畫布圖檔，並在時間到時自動擷取目前畫布並等待全員同步後再進入評選
      **************************************************************/
     function startMiniGame4_CruelBinary() {
       const mount = document.getElementById('miniGameMountPoint');
@@ -4016,12 +4140,26 @@
       GameState.stats.funnyGrudge[pA.id][pB.id] = true;
 
       let drawTimeLeft = 60;
-      const submittedDrawings = {}; // { playerId: dataUrl }
+      const submittedDrawings = {};
       let bracketQueue = [];
       let currentPair = [];
       let championItem = null;
       let isAnimatingPick = false;
       let battleStarted = false;
+
+      // 產生有效的預設空白圖片 DataURL，確保即使未交卷或斷線也絕不會出現破圖
+      function createFallbackBlankDataUrl(playerName) {
+        const off = document.createElement('canvas');
+        off.width = 280; off.height = 280;
+        const octx = off.getContext('2d');
+        octx.fillStyle = '#ffffff';
+        octx.fillRect(0, 0, 280, 280);
+        octx.fillStyle = '#dfe6e9';
+        octx.font = 'bold 16px "Noto Sans TC", sans-serif';
+        octx.textAlign = 'center';
+        octx.fillText(`(${playerName} 未完成畫作)`, 140, 140);
+        return off.toDataURL('image/png');
+      }
 
       document.getElementById('playSubProgress').textContent = `主持人不畫圖｜全員同步觀看二選一`;
 
@@ -4036,7 +4174,10 @@
 
       window._onGameEvent = (action, payload) => {
         if (action === 'CRUEL_SUBMIT_DRAW') {
-          submittedDrawings[payload.playerId] = payload.dataUrl;
+          submittedDrawings[payload.playerId] = payload.dataUrl || createFallbackBlankDataUrl('玩家');
+          if (isHumanHost && !battleStarted) {
+            renderCruelDrawPhase();
+          }
           checkAllDrawingsSubmitted();
         } else if (action === 'CRUEL_FORCE_START_BATTLE') {
           startBattlePhase();
@@ -4045,7 +4186,6 @@
         }
       };
 
-      // AI 畫作預先準備
       GameState.players.forEach((p, idx) => {
         if (p.isAI && p.id !== host.id) {
           const off = document.createElement('canvas');
@@ -4069,7 +4209,7 @@
           mount.innerHTML = `
             <div class="space-y-4 text-center py-6">
               <div class="doodle-box-sm p-4 bg-[#ffe66d]">
-                <div class="text-xs font-black">🎨 本局荒謬繪圖題目：</div>
+                <div class="text-xs font-black">🎨 本局繪圖題目：</div>
                 <h3 class="text-xl md:text-2xl font-black mt-1">${finalPrompt}</h3>
               </div>
               <div class="doodle-box-sm p-6 bg-[#fffdf7] max-w-lg mx-auto space-y-3">
@@ -4092,7 +4232,7 @@
           mount.innerHTML = `
             <div class="space-y-4 text-center">
               <div class="doodle-box-sm p-3 bg-[#ffe66d]">
-                <div class="text-xs font-black">🎨 本局荒謬繪圖題目（主持人【${host.name}】不畫圖負責評選）：</div>
+                <div class="text-xs font-black">🎨 本局繪圖題目（主持人【${host.name}】不畫圖負責評選）：</div>
                 <h3 class="text-xl md:text-2xl font-black mt-1">${finalPrompt}</h3>
               </div>
 
@@ -4149,8 +4289,14 @@
             clearInterval(tId);
             if (!isHumanHost && !submittedDrawings[me.id]) {
               window._submitMyCruelDrawing();
-            } else if (GameState.isRoomHost) {
-              window._hostForceCruelBattle();
+            }
+            if (GameState.isRoomHost) {
+              // 給網路一點緩衝時間接收最後一刻自動送出的畫布，若仍未收到則使用預設空白畫布補齊
+              setTimeout(() => {
+                if (!battleStarted) {
+                  window._hostForceCruelBattle();
+                }
+              }, 1200);
             }
           }
         }, 1000);
@@ -4166,8 +4312,9 @@
       };
 
       window._submitMyCruelDrawing = () => {
+        if (submittedDrawings[me.id]) return;
         const c = document.getElementById('cruelMainCanvas');
-        const myUrl = c ? c.toDataURL('image/png') : '';
+        const myUrl = c ? c.toDataURL('image/png') : createFallbackBlankDataUrl(me.name);
         SoundFX.pop();
         NetSync.sendGameAction('CRUEL_SUBMIT_DRAW', { playerId: me.id, dataUrl: myUrl });
         if (!battleStarted) renderCruelDrawPhase();
@@ -4185,7 +4332,7 @@
         const nonHostPlayers = GameState.players.filter(p => p.id !== host.id);
         bracketQueue = nonHostPlayers.map(p => ({
           player: p,
-          dataUrl: submittedDrawings[p.id] || ''
+          dataUrl: submittedDrawings[p.id] || createFallbackBlankDataUrl(p.name)
         }));
         nextBracketMatch();
       }
@@ -4310,8 +4457,7 @@
 
     /**************************************************************
      * 遊戲 6：這是我的回答
-     * - 沒有輸入就會寫「(空白)」
-     * - 倒數 60 秒或者所有玩家都完成選擇後才會公布答案，並自動進入下一題
+     * - 徹底修復輸入到一半因為其他事件或狀態重繪而跳掉的問題（保留草稿與焦點，且在盲猜階段局部更新不重繪整個列表）
      **************************************************************/
     function startMiniGame5_MyAnswer() {
       const mount = document.getElementById('miniGameMountPoint');
@@ -4327,9 +4473,10 @@
       let qIdx = 0;
       let phaseTimeLeft = 60;
       let step = 'input'; // 'input' | 'vote' | 'reveal'
-      let textMap = {};   // { playerId: text }
-      let voteMap = {};   // { voterId: pickedPlayerId }
+      let textMap = {};
+      let voteMap = {};
       let submissions = [];
+      let myDraftText = ''; // 儲存玩家正在輸入的草稿，防止任何意外重繪清空輸入
 
       function startPhase60sTimer(onTimeout) {
         clearAllGameTimers();
@@ -4402,7 +4549,6 @@
         if (anyRight) SoundFX.correct(); else SoundFX.wrong();
         renderMyAnswerView();
 
-        // 公布答案 2.8 秒後自動同步進入下一題
         if (GameState.isRoomHost) {
           const nextTimer = setTimeout(() => {
             NetSync.sendGameAction('MYANS_NEXT_ROUND', { nextIdx: qIdx + 1 });
@@ -4414,7 +4560,7 @@
       window._onGameEvent = (action, payload) => {
         if (action === 'MYANS_SUBMIT_TEXT' && payload.qIdx === qIdx) {
           textMap[payload.playerId] = payload.text || '(空白)';
-          // 僅局部更新人數文字或當前交卷者自己的畫面，絕不重繪其他正在打字的玩家輸入框！
+          // 局部更新已交卷人數文字，絕不重繪其他正在打字的玩家輸入框！
           if (step === 'input') {
             const countBadge = document.getElementById('myAnsSubmittedCountBadge');
             if (countBadge) {
@@ -4428,7 +4574,18 @@
           checkAllTextsSubmitted();
         } else if (action === 'MYANS_SUBMIT_VOTE' && payload.qIdx === qIdx) {
           voteMap[payload.voterId] = payload.pickedPlayerId;
-          renderMyAnswerView();
+          // 局部更新盲猜人數或自己的按鈕高亮
+          if (step === 'vote') {
+            const vBadge = document.getElementById('myAnsVotedCountBadge');
+            if (vBadge) {
+              const voters = GameState.players.filter(p => p.id !== host.id);
+              const votedCount = voters.filter(p => voteMap[p.id] !== undefined).length;
+              vBadge.textContent = `題目：${selectedPrompts[qIdx]}（已盲猜 ${votedCount}/${voters.length} 人）`;
+            }
+            if (payload.voterId === me.id) {
+              renderMyAnswerView();
+            }
+          }
           checkAllVotesSubmitted();
         } else if (action === 'MYANS_FORCE_REVEAL' && payload.qIdx === qIdx) {
           revealVotesForCurrentRound();
@@ -4448,6 +4605,7 @@
         textMap = {};
         voteMap = {};
         submissions = [];
+        myDraftText = '';
 
         const pool = QUESTION_BANKS.testSituationAnswers;
         GameState.players.forEach((p, pIdx) => {
@@ -4466,7 +4624,7 @@
           if (step === 'input') {
             if (textMap[me.id] === undefined) {
               const inp = document.getElementById('myAnsTextInput');
-              const myText = (inp?.value || '').trim() || '(空白)';
+              const myText = (inp?.value || myDraftText || '').trim() || '(空白)';
               NetSync.sendGameAction('MYANS_SUBMIT_TEXT', { qIdx, playerId: me.id, text: myText });
             }
             if (GameState.isRoomHost) {
@@ -4481,6 +4639,11 @@
       }
 
       function renderMyAnswerView() {
+        const existingInp = document.getElementById('myAnsTextInput');
+        if (existingInp) {
+          myDraftText = existingInp.value;
+        }
+
         const promptText = selectedPrompts[qIdx];
         const pts = roundScores[qIdx];
         const myTextSubmitted = textMap[me.id] !== undefined;
@@ -4511,7 +4674,7 @@
                   <label class="block text-sm font-black">
                     ✏️ 請輸入你的靈魂回答${isHumanHost ? '（你是主持人，大家待會要猜出你寫的這句話！）' : ''}（未輸入將顯示為 (空白)）：
                   </label>
-                  <input id="myAnsTextInput" type="text" value="" placeholder="請在此輸入你的回答..." class="doodle-input w-full text-base" onkeydown="if(event.key==='Enter') window._submitMyAnswerText()" />
+                  <input id="myAnsTextInput" type="text" value="" placeholder="請在此輸入你的回答..." class="doodle-input w-full min-w-0 text-base" oninput="window._updateMyAnsDraft(this.value)" onkeydown="if(event.key==='Enter') window._submitMyAnswerText()" />
                   <div class="flex justify-end pt-2">
                     <button onclick="window._submitMyAnswerText()" class="doodle-btn px-6 py-2.5 text-base bg-[#ff6b6b] text-white">
                       📤 提交回答並等待全員盲猜
@@ -4521,6 +4684,10 @@
               `}
             </div>
           `;
+          const newInp = document.getElementById('myAnsTextInput');
+          if (newInp && myDraftText) {
+            newInp.value = myDraftText;
+          }
         } else {
           const voters = GameState.players.filter(p => p.id !== host.id);
           const votedCount = voters.filter(p => voteMap[p.id] !== undefined).length;
@@ -4528,7 +4695,7 @@
             <div class="space-y-4">
               <div class="doodle-box-sm p-3 bg-[#fffdf7] text-center">
                 <div class="flex items-center justify-center gap-2">
-                  <span class="text-xs font-black text-neutral-500">題目：${promptText}（已盲猜 ${votedCount}/${voters.length} 人）</span>
+                  <span id="myAnsVotedCountBadge" class="text-xs font-black text-neutral-500">題目：${promptText}（已盲猜 ${votedCount}/${voters.length} 人）</span>
                   ${step === 'vote' ? `<span class="text-xs font-mono font-black bg-[#1e1e1e] text-[#ffe66d] px-2 py-0.5 rounded">⏱️ <span id="myAnsTimerText">${phaseTimeLeft}s</span></span>` : ''}
                 </div>
                 <h4 class="text-base md:text-lg font-black mt-1 text-red-600">
@@ -4550,7 +4717,7 @@
                   }
                   return `
                     <button ${(isHumanHost || step === 'reveal') ? 'disabled' : ''} onclick="window._voteHostAnswer('${sub.playerId}')" class="w-full doodle-box-sm p-3.5 text-left flex items-center justify-between gap-3 ${boxCls}">
-                      <div class="font-black text-base">
+                      <div class="font-black text-base break-all">
                         <span class="bg-[#1e1e1e] text-white text-xs px-2 py-0.5 rounded mr-2">#${i + 1}</span>
                         「${sub.text}」
                       </div>
@@ -4574,10 +4741,14 @@
         }
       }
 
+      window._updateMyAnsDraft = (val) => {
+        myDraftText = val;
+      };
+
       window._submitMyAnswerText = () => {
         if (textMap[me.id] !== undefined) return;
         const inp = document.getElementById('myAnsTextInput');
-        const myText = (inp?.value || '').trim() || '(空白)';
+        const myText = (inp?.value || myDraftText || '').trim() || '(空白)';
         SoundFX.pop();
         NetSync.sendGameAction('MYANS_SUBMIT_TEXT', { qIdx, playerId: me.id, text: myText });
       };
@@ -4595,7 +4766,7 @@
      * 遊戲 7：臉部拼圖
      * - 部位順序改為亂數洗牌，且不告訴玩家這是哪個部位（僅顯示神祕部位 1/4 ~ 4/4）
      * - 必須等所有玩家完成當前部位後，才會全員同步進入下一個部位
-     * - 主持人畫面即時看到大家的距離差，並有 2 次「陷害」機會（對同一玩家限用 1 次，使目標移動瞬間加速 2 倍持續 1 秒，被陷害者跳出警告字樣）
+     * - 重要修正：使用加速（陷害）時，絕對不重繪畫面、不綁定 mouseleave、且橫幅改為浮動絕對定位不推擠按鈕，確保玩家長按時只會「突然變快 2 倍」而不會直接放下來中斷輸入！
      **************************************************************/
     function startMiniGame6_FacePuzzle() {
       const mount = document.getElementById('miniGameMountPoint');
@@ -4613,7 +4784,6 @@
         { key: 'mouth' },
         { key: 'hair' }
       ];
-      // 亂數決定本局五官出現順序，且不顯示部位名稱
       const partSequence = deterministicShuffle(baseParts, rng);
 
       let curPartIdx = 0;
@@ -4622,10 +4792,10 @@
       let galleryRevealed = false;
       let speedMultiplier = 1;
       let sabotageTotalUsed = 0;
-      const sabotagedTargets = {}; // { playerId: true }
+      const sabotagedTargets = {};
 
-      const allPlayerCoords = {}; // { playerId: { eyes:{x,y}, nose:{x,y}, mouth:{x,y}, hair:{x,y} } }
-      const stepCompletedMap = {}; // { stepIdx: { playerId: true } }
+      const allPlayerCoords = {};
+      const stepCompletedMap = {};
       for (let i = 0; i < 4; i++) stepCompletedMap[i] = {};
 
       const placedCoords = {
@@ -4712,8 +4882,23 @@
           allPlayerCoords[payload.playerId][payload.partKey] = { x: payload.x, y: payload.y };
           if (!stepCompletedMap[payload.stepIdx]) stepCompletedMap[payload.stepIdx] = {};
           stepCompletedMap[payload.stepIdx][payload.playerId] = true;
-          if (isHumanHost && !galleryRevealed) renderHostPuzzleDashboard();
-          else if (!isHumanHost && movePhase === 'step_locked') renderPuzzleControlView();
+          if (isHumanHost && !galleryRevealed) {
+            renderHostPuzzleDashboard();
+          } else if (!isHumanHost) {
+            // 只局部更新進度文字，不重繪其他正在長按移動的玩家按鈕！
+            const puzzlers = GameState.players.filter(p => p.id !== host.id);
+            const doneCount = puzzlers.filter(p => !!stepCompletedMap[curPartIdx]?.[p.id]).length;
+            const progHeader = document.getElementById('puzzleStepProgressHeader');
+            if (progHeader) {
+              progHeader.textContent = `神秘部位進度 (${curPartIdx + 1} / 4)｜已完成人數：${doneCount} / ${puzzlers.length} 人`;
+            }
+            if (movePhase === 'step_locked') {
+              const statusEl = document.getElementById('puzzleStepStatusText');
+              if (statusEl) {
+                statusEl.textContent = `✅ 本部位已定位！等待其他玩家完成 (${doneCount}/${puzzlers.length}) 後同步進入下一部位...`;
+              }
+            }
+          }
           checkAllStepDone(payload.stepIdx);
         } else if (action === 'PUZZLE_SABOTAGE') {
           sabotageTotalUsed = payload.totalUsed;
@@ -4721,6 +4906,7 @@
           if (isHumanHost && !galleryRevealed) renderHostPuzzleDashboard();
           if (payload.targetId === human.id && !isHumanHost && !galleryRevealed) {
             SoundFX.wrong();
+            // 還原原始設定：瞬間將移動倍率提高為 5.0 倍持續 1 秒，且不重繪按鈕、不改變布局位置，確保正在長按的玩家不會鬆開或中斷！
             speedMultiplier = 5.0;
             const alertEl = document.getElementById('puzzleSabotageBanner');
             if (alertEl) alertEl.classList.remove('hidden');
@@ -4832,13 +5018,13 @@
 
         mount.innerHTML = `
           <div class="flex flex-col items-center space-y-3 relative">
-            <!-- 被主持人陷害時的彈出警告字樣 -->
-            <div id="puzzleSabotageBanner" class="hidden theme-cut-in doodle-box-sm px-5 py-2.5 bg-[#ff6b6b] text-white border-4 border-[#1e1e1e] text-center shadow-lg">
-              <div class="text-lg font-black">😈 遭到主持人【${host.name}】陷害！移動速度瞬間暴增 2 倍（持續 1 秒）！</div>
+            <!-- 被主持人陷害時的浮動警告字樣（使用 fixed pointer-events-none，絕不推擠畫面或導致長按按鈕滑出而中斷！） -->
+            <div id="puzzleSabotageBanner" class="hidden fixed top-20 left-1/2 -translate-x-1/2 z-50 pointer-events-none doodle-box-sm px-5 py-2.5 bg-[#ff6b6b] text-white border-4 border-[#1e1e1e] text-center shadow-lg">
+              <div class="text-base md:text-lg font-black">😈 遭到主持人【${host.name}】陷害！移動速度瞬間暴增 2 倍！</div>
             </div>
 
             <div class="doodle-box-sm p-3 bg-[#ffe66d] text-center w-full max-w-md">
-              <div class="text-xs font-black">
+              <div id="puzzleStepProgressHeader" class="text-xs font-black">
                 神秘部位進度 (${curPartIdx + 1} / 4)｜已完成人數：${doneCount} / ${puzzlers.length} 人
               </div>
               <div id="puzzleStepStatusText" class="text-sm font-black mt-0.5 text-red-700">
@@ -4853,10 +5039,10 @@
             </div>
 
             <div class="flex items-center justify-center gap-4 w-full max-w-md">
-              <button id="btnHoldRight" ${isStepLocked ? 'disabled' : ''} class="doodle-btn flex-1 py-4 text-base bg-[#ffe66d]">
+              <button id="btnHoldRight" ${isStepLocked ? 'disabled' : ''} class="doodle-btn flex-1 py-4 text-base bg-[#ffe66d] select-none touch-none">
                 ➡️ 長按向右移動 (限1次)
               </button>
-              <button id="btnHoldUp" disabled class="doodle-btn flex-1 py-4 text-base bg-[#4ecdc4]">
+              <button id="btnHoldUp" disabled class="doodle-btn flex-1 py-4 text-base bg-[#4ecdc4] select-none touch-none">
                 ⬆️ 長按向上移動 (限1次)
               </button>
             </div>
@@ -4974,6 +5160,12 @@
         movePhase = 'step_locked';
         SoundFX.correct();
 
+        const btnR = document.getElementById('btnHoldRight');
+        const btnU = document.getElementById('btnHoldUp');
+        if (btnR) btnR.disabled = true;
+        if (btnU) btnU.disabled = true;
+        redrawCraneCanvas();
+
         NetSync.sendGameAction('PUZZLE_PART_DONE', {
           stepIdx: curPartIdx,
           playerId: human.id,
@@ -4981,7 +5173,6 @@
           x: Math.round(placedCoords[curKey].x),
           y: Math.round(placedCoords[curKey].y)
         });
-        renderPuzzleControlView();
       }
 
       function bindHoldButtons() {
@@ -4989,13 +5180,18 @@
         const btnU = document.getElementById('btnHoldUp');
         if (!btnR || !btnU) return;
 
+        // 移除 onmouseleave 觸發，改由真實放開滑鼠/手指 (mouseup / touchend) 決定停止，防止任何震動或微幅滑動中斷長按！
         btnR.onmousedown = btnR.ontouchstart = (e) => { e.preventDefault(); startRightMovement(); };
-        btnR.onmouseup = btnR.onmouseleave = btnR.ontouchend = (e) => { e.preventDefault(); stopRightMovement(); };
+        btnR.onmouseup = btnR.ontouchend = btnR.ontouchcancel = (e) => { e.preventDefault(); stopRightMovement(); };
 
         btnU.onmousedown = btnU.ontouchstart = (e) => { e.preventDefault(); startUpMovement(); };
-        btnU.onmouseup = btnU.onmouseleave = btnU.ontouchend = (e) => { e.preventDefault(); stopUpMovement(); };
+        btnU.onmouseup = btnU.ontouchend = btnU.ontouchcancel = (e) => { e.preventDefault(); stopUpMovement(); };
       }
 
+      const winMouseUpHandler = () => {
+        if (movePhase === 'moving_right') stopRightMovement();
+        if (movePhase === 'moving_up') stopUpMovement();
+      };
       const keyDownHandler = (e) => {
         if (e.repeat) return;
         if (e.key === 'ArrowRight') startRightMovement();
@@ -5005,6 +5201,8 @@
         if (e.key === 'ArrowRight') stopRightMovement();
         if (e.key === 'ArrowUp') stopUpMovement();
       };
+      window.addEventListener('mouseup', winMouseUpHandler);
+      window.addEventListener('touchend', winMouseUpHandler);
       window.addEventListener('keydown', keyDownHandler);
       window.addEventListener('keyup', keyUpHandler);
 
@@ -5015,6 +5213,8 @@
       function renderPuzzleGallery() {
         if (galleryRevealed) return;
         galleryRevealed = true;
+        window.removeEventListener('mouseup', winMouseUpHandler);
+        window.removeEventListener('touchend', winMouseUpHandler);
         window.removeEventListener('keydown', keyDownHandler);
         window.removeEventListener('keyup', keyUpHandler);
 
@@ -5093,8 +5293,6 @@
 
     /**************************************************************
      * 遊戲 8：超級找找王
-     * - 數量分配：正解 5 個、錯 1 部位 9 個、錯 2 部位 8 個、超級不像 8 個（共 30 個）
-     * - 主持人面板即時顯示每位玩家找到幾個，並提供 1 次「懲罰（指定玩家 5 秒不能選）」與 1 次「祝福（直接幫指定玩家公布 1 個答案）」
      **************************************************************/
     function startMiniGame7_SuperFinder() {
       const mount = document.getElementById('miniGameMountPoint');
@@ -5142,7 +5340,6 @@
         return clone;
       }
 
-      // 正解 5 個、錯 1 個部位 9 個、錯 2 個部位 8 個、超級不像 8 個（共 30 個）
       const rawRoleTypes = [
         ...Array(5).fill('real'),
         ...Array(9).fill('wrong1'),
@@ -5270,7 +5467,6 @@
 
         mount.innerHTML = `
           <div class="space-y-3 relative">
-            <!-- 頂部：正版主持人通緝令與進度 -->
             <div class="doodle-box-sm p-3 bg-[#fffdf7] flex flex-wrap items-center justify-between gap-3">
               <div class="flex items-center gap-3">
                 <div class="w-14 h-14 rounded-xl border-2 border-[#1e1e1e] bg-white overflow-hidden flex-shrink-0">
@@ -5307,7 +5503,6 @@
             </div>
 
             ${isHumanHost ? `
-              <!-- 主持人專屬即時進度與懲罰/祝福面板 -->
               <div class="doodle-box-sm p-4 bg-[#fff9db] space-y-3">
                 <div class="flex flex-wrap items-center justify-between gap-2 border-b-2 border-dashed border-neutral-400 pb-2">
                   <span class="font-black text-sm">📊 玩家即時尋找進度與神力操作</span>
@@ -5344,14 +5539,12 @@
               </div>
             ` : ''}
 
-            <!-- 點錯或被主持人懲罰遮罩 -->
             <div id="finderPenaltyOverlay" class="hidden absolute inset-0 z-30 bg-red-600/80 backdrop-blur-sm rounded-2xl flex flex-col items-center justify-center text-white p-6 text-center">
               <div class="text-6xl mb-2">🚫</div>
               <h4 id="finderPenaltyTitle" class="text-2xl font-black">點錯冒牌貨了！罰站鎖定 3 秒！</h4>
               <p class="text-sm font-bold mt-1">請仔細比對臉型、膚色與四個五官部位！</p>
             </div>
 
-            <!-- 縮小鏡頭全景網格 (30格) -->
             <div id="finderPanoramaGrid" class="doodle-box-sm p-3 bg-white grid grid-cols-5 sm:grid-cols-6 gap-2.5 place-items-center min-h-[300px]">
               ${crowdList.map(item => `
                 <button id="finder_cell_${item.idx}" ${(isHumanHost || item.found) ? 'disabled' : ''} onclick="window._clickFinderCharacter(${item.idx})" class="w-14 h-14 sm:w-20 sm:h-20 rounded-xl border-2 ${item.found ? 'border-green-600 bg-green-100 ring-4 ring-green-500' : 'border-neutral-300 hover:border-[#1e1e1e] bg-[#fffdf9]'} p-1 flex items-center justify-center transition relative overflow-hidden">
@@ -5369,7 +5562,6 @@
         });
       }
 
-      // 啟動 45 秒倒數與 AI 同步尋找模擬
       const timerId = setInterval(() => {
         if (roundEnded) return;
         finderTimeLeft--;
@@ -5430,7 +5622,6 @@
           const pts = (myFoundCount === 1) ? 1 : 2;
           myEarnedScore += pts;
           const elapsedSec = (Date.now() - startTimeMs) / 1000;
-          // 「一眼瞧見你」相性條件：只有在 20 秒內把 5 個正版全部找完才會觸發！
           const quickHit = (myFoundCount === 5 && elapsedSec <= 20);
 
           SoundFX.correct();
@@ -5445,11 +5636,7 @@
     }
 
     /**************************************************************
-     * 8. 【6】最終結算畫面：
-     * - 完整實作 3 人以上「雙向關係連線與稱號」(紅線正面/高黏著、藍線搞笑/負面)
-     * - 完整實作 3 人以上「全場局勢評語」11 種判定條件
-     * - 關係圖不顯示下方文字說明圖例
-     * - 排行榜刪除「人氣王」特寫卡片上的分數數字
+     * 8. 【6】最終結算畫面
      **************************************************************/
     function ensureDemoScoresIfZero() {
       const totalPts = GameState.players.reduce((acc, p) => acc + p.totalScore, 0);
@@ -5467,14 +5654,11 @@
       });
     }
 
-    // 計算兩名玩家 (pA, pB) 之間的關係連線類型與稱號
     function classifyPairRelationship(pA, pB, allPlayers, bestPartnerPairIds, top20Threshold) {
-      // pA 對 pB 的默契得分 = 當 pB 主持時 pA 拿到的分數 -> GameState.chemistry[pB.id][pA.id]
       const aToB = GameState.chemistry[pB.id]?.[pA.id] || 0;
       const bToA = GameState.chemistry[pA.id]?.[pB.id] || 0;
       const sum = aToB + bToA;
 
-      // 計算 pA 投給所有人的總默契分，判斷是否 80% 集中給 pB
       let totalGivenByA = 0;
       let targetsCountA = 0;
       allPlayers.forEach(other => {
@@ -5490,7 +5674,6 @@
         (bestPartnerPairIds[0] === pB.id && bestPartnerPairIds[1] === pA.id)
       );
 
-      // 1. 優先檢查特殊事件與高默契紅線條件
       const teleMaxAB = Math.max(
         GameState.stats.telepathyMaxMatches[pA.id]?.[pB.id] || 0,
         GameState.stats.telepathyMaxMatches[pB.id]?.[pA.id] || 0
@@ -5508,28 +5691,23 @@
       if (teleMaxAB >= 4) return { type: 'red', label: '心靈相通' };
       if (isBestPartner && sum > 0) return { type: 'red', label: '最佳拍檔' };
 
-      // 恐怖情人 (藍線)：A 瘋狂把分集中給 B (>=4)，但 B 對 A 的默契得分趨近於 0
       if ((aToB >= 4 && bToA === 0 && totalGivenByA > 0 && aToB / totalGivenByA >= 0.7) ||
           (bToA >= 4 && aToB === 0)) {
         return { type: 'blue', label: '恐怖情人' };
       }
 
-      // 單相思 (紅線)：A 對 B >= 5，但 B 對 A < 2
       if ((aToB >= 5 && bToA < 2) || (bToA >= 5 && aToB < 2)) {
         return { type: 'red', label: '單相思' };
       }
 
-      // 本命 (紅線)：80% 以上集中給同一特定玩家
       if (totalGivenByA >= 4 && (aToB / totalGivenByA) >= 0.8) {
         return { type: 'red', label: '本命' };
       }
 
-      // 朋友以上 (紅線)：總互動得分排名前 20%
       if (sum >= top20Threshold && sum >= 7) {
         return { type: 'red', label: '朋友以上' };
       }
 
-      // 默契 (紅線)：6 ~ 9 分
       if (sum >= 6 && sum <= 9) {
         return { type: 'red', label: '默契' };
       }
@@ -5537,13 +5715,11 @@
         return { type: 'red', label: '命中注定' };
       }
 
-      // 點頭 (紅線)：3 ~ 5 分
       if (sum >= 3 && sum <= 5) {
         if (targetsCountA >= 3) return { type: 'red', label: '花心' };
         return { type: 'red', label: '點頭' };
       }
 
-      // 2. 藍色系列（搞笑、特殊吐槽、負面）
       const missedBoth = (GameState.stats.missedParts[pA.id]?.[pB.id] || 0) > 0 &&
                          (GameState.stats.missedParts[pB.id]?.[pA.id] || 0) > 0;
       if (missedBoth) return { type: 'blue', label: '這誰' };
@@ -5559,7 +5735,6 @@
       return { type: 'blue', label: '這誰' };
     }
 
-    // 判定 3 人以上局「全場局勢評語」
     function evaluateOverallGroupSituation(players, pairLinks) {
       const n = players.length;
       const sorted = [...players].sort((a, b) => b.totalScore - a.totalScore);
@@ -5569,18 +5744,14 @@
 
       const avgPairChem = pairLinks.reduce((acc, l) => acc + l.sumChem, 0) / Math.max(1, pairLinks.length);
 
-      // 1. 我們不熟：全場平均默契得分極低
       if (avgPairChem < 1.8) return '我們不熟';
 
-      // 2. 小心他：某位玩家在惡搞題拿了極高分
       const prankMax = Math.max(...players.map(p => GameState.stats.prankHighScorer[p.id] || 0));
       if (prankMax >= 6) return '小心他';
 
-      // 3. 女王大人 / 眾星拱月：第一名壓倒性勝利
       if (maxS - secondS >= 10) return '女王大人';
       if (maxS - secondS >= 6) return '眾星拱月';
 
-      // 4. 孤立：有人完全沒有紅線且總分墊底脫節
       const redCountByPlayer = {};
       players.forEach(p => redCountByPlayer[p.id] = 0);
       pairLinks.forEach(l => {
@@ -5594,24 +5765,19 @@
         return '孤立';
       }
 
-      // 5. 雙向奔赴：有兩位玩家互為全場最高且雙向極高
       const topLink = [...pairLinks].sort((a, b) => b.sumChem - a.sumChem)[0];
       if (topLink && topLink.aToB >= 4 && topLink.bToA >= 4 && topLink.sumChem >= avgPairChem * 1.8) {
         return '雙向奔赴';
       }
 
-      // 6. 三角關係：出現三個人單相思或高分閉環
       const unrequitedCount = pairLinks.filter(l => l.rel.label === '單相思' || l.rel.label === '恐怖情人').length;
       if (n === 3 || unrequitedCount >= 2) return '三角關係';
 
-      // 7. 四角戀：4人以上複雜高默契交叉
       const redLinksCount = pairLinks.filter(l => l.rel.type === 'red').length;
       if (n >= 4 && redLinksCount >= 4) return '四角戀';
 
-      // 8. 大亂鬥：全場分數咬得極緊
       if (maxS - minS <= 4) return '大亂鬥';
 
-      // 9. 二極對抗 vs 小圈圈
       if (redLinksCount >= 2 && isolatedPlayers.length >= 1) return '小圈圈';
       return '二極對抗';
     }
@@ -5624,7 +5790,6 @@
       const players = [...GameState.players];
       const n = players.length;
 
-      // 先找出最佳拍檔
       let bestPair = [players[0], players[1] || players[0]];
       let bestChemSum = -1;
       const allSums = [];
@@ -5643,7 +5808,6 @@
       allSums.sort((a, b) => b - a);
       const top20Threshold = allSums[Math.max(0, Math.floor(allSums.length * 0.2))] || 6;
 
-      // 1. 判斷 2人局 vs 3人以上局
       const box2P = document.getElementById('relation2PContainer');
       const boxMulti = document.getElementById('relationMultiContainer');
       const groupBadge = document.getElementById('overallGroupLabel');
@@ -5689,7 +5853,6 @@
         drawRelationshipGraphCanvas(players, pairLinks);
       }
 
-      // 2. 排行榜與第一名「人氣王」特寫（依要求刪除人氣王特寫卡片上的分數數字！）
       const sortedByScore = [...players].sort((a, b) => b.totalScore - a.totalScore);
       const topWinner = sortedByScore[0];
       const highlightBox = document.getElementById('topWinnerHighlight');
@@ -5721,7 +5884,6 @@
         </div>
       `).join('');
 
-      // 3. 最佳拍檔展示
       const partnerBox = document.getElementById('bestPartnerBox');
       partnerBox.innerHTML = `
         <div class="flex items-center justify-center gap-3 mb-3">
@@ -5747,7 +5909,6 @@
       renderAvatarToCanvas(document.getElementById('partner_av_1'), bestPair[1].avatar);
     }
 
-    // 繪製 3 人以上關係相性網路圖（重疊部分一上一下交錯錯開演算法）
     function drawRelationshipGraphCanvas(players, pairLinks) {
       const canvas = document.getElementById('relationshipGraphCanvas');
       if (!canvas) return;
@@ -5765,7 +5926,6 @@
       const redLineCount = {};
       players.forEach(p => redLineCount[p.id] = 0);
 
-      // 1. 計算節點座標（偶數與奇數節點微幅交錯半徑與一上一下偏移，避免水平連線完全重疊）
       const nodes = players.map((p, idx) => {
         const angle = (idx / n) * Math.PI * 2 - Math.PI / 2;
         const staggerR = baseRadius + ((idx % 2 === 0) ? -12 : 14);
@@ -5777,16 +5937,13 @@
         };
       });
 
-      // 已佔用的標籤座標紀錄，用來進行一上一下錯開防重疊碰撞檢測
       const placedBadgeRects = [];
 
       function resolveStaggeredPosition(targetX, targetY, nx, ny, linkIndex) {
-        // 先依序號給予基本的一上一下初始偏移
         const baseStep = ((linkIndex % 2 === 0) ? -1 : 1) * (14 + (linkIndex % 3) * 8);
         let bx = targetX + nx * (baseStep * 0.6);
         let by = targetY + ((linkIndex % 2 === 0) ? -14 : 14);
 
-        // 若與既有標籤過近，強制進行一上一下（正負 Y 方向交替）推開
         for (let attempt = 0; attempt < 8; attempt++) {
           const hit = placedBadgeRects.find(r => Math.abs(r.x - bx) < 58 && Math.abs(r.y - by) < 23);
           if (!hit) break;
@@ -5801,7 +5958,6 @@
         return { x: bx, y: by };
       }
 
-      // 2. 繪製配對關係弧線與一上一下錯開的稱號膠囊標籤
       pairLinks.forEach((link, linkIdx) => {
         const nA = nodes[link.i];
         const nB = nodes[link.j];
@@ -5817,11 +5973,9 @@
         const dx = nB.x - nA.x;
         const dy = nB.y - nA.y;
         const len = Math.hypot(dx, dy) || 1;
-        // 單位法向量
         const nx = -dy / len;
         const ny = dx / len;
 
-        // 曲線控制點一上一下交錯彎曲，避免多條對角線在圓心交會重疊
         const curveSign = (linkIdx % 2 === 0) ? 1 : -1;
         const curveMag = 26 + (linkIdx % 3) * 14;
         const ctrlX = (nA.x + nB.x) / 2 + nx * curveSign * curveMag;
@@ -5837,7 +5991,6 @@
         ctx.quadraticCurveTo(ctrlX, ctrlY, nB.x, nB.y);
         ctx.stroke();
 
-        // 二次貝茲曲線中點 t = 0.5 座標
         const curveMidX = 0.25 * nA.x + 0.5 * ctrlX + 0.25 * nB.x;
         const curveMidY = 0.25 * nA.y + 0.5 * ctrlY + 0.25 * nB.y;
         const badgePos = resolveStaggeredPosition(curveMidX, curveMidY, nx, ny, linkIdx);
@@ -5860,7 +6013,6 @@
         ctx.restore();
       });
 
-      // 3. 繪製每個玩家的頭像節點，並將名字與稱號「一上一下」交錯配置避免遮擋
       nodes.forEach((node, idx) => {
         const off = document.createElement('canvas');
         off.width = 120; off.height = 120;
@@ -5884,7 +6036,6 @@
         ctx.drawImage(off, node.x - 27, node.y - 27, 54, 54);
         ctx.restore();
 
-        // 依節點位於上半部或下半部，以及奇偶索引，將玩家名稱牌一上一下錯開配置
         const placeNameAbove = (node.y < cy - 20) ? true : ((node.y > cy + 20) ? false : (idx % 2 === 0));
         const nameOffsetY = placeNameAbove ? -40 : 40;
         const noFriendOffsetY = placeNameAbove ? 40 : -40;
@@ -5905,7 +6056,6 @@
           ctx.fillText('沒朋友', node.x, node.y + noFriendOffsetY);
         }
 
-        // 玩家名稱底牌
         ctx.font = '900 13px "Noto Sans TC", sans-serif';
         const nw = ctx.measureText(node.player.name).width + 14;
         ctx.fillStyle = '#ffe66d';
@@ -5924,7 +6074,6 @@
       });
     }
 
-    // 彩帶飄落動畫
     function startConfettiAnimation() {
       const canvas = document.getElementById('confettiCanvas');
       if (!canvas) return;
@@ -5975,12 +6124,12 @@
       GameState.players.forEach(p => {
         p.totalScore = 0;
         p.roundDelta = 0;
+        p.creatorDone = p.isAI ? true : false;
       });
       resetChemistryMatrix();
       switchScreen('screen-lobby');
     }
 
-    // 頁面載入初始化
     window.addEventListener('DOMContentLoaded', () => {
       initDefaultPlayers('', false);
       openLoginPanel('create');
