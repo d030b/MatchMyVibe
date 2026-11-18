@@ -1556,16 +1556,17 @@
     const FACE_SOCKETS = {
       square: { eyes: { x: 120, y: 105 }, nose: { x: 120, y: 135 }, mouth: { x: 120, y: 170 }, hair: { x: 120, y: 62 } },
       round:  { eyes: { x: 120, y: 108 }, nose: { x: 120, y: 136 }, mouth: { x: 120, y: 168 }, hair: { x: 120, y: 66 } },
-      vshape: { eyes: { x: 120, y: 102 }, nose: { x: 120, y: 134 }, mouth: { x: 120, y: 164 }, hair: { x: 120, y: 64 } },
+      vshape: { eyes: { x: 120, y: 96 },  nose: { x: 120, y: 126 }, mouth: { x: 120, y: 154 }, hair: { x: 120, y: 58 } },
       oval:   { eyes: { x: 120, y: 112 }, nose: { x: 120, y: 140 }, mouth: { x: 120, y: 172 }, hair: { x: 120, y: 65 } }
     };
 
-    function drawFaceBase(ctx, shape, skinHex) {
+        function drawFaceBase(ctx, shape, skinHex) {
       ctx.save();
       ctx.fillStyle = skinHex || '#FFE5D9';
       ctx.strokeStyle = '#1e1e1e';
       ctx.lineWidth = 5;
-      ctx.lineJoin = 'round';
+      ctx.lineJoin = shape === 'vshape' ? 'miter' : 'round';
+      ctx.miterLimit = 15;
 
       ctx.beginPath();
       if (shape === 'square') {
@@ -1573,11 +1574,11 @@
       } else if (shape === 'round') {
         ctx.arc(120, 126, 70, 0, Math.PI * 2);
       } else if (shape === 'vshape') {
-        ctx.moveTo(58, 72);
-        ctx.quadraticCurveTo(120, 48, 182, 72);
-        ctx.lineTo(168, 138);
-        ctx.lineTo(120, 206);
-        ctx.lineTo(72, 138);
+        // 兇器級超長錐子下巴：從額頭兩側微向內凹，一路向下暴刺到 y=235 畫布最底端！
+        ctx.moveTo(54, 66);
+        ctx.quadraticCurveTo(120, 44, 186, 66);
+        ctx.quadraticCurveTo(160, 135, 120, 235);
+        ctx.quadraticCurveTo(80, 135, 54, 66);
         ctx.closePath();
       } else {
         ctx.moveTo(120, 46);
@@ -6875,6 +6876,9 @@
     /*************************************************************************
 - 遊戲 11 (ID 10)：｜完美整形診所（最少 3 人）
      *************************************************************************/
+/*************************************************************************
+     * 遊戲 11 (ID 10)：｜完美整形診所（最少 3 人）
+     *************************************************************************/
     function startMiniGame10_PlasticSurgery() {
       const mount = document.getElementById('miniGameMountPoint');
       const host = getCurrentHost();
@@ -6884,7 +6888,8 @@
 
       const nPlayers = GameState.players.length;
       const totalBidRounds = Math.max(nPlayers, 6);
-      const itemsPerRound = nPlayers <= 5 ? 3 : (nPlayers <= 8 ? 4 : 6);
+      // 3~4人出3個、5~8人出4個、9~12人出6個
+      const itemsPerRound = nPlayers <= 4 ? 3 : (nPlayers <= 8 ? 4 : 6);
 
       let phase = 'bidding';
       let curBidRound = 0;
@@ -6892,6 +6897,8 @@
       let currentRoundItems = [];
       let roundPicks = {};
       let bidRevealed = false;
+      let tieDecisions = {}; // 記錄撞選時主持人欽點給誰：{ itemIdx: winnerPid }
+      let advancingRound = false;
 
       const playerInventory = {};
       GameState.players.forEach(p => { playerInventory[p.id] = []; });
@@ -6916,16 +6923,35 @@
         bidRoundsData.push(items);
       }
 
-     let surgeryTimeLeft = 60;
+      let surgeryTimeLeft = 60;
       const mySockets = FACE_SOCKETS[me.avatar.faceShape || 'round'] || FACE_SOCKETS.round;
-      // 保留哪些原有的基礎五官（可自由勾選保留或摘除）
-      const keepOriginalParts = { eyes: true, nose: true, mouth: true, hair: true };
-      // 自由放置的多五官圖層陣列（可同時擺放多個眼睛、多個嘴巴等，無數量限制）：[{ item, x, y, scale, rotDeg, active }]
+      // 自由放置的多五官圖層陣列（完全不使用自己原本的五官，僅能使用搶到的戰利品）：[{ item, x, y, scale, rotDeg, active }]
       let placedItems = [];
       let selectedPlacedIdx = -1;
       const afterSubmissions = {};
       let awardSuccessId = null;
       let awardFunnyId = null;
+
+      function givePartToPlayer(winnerPid, wonItem) {
+        if (!playerInventory[winnerPid]) playerInventory[winnerPid] = [];
+        if (playerInventory[winnerPid].some(x => x.id === wonItem.id)) return;
+        playerInventory[winnerPid].push(wonItem);
+        if (winnerPid === me.id) {
+          const sameTypeCount = placedItems.filter(x => x.item.partType === wonItem.partType).length;
+          const basePos = mySockets[wonItem.partType] || { x: 120, y: 120 };
+          const offsetX = (sameTypeCount % 2 === 1 ? 1 : -1) * Math.ceil(sameTypeCount / 2) * 22;
+          const offsetY = sameTypeCount * 14;
+          placedItems.push({
+            item: wonItem,
+            x: Math.max(35, Math.min(205, basePos.x + offsetX)),
+            y: Math.max(35, Math.min(205, basePos.y + offsetY)),
+            scale: 1,
+            rotDeg: 0,
+            active: true
+          });
+          selectedPlacedIdx = placedItems.length - 1;
+        }
+      }
 
       function drawAuctionPartItem(ctx, item, cx, cy, scale = 1, rotDeg = 0) {
         ctx.save();
@@ -6936,8 +6962,17 @@
           const owner = GameState.players.find(p => p.id === item.ownerId);
           const pData = owner?.avatar?.parts?.[item.partType];
           const oSock = (FACE_SOCKETS[owner?.avatar?.faceShape || 'round'] || FACE_SOCKETS.round)[item.partType];
-          if (pData && pData.mode === 'custom' && pData.imgElement) {
-            ctx.drawImage(pData.imgElement, -oSock.x, -oSock.y, 240, 240);
+          if (pData && pData.mode === 'custom') {
+            if (pData.imgElement && pData.imgElement.complete && pData.imgElement.naturalWidth > 0) {
+              ctx.drawImage(pData.imgElement, -oSock.x, -oSock.y, 240, 240);
+            } else if (pData.dataUrl) {
+              const img = new Image();
+              img.onload = () => {
+                pData.imgElement = img;
+                if (window._redrawSurgery) window._redrawSurgery();
+              };
+              img.src = pData.dataUrl;
+            }
             ctx.restore();
             return;
           }
@@ -6952,21 +6987,10 @@
         const octx = out.getContext('2d');
         octx.fillStyle = '#fffdf9';
         octx.fillRect(0, 0, 240, 240);
+        // 只畫空白臉型底圖，絕對不使用自己原本的五官
         drawFaceBase(octx, me.avatar.faceShape, me.avatar.skinColor);
 
-        // 1. 先繪製選擇保留的原有基礎五官
-        ['eyes', 'nose', 'mouth', 'hair'].forEach(k => {
-          if (keepOriginalParts[k]) {
-            const origData = me.avatar.parts?.[k];
-            if (origData && origData.mode === 'custom' && origData.imgElement) {
-              octx.drawImage(origData.imgElement, 0, 0, 240, 240);
-            } else {
-              drawPresetPart(octx, k, origData?.presetIndex ?? 0, mySockets[k].x, mySockets[k].y, me.avatar.hairColor, 1);
-            }
-          }
-        });
-
-        // 2. 依序疊加所有啟用中的戰利品五官（支援多個眼睛、多個嘴巴任意組合）
+        // 依序疊加所有顯示中的新獲得五官
         placedItems.forEach(layer => {
           if (layer.active) {
             drawAuctionPartItem(octx, layer.item, layer.x, layer.y, layer.scale, layer.rotDeg);
@@ -6982,6 +7006,15 @@
           checkAllBidPicked();
         } else if (act === 'SURGERY_BID_RESOLVE' && payload.round === curBidRound) {
           resolveCurrentBidRound();
+        } else if (act === 'SURGERY_HOST_BREAK_TIE' && payload.round === curBidRound) {
+          const { itemIdx, winnerPid } = payload;
+          if (tieDecisions[itemIdx]) return;
+          tieDecisions[itemIdx] = winnerPid;
+          const wonItem = currentRoundItems[itemIdx];
+          if (wonItem) givePartToPlayer(winnerPid, wonItem);
+          SoundFX.correct();
+          renderPlasticView();
+          checkAllTiesResolvedAndAdvance();
         } else if (act === 'SURGERY_NEXT_BID') {
           startBidRound(payload.nextRound);
         } else if (act === 'SURGERY_SUBMIT_AFTER') {
@@ -7023,7 +7056,9 @@
         curBidRound = rIdx;
         bidTimeLeft = 8;
         roundPicks = {};
+        tieDecisions = {};
         bidRevealed = false;
+        advancingRound = false;
         currentRoundItems = bidRoundsData[rIdx];
 
         GameState.players.forEach(p => {
@@ -7032,7 +7067,7 @@
           }
         });
 
-        document.getElementById('playSubProgress').textContent = `五官搶奪戰：第 ${curBidRound + 1} / ${totalBidRounds} 輪（撞選直接報廢！）`;
+        document.getElementById('playSubProgress').textContent = `五官搶奪戰：第 ${curBidRound + 1} / ${totalBidRounds} 輪（若多人撞選由院長決定給誰！）`;
         renderPlasticView();
         checkAllBidPicked();
 
@@ -7061,53 +7096,69 @@
         }
       }
 
-      function resolveCurrentBidRound() {
-        if (bidRevealed) return;
-        bidRevealed = true;
-        clearAllGameTimers();
-
+      function getPickMap() {
         const pickMap = {};
         currentRoundItems.forEach((_, idx) => { pickMap[idx] = []; });
         Object.entries(roundPicks).forEach(([pid, itemIdx]) => {
           if (pickMap[itemIdx]) pickMap[itemIdx].push(pid);
         });
+        return pickMap;
+      }
 
-       let anySuccess = false;
+      function checkAllTiesResolvedAndAdvance() {
+        if (advancingRound) return;
+        const pickMap = getPickMap();
+        const unresolvedIndices = Object.keys(pickMap).filter(idx => pickMap[idx].length > 1 && !tieDecisions[idx]);
+        if (unresolvedIndices.length === 0) {
+          advancingRound = true;
+          if (GameState.isRoomHost) {
+            const nextT = setTimeout(() => {
+              NetSync.sendGameAction('SURGERY_NEXT_BID', { nextRound: curBidRound + 1 });
+            }, 1800);
+            GameState.activeTimers.push(nextT);
+          }
+        }
+      }
+
+      function resolveCurrentBidRound() {
+        if (bidRevealed) return;
+        bidRevealed = true;
+        clearAllGameTimers();
+
+        const pickMap = getPickMap();
+        let anySingleSuccess = false;
+        const tiedIndices = [];
+
         Object.entries(pickMap).forEach(([itemIdx, pids]) => {
           if (pids.length === 1) {
             const winnerPid = pids[0];
             const wonItem = currentRoundItems[itemIdx];
-            playerInventory[winnerPid].push(wonItem);
-            if (winnerPid === me.id) {
-              // 自動將搶到的新五官放上手術台，若已有同類五官則稍微錯開座標方便同時顯示多個
-              const sameTypeCount = placedItems.filter(x => x.item.partType === wonItem.partType).length;
-              const basePos = mySockets[wonItem.partType] || { x: 120, y: 120 };
-              const offsetX = (sameTypeCount % 2 === 1 ? 1 : -1) * Math.ceil(sameTypeCount / 2) * 22;
-              const offsetY = sameTypeCount * 14;
-              placedItems.push({
-                item: wonItem,
-                x: Math.max(35, Math.min(205, basePos.x + offsetX)),
-                y: Math.max(35, Math.min(205, basePos.y + offsetY)),
-                scale: 1,
-                rotDeg: 0,
-                active: true
-              });
-              selectedPlacedIdx = placedItems.length - 1;
-              // 搶到某部位的第一個零件時，預設先幫玩家隱藏該部位原貌（玩家仍可在手術台隨時點開關恢復）
-              keepOriginalParts[wonItem.partType] = false;
-            }
-            anySuccess = true;
+            givePartToPlayer(winnerPid, wonItem);
+            anySingleSuccess = true;
+          } else if (pids.length > 1) {
+            tiedIndices.push(Number(itemIdx));
           }
         });
 
-        if (anySuccess) SoundFX.correct(); else SoundFX.wrong();
+        if (anySingleSuccess) SoundFX.correct(); else SoundFX.pop();
         renderPlasticView();
 
-        if (GameState.isRoomHost) {
-          const nextT = setTimeout(() => {
-            NetSync.sendGameAction('SURGERY_NEXT_BID', { nextRound: curBidRound + 1 });
-          }, 2000);
-          GameState.activeTimers.push(nextT);
+        if (tiedIndices.length === 0) {
+          checkAllTiesResolvedAndAdvance();
+        } else if (host.isAI && GameState.isRoomHost) {
+          // 若主持人是 AI，自動幫每個撞選五官隨機欽點一位得主
+          tiedIndices.forEach((tIdx, i) => {
+            const pids = pickMap[tIdx];
+            const luckyPid = pids[Math.floor(rng() * pids.length)];
+            const tTimer = setTimeout(() => {
+              NetSync.sendGameAction('SURGERY_HOST_BREAK_TIE', {
+                round: curBidRound,
+                itemIdx: tIdx,
+                winnerPid: luckyPid
+              });
+            }, 900 * (i + 1));
+            GameState.activeTimers.push(tTimer);
+          });
         }
       }
 
@@ -7115,7 +7166,7 @@
         clearAllGameTimers();
         phase = 'surgery';
         surgeryTimeLeft = 60;
-        document.getElementById('playSubProgress').textContent = `第二階段：60 秒動刀手術（不限部位數量，自由拼貼所有戰利品！）`;
+        document.getElementById('playSubProgress').textContent = `第二階段：60 秒動刀手術（不可使用原本五官，純靠戰利品拼貼新臉孔！）`;
 
         GameState.players.forEach(p => {
           if (p.isAI && p.id !== host.id) {
@@ -7124,16 +7175,10 @@
             const ctx = c.getContext('2d');
             ctx.fillStyle = '#fffdf9';
             ctx.fillRect(0, 0, 240, 240);
+            // AI 同樣只畫空白臉型，不保留原本五官，只貼搶到的戰利品
             drawFaceBase(ctx, p.avatar.faceShape, p.avatar.skinColor);
             const inv = playerInventory[p.id] || [];
             const pSocks = FACE_SOCKETS[p.avatar.faceShape || 'round'] || FACE_SOCKETS.round;
-            ['eyes', 'nose', 'mouth', 'hair'].forEach(k => {
-              const hasWonType = inv.some(x => x.partType === k);
-              if (!hasWonType) {
-                drawPresetPart(ctx, k, p.avatar.parts?.[k]?.presetIndex ?? 0, pSocks[k].x, pSocks[k].y, p.avatar.hairColor, 1);
-              }
-            });
-            // AI 也會把搶到的所有五官（包含複數眼睛、嘴巴）全部貼到臉上！
             inv.forEach((wonItem, idx) => {
               const base = pSocks[wonItem.partType] || { x: 120, y: 120 };
               const ox = ((idx % 3) - 1) * 18;
@@ -7202,6 +7247,8 @@
         if (phase === 'bidding') {
           const myPick = roundPicks[me.id];
           const myBag = playerInventory[me.id] || [];
+          const pickMap = getPickMap();
+          const hasUnresolvedTie = bidRevealed && Object.keys(pickMap).some(idx => pickMap[idx].length > 1 && !tieDecisions[idx]);
 
           mount.innerHTML = `
             <div class="space-y-4 text-center">
@@ -7210,48 +7257,86 @@
                   <span class="text-xs font-black bg-[#ffe66d] px-2.5 py-0.5 rounded border border-black">
                     第 ${curBidRound + 1} / ${totalBidRounds} 輪競標
                   </span>
-                  <span class="text-xs font-bold ml-2">暗選 1 個無主五官，沒人跟你撞選就能獨佔！撞選直接報廢！</span>
+                  <span class="text-xs font-bold ml-2">
+                    ${hasUnresolvedTie
+                      ? `<strong class="text-red-600">💥 發生撞選！請院長【${host.name}】點擊按鈕決定將五官判給誰！</strong>`
+                      : '暗選 1 個無主五官，無人撞選直接獨得；若多人撞選則由主持人決定給誰！'}
+                  </span>
                 </div>
                 <span class="bg-[#1e1e1e] text-[#ffe66d] px-3 py-1 rounded font-mono text-xs font-black">⏱️ <span id="bidTimerText">${bidTimeLeft}s</span></span>
               </div>
 
               <div class="grid grid-cols-3 ${itemsPerRound === 3 ? 'sm:grid-cols-3' : (itemsPerRound === 4 ? 'sm:grid-cols-4' : 'sm:grid-cols-6')} gap-3">
                 ${currentRoundItems.map((item, idx) => {
-                  const biddersOnThis = Object.entries(roundPicks).filter(([_, iIdx]) => iIdx === idx).map(([pid]) => GameState.players.find(p => p.id === pid)?.name || '');
-                  const isClashed = bidRevealed && biddersOnThis.length > 1;
-                  const isWon = bidRevealed && biddersOnThis.length === 1;
+                  const bidderPids = pickMap[idx] || [];
+                  const bidderNames = bidderPids.map(pid => GameState.players.find(p => p.id === pid)?.name || '');
+                  const tieWinnerPid = tieDecisions[idx];
+                  const tieWinnerName = tieWinnerPid ? (GameState.players.find(p => p.id === tieWinnerPid)?.name || '') : '';
+                  const isClashed = bidRevealed && bidderPids.length > 1;
+                  const isSingleWon = bidRevealed && bidderPids.length === 1;
+
                   let cardCls = 'bg-white';
                   if (bidRevealed) {
-                    if (isWon) cardCls = 'bg-[#d4edda] ring-4 ring-green-600';
-                    else if (isClashed) cardCls = 'bg-red-100 ring-4 ring-red-500 opacity-75';
+                    if (isSingleWon || tieWinnerPid) cardCls = 'bg-[#d4edda] ring-4 ring-green-600';
+                    else if (isClashed) cardCls = 'bg-[#fff3cd] ring-4 ring-[#ff6b6b]';
                   } else if (myPick === idx) {
                     cardCls = 'bg-[#ffe66d] ring-4 ring-black';
                   }
+
                   return `
-                    <button ${(isHumanHost || bidRevealed) ? 'disabled' : ''} onclick="window._pickBidItem(${idx})" class="doodle-box-sm p-3 flex flex-col items-center relative ${cardCls}">
-                      <span class="text-xs font-black mb-1">#${idx + 1} ${item.partLabel}</span>
-                      <div class="w-20 h-20 bg-[#fffdf9] border-2 border-[#1e1e1e] rounded-xl overflow-hidden">
-                        <canvas id="bid_cv_${item.id}" width="140" height="140" class="w-full h-full"></canvas>
-                      </div>
+                    <div class="doodle-box-sm p-3 flex flex-col items-center justify-between relative ${cardCls}">
+                      <button ${(isHumanHost || bidRevealed) ? 'disabled' : ''} onclick="window._pickBidItem(${idx})" class="w-full flex flex-col items-center">
+                        <span class="text-xs font-black mb-1">#${idx + 1} ${item.partLabel}</span>
+                        <div class="w-20 h-20 bg-[#fffdf9] border-2 border-[#1e1e1e] rounded-xl overflow-hidden">
+                          <canvas id="bid_cv_${item.id}" width="140" height="140" class="w-full h-full"></canvas>
+                        </div>
+                      </button>
+
                       ${bidRevealed ? `
-                        <div class="mt-1.5 text-[11px] font-black">
-                          ${isWon ? `<span class="text-green-800">🎉 ${biddersOnThis[0]} 獨得!</span>` : (isClashed ? `<span class="text-red-700">💥 撞選報廢 (${biddersOnThis.join('、')})</span>` : `<span class="text-neutral-400">無人問津</span>`)}
+                        <div class="mt-2 w-full text-[11px] font-black">
+                          ${isSingleWon ? `
+                            <span class="text-green-800">🎉 ${bidderNames[0]} 獨得!</span>
+                          ` : isClashed ? (
+                            tieWinnerPid ? `
+                              <span class="text-green-800">👑 院長欽點給：${tieWinnerName}!</span>
+                            ` : (
+                              isHumanHost ? `
+                                <div class="text-red-600 mb-1">👇 撞選！請院長決定給誰：</div>
+                                <div class="flex flex-col gap-1">
+                                  ${bidderPids.map(pid => {
+                                    const pName = GameState.players.find(p => p.id === pid)?.name || '';
+                                    return `
+                                      <button onclick="window._hostBreakTie(${idx}, '${pid}')" class="doodle-btn py-1 px-2 text-xs bg-[#ffe66d] hover:bg-[#ff6b6b] hover:text-white w-full">
+                                        給 ${pName}
+                                      </button>
+                                    `;
+                                  }).join('')}
+                                </div>
+                              ` : `
+                                <span class="text-red-600">💥 撞選 (${bidderNames.join('、')})<br/>⏳ 等待院長裁決給誰...</span>
+                              `
+                            )
+                          ) : `
+                            <span class="text-neutral-400">無人問津</span>
+                          `}
                         </div>
                       ` : `
-                        <div class="mt-1.5 text-[11px] font-bold text-neutral-500">${myPick === idx ? '✅ 已暗選' : '點此搶奪'}</div>
+                        <button ${(isHumanHost || bidRevealed) ? 'disabled' : ''} onclick="window._pickBidItem(${idx})" class="mt-1.5 text-[11px] font-bold text-neutral-600">
+                          ${myPick === idx ? '✅ 已暗選' : (isHumanHost ? '等待玩家暗選' : '👉 點此搶奪')}
+                        </button>
                       `}
-                    </button>
+                    </div>
                   `;
                 }).join('')}
               </div>
 
               ${!isHumanHost ? `
                 <div class="doodle-box-sm p-2.5 bg-neutral-100 text-xs font-black">
-                  🎒 你目前已搶到的五官庫（共 ${myBag.length} 件）：
+                  🎒 你目前已搶到的五官庫（共 ${myBag.length} 件，手術時不能用自己原本的五官喔！）：
                   ${myBag.length === 0 ? '尚無戰利品' : myBag.map(x => `<span class="bg-white px-2 py-0.5 rounded border border-black mx-0.5">${x.partLabel}</span>`).join('')}
                 </div>
               ` : `
-                <div class="text-xs font-black text-neutral-500">🎤 你是主刀評審主持人，請觀賞大家爭搶五官零件！</div>
+                <div class="text-xs font-black text-neutral-600">🎤 你是主刀院長主持人，若有多人搶同一個五官，由你全權決定判給誰！</div>
               `}
             </div>
           `;
@@ -7267,7 +7352,7 @@
               ctx.restore();
             }
           });
-     } else if (phase === 'surgery') {
+        } else if (phase === 'surgery') {
           const patients = GameState.players.filter(p => p.id !== host.id);
           const doneCnt = patients.filter(p => !!afterSubmissions[p.id]).length;
 
@@ -7292,32 +7377,17 @@
             mount.innerHTML = `
               <div class="space-y-3 text-center">
                 <div class="doodle-box-sm p-3 bg-[#4ecdc4]/30 flex flex-wrap items-center justify-between gap-2">
-                  <span class="text-xs font-black">🏥 自由動刀手術台：不限單一五官數量！可同時擺放多個眼睛、嘴巴，直接在畫布點擊五官即可拖曳！</span>
+                  <span class="text-xs font-black">🏥 動刀手術台：原本五官已全數摘除！直接拖曳戰利品拼臉，再點一次已選中的五官按鈕即可隱藏／顯示！</span>
                   <span class="bg-[#1e1e1e] text-[#ffe66d] px-2.5 py-0.5 rounded font-mono text-xs font-black">⏱️ <span id="surgeryTimerText">${surgeryTimeLeft}s</span></span>
                 </div>
 
-                <!-- 1. 原有基礎五官保留或摘除開關 -->
-                <div class="flex flex-wrap items-center justify-center gap-1.5 bg-neutral-100 p-2 rounded-xl border-2 border-[#1e1e1e]">
-                  <span class="text-xs font-black">底圖原貌開關：</span>
-                  ${[
-                    { k: 'eyes', n: '原有眼睛' },
-                    { k: 'nose', n: '原有鼻子' },
-                    { k: 'mouth', n: '原有嘴巴' },
-                    { k: 'hair', n: '原有髮型' }
-                  ].map(t => `
-                    <button onclick="window._toggleOrigSurgeryPart('${t.k}')" class="doodle-btn px-2.5 py-1 text-xs ${keepOriginalParts[t.k] ? 'bg-[#d4edda] ring-2 ring-green-700' : 'bg-white opacity-60'}">
-                      ${keepOriginalParts[t.k] ? '👁️ 顯示' : '🚫 隱藏'}${t.n}
-                    </button>
-                  `).join('')}
-                </div>
-
-                <!-- 2. 搶到的戰利品清單（點選切換當前要縮放/旋轉的零件，不限同部位數量） -->
-                <div class="flex flex-wrap items-center justify-center gap-1.5 bg-[#fff9db] p-2 rounded-xl border-2 border-[#1e1e1e]">
-                  <span class="text-xs font-black">🎒 戰利品圖層（可全部同時擺上臉）：</span>
-                  ${placedItems.length === 0 ? `<span class="text-xs font-bold text-neutral-400">（本次未搶到任何五官）</span>` : ''}
+                <!-- 搶到的戰利品清單（點一下選中，再點一次同按鈕直接切換不顯示/顯示） -->
+                <div class="flex flex-wrap items-center justify-center gap-1.5 bg-[#fff9db] p-2.5 rounded-xl border-2 border-[#1e1e1e]">
+                  <span class="text-xs font-black">🎒 點擊選取（再點一次隱藏／顯示）：</span>
+                  ${placedItems.length === 0 ? `<span class="text-xs font-bold text-red-600">（慘遭淘汰！未搶到任何五官，只能交出無臉男了！）</span>` : ''}
                   ${placedItems.map((layer, idx) => `
-                    <button onclick="window._selectPlacedSurgeryItem(${idx})" class="doodle-btn px-2.5 py-1 text-xs ${selectedPlacedIdx === idx ? 'bg-[#ffe66d] ring-2 ring-black' : 'bg-white'} ${!layer.active ? 'line-through opacity-50' : ''}">
-                      #${idx + 1} ${layer.item.partLabel} ${layer.active ? '✅' : '(已隱藏)'}
+                    <button data-placed-idx="${idx}" onclick="window._clickPlacedSurgeryItemBtn(${idx})" class="doodle-btn px-2.5 py-1 text-xs ${selectedPlacedIdx === idx && layer.active ? 'bg-[#ffe66d] ring-2 ring-black' : 'bg-white'} ${!layer.active ? 'line-through opacity-50 bg-neutral-200' : ''}">
+                      #${idx + 1} ${layer.item.partLabel} ${layer.active ? '👁️' : '(隱藏)'}
                     </button>
                   `).join('')}
                 </div>
@@ -7331,11 +7401,6 @@
                   <button onclick="window._adjSurgerySlot(-0.15, 0)" class="doodle-btn px-3 py-1.5 text-xs bg-white">➖ 縮小選中</button>
                   <button onclick="window._adjSurgerySlot(0, -15)" class="doodle-btn px-3 py-1.5 text-xs bg-white">↺ 左旋轉</button>
                   <button onclick="window._adjSurgerySlot(0, 15)" class="doodle-btn px-3 py-1.5 text-xs bg-white">↻ 右旋轉</button>
-                  ${selectedPlacedIdx >= 0 && placedItems[selectedPlacedIdx] ? `
-                    <button onclick="window._togglePlacedItemActive(${selectedPlacedIdx})" class="doodle-btn px-3 py-1.5 text-xs ${placedItems[selectedPlacedIdx].active ? 'bg-neutral-200' : 'bg-[#4ecdc4]'}">
-                      ${placedItems[selectedPlacedIdx].active ? '🗑️ 暫時移除此件' : '➕ 放回臉上'}
-                    </button>
-                  ` : ''}
                   <button onclick="window._submitMySurgeryWork()" class="doodle-btn px-5 py-1.5 text-sm bg-[#ff6b6b] text-white">
                     ✅ 完成整形手術 (<span id="surgeryDoneCountBadge">已完成手術：${doneCnt} / ${patients.length} 人</span>) ➔
                   </button>
@@ -7410,21 +7475,10 @@
           ctx.clearRect(0, 0, 240, 240);
           ctx.fillStyle = '#fffdf9';
           ctx.fillRect(0, 0, 240, 240);
+          // 僅繪製空白臉型，不繪製任何原有五官
           drawFaceBase(ctx, me.avatar.faceShape, me.avatar.skinColor);
 
-          // 1. 畫出勾選保留的原有五官
-          ['eyes', 'nose', 'mouth', 'hair'].forEach(k => {
-            if (keepOriginalParts[k]) {
-              const origData = me.avatar.parts?.[k];
-              if (origData && origData.mode === 'custom' && origData.imgElement) {
-                ctx.drawImage(origData.imgElement, 0, 0, 240, 240);
-              } else {
-                drawPresetPart(ctx, k, origData?.presetIndex ?? 0, mySockets[k].x, mySockets[k].y, me.avatar.hairColor, 1);
-              }
-            }
-          });
-
-          // 2. 畫出所有啟用的戰利品五官，並標示當前選中的零件紅框
+          // 繪製所有啟用中的新獲得五官，並標示當前選中的紅框
           placedItems.forEach((layer, idx) => {
             if (!layer.active) return;
             drawAuctionPartItem(ctx, layer.item, layer.x, layer.y, layer.scale, layer.rotDeg);
@@ -7453,7 +7507,6 @@
         c.onmousedown = c.ontouchstart = (e) => {
           e.preventDefault();
           const p = getPos(e);
-          // 支援直接在畫布上點擊距離最近的戰利品五官來切換選取並拖曳！
           let bestIdx = selectedPlacedIdx;
           let bestDist = 999;
           placedItems.forEach((layer, idx) => {
@@ -7466,6 +7519,11 @@
           });
           if (bestIdx !== selectedPlacedIdx && bestIdx >= 0) {
             selectedPlacedIdx = bestIdx;
+            document.querySelectorAll('[data-placed-idx]').forEach(btn => {
+              const bIdx = parseInt(btn.getAttribute('data-placed-idx'), 10);
+              if (bIdx === selectedPlacedIdx) btn.classList.add('bg-[#ffe66d]', 'ring-2', 'ring-black');
+              else btn.classList.remove('bg-[#ffe66d]', 'ring-2', 'ring-black');
+            });
           }
           dragging = true;
           if (selectedPlacedIdx >= 0 && placedItems[selectedPlacedIdx]?.active) {
@@ -7494,24 +7552,28 @@
         NetSync.sendGameAction('SURGERY_BID_PICK', { round: curBidRound, playerId: me.id, itemIdx: idx });
       };
 
-      window._toggleOrigSurgeryPart = (partKey) => {
-        keepOriginalParts[partKey] = !keepOriginalParts[partKey];
+      window._hostBreakTie = (itemIdx, winnerPid) => {
+        if (!isHumanHost || !bidRevealed) return;
         SoundFX.pop();
-        renderPlasticView();
+        NetSync.sendGameAction('SURGERY_HOST_BREAK_TIE', {
+          round: curBidRound,
+          itemIdx,
+          winnerPid
+        });
       };
 
-      window._selectPlacedSurgeryItem = (idx) => {
-        selectedPlacedIdx = idx;
-        if (placedItems[idx] && !placedItems[idx].active) {
-          placedItems[idx].active = true;
+      // 點擊新獲得的五官按鈕：若尚未顯示則顯示並選取；若已是選中且顯示中，再點一次即變為不顯示！
+      window._clickPlacedSurgeryItemBtn = (idx) => {
+        const layer = placedItems[idx];
+        if (!layer) return;
+        if (!layer.active) {
+          layer.active = true;
+          selectedPlacedIdx = idx;
+        } else if (selectedPlacedIdx === idx) {
+          layer.active = false;
+        } else {
+          selectedPlacedIdx = idx;
         }
-        SoundFX.pop();
-        renderPlasticView();
-      };
-
-      window._togglePlacedItemActive = (idx) => {
-        if (!placedItems[idx]) return;
-        placedItems[idx].active = !placedItems[idx].active;
         SoundFX.pop();
         renderPlasticView();
       };
