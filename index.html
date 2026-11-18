@@ -17,7 +17,7 @@
       --accent-purple: #a29bfe;
     }
 
-    * {
+- {
       box-sizing: border-box;
       user-select: none;
       -webkit-user-select: none;
@@ -266,6 +266,10 @@
             <option value="game-5">🎮 遊戲6：這是我的回答</option>
             <option value="game-6">🎮 遊戲7：臉部拼圖</option>
             <option value="game-7">🎮 遊戲8：超級找找王</option>
+            <option value="game-8">🎮 遊戲9：靈魂畫師傳聲筒</option>
+            <option value="game-9">🎮 遊戲10：表情包製造機</option>
+            <option value="game-10">🎮 遊戲11：完美整形診所</option>
+            <option value="game-11">🎮 遊戲12：破壞小圈圈</option>
             <option value="screen-final">🏆 【6】最終結算與關係圖</option>
           </select>
         </div>
@@ -504,7 +508,7 @@
         </div>
         <h2 class="text-2xl md:text-4xl font-black mb-2">✨ 參賽玩家登場 ✨</h2>
         <p class="text-sm font-bold text-neutral-600 mb-6">
-          跟在場的朋友們打招呼吧！（別忘了好朋友者怎樣喔）
+          四人一排綜藝攝影棚舞台（已精簡移除問候語環節，直接展示各位的靈魂畫作！）
         </p>
 
         <!-- 四人一排、最多三排舞台 -->
@@ -525,7 +529,7 @@
 
     <!-- ==================== 【5】遊戲說明黑板 & 遊戲互動區 & 單局結算台 ==================== -->
     <section id="screen-game-loop" class="view-section hidden w-full max-w-5xl mx-auto">
-      
+
       <!-- 5-A: 遊戲說明卡片 (黑板風) -->
       <div id="subview-game-intro" class="doodle-box p-6 md:p-10 bg-[#2d3436] text-white border-4 border-[#1e1e1e] text-center relative">
         <div class="flex flex-wrap items-center justify-between gap-2 mb-4 pb-3 border-b-2 border-dashed border-neutral-500">
@@ -661,7 +665,7 @@
         <!-- 排行榜 -->
         <div class="md:col-span-7 doodle-box p-5 md:p-6 bg-white">
           <h3 class="text-2xl font-black pb-3 mb-4 border-b-4 border-[#1e1e1e]">｜排行榜</h3>
-          
+
           <!-- 第一名人氣王特寫卡片 -->
           <div id="topWinnerHighlight" class="doodle-box-sm p-4 bg-[#fff9db] mb-4 flex items-center gap-4 relative overflow-hidden">
             <!-- 動態填入第一名 -->
@@ -695,7 +699,7 @@
   <!-- ==================== JavaScript 核心邏輯與完整題庫 ==================== -->
   <script>
     /**************************************************************
-     * 0. 音效合成器 (SoundFX)、全局狀態 (GameState) 與隨機亂數工具
+- 0. 音效合成器 (SoundFX)、全局狀態 (GameState) 與隨機亂數工具
      **************************************************************/
     const SoundFX = {
       ctx: null,
@@ -768,7 +772,11 @@
       { id: 4, title: "殘酷二選一", minPlayers: 3, desc: "限時 1 分鐘，根據荒謬題目畫出你的作品！主持人會把大家的畫兩兩捉對廝殺，只有被看上眼的那幅才能晉級。" },
       { id: 5, title: "這是我的回答", minPlayers: 3, desc: "面對情境題，每個人都要交出一句靈魂回答。所有答案打散混在一起，請靠直覺抓出哪一句才是主持人的真心話。" },
       { id: 6, title: "臉部拼圖", minPlayers: 3, desc: "主持人的五官離家散落！請依序對眼睛、鼻子、嘴巴、髮型，從左下開始，各長按右鍵與上鍵協助復位。" },
-      { id: 7, title: "超級找找王", minPlayers: 2, desc: "畫面裡塞滿了各式各樣長得很像主持人的冒牌貨，還在做奇怪的事！眼明手快找出總共５個正版，千萬別亂點。" }
+      { id: 7, title: "超級找找王", minPlayers: 2, desc: "畫面裡塞滿了各式各樣長得很像主持人的冒牌貨，還在做奇怪的事！眼明手快找出總共５個正版，千萬別亂點。" },
+      { id: 8, title: "靈魂畫師傳聲筒", minPlayers: 3, desc: "猜出主持人到底在演哪一齣！先由主持人擺好姿勢並畫出情境底圖，其他人根據這張線索腦補並接力完成畫作，最後在全場見證下進行殘酷的 Tier 階級評分！" },
+      { id: 9, title: "表情包製造機", minPlayers: 3, desc: "讓我們幫主持人找回笑容吧！根據荒謬情境，自由移動、縮放、扭曲甚至「偷換」主持人的五官，為主持人量身打造最魔性的專屬表情包！" },
+      { id: 10, title: "完美整形診所", minPlayers: 3, desc: "歡迎光臨全台最狂醫美診所！手速與眼力的搶奪戰開打，搶下無主五官拼出你的新面孔，看看誰能成功換頭、誰又會變身車禍現場！" },
+      { id: 11, title: "破壞小圈圈", minPlayers: 4, desc: "居然在派對裡搞小圈圈！？主持人秘密挑選心腹組成「小圈圈」，並出題考驗彼此的默契暗號；其他被排擠的「破壞者」則要全力猜出密語，只要有一位破壞者猜中，小圈圈當場瓦解！" }
     ];
 
     const GameState = {
@@ -831,13 +839,14 @@
     }
 
     /**************************************************************
-     * 3.5 PeerJS WebRTC 跨裝置即時連線同步引擎 + BroadcastChannel 同機多分頁秒連
+- 3.5 PeerJS WebRTC 跨裝置即時連線同步引擎 + BroadcastChannel 同機多分頁秒連
      **************************************************************/
     const NetSync = {
       peer: null,
       conns: [],        // 房主維護的所有客戶端連線
       hostConn: null,   // 房客連向房主的連線
       bc: null,         // 同裝置跨分頁零延遲通道
+      joinRetryTimer: null, // 房客加入重試計時器
       prefix: 'POPULARITY_KING_V2_',
 
       updateBadge(text, bgClass = 'bg-[#d4edda] text-green-800') {
@@ -867,6 +876,10 @@
       },
 
       initHost(roomCode) {
+        if (this.joinRetryTimer) {
+          clearInterval(this.joinRetryTimer);
+          this.joinRetryTimer = null;
+        }
         this.setupBroadcastChannel(roomCode);
         if (typeof Peer === 'undefined') {
           this.updateBadge(`🟢 本機分頁同步模式 (#${roomCode})`, 'bg-[#d4edda] text-green-800');
@@ -881,7 +894,9 @@
               iceServers: [
                 { urls: 'stun:stun.l.google.com:19302' },
                 { urls: 'stun:stun1.l.google.com:19302' },
-                { urls: 'stun:stun2.l.google.com:19302' }
+                { urls: 'stun:stun2.l.google.com:19302' },
+                { urls: 'stun:stun3.l.google.com:19302' },
+                { urls: 'stun:stun4.l.google.com:19302' }
               ]
             }
           });
@@ -893,7 +908,13 @@
           this.peer.on('connection', (conn) => {
             this.conns.push(conn);
             conn.on('data', (data) => this.handleHostReceive(conn, data));
+            conn.on('open', () => {
+              this.broadcastState();
+            });
             conn.on('close', () => {
+              this.conns = this.conns.filter(c => c !== conn);
+            });
+            conn.on('error', () => {
               this.conns = this.conns.filter(c => c !== conn);
             });
           });
@@ -908,8 +929,12 @@
       },
 
       initClient(roomCode, nickname, onJoinedCallback, onErrorCallback) {
+        if (this.joinRetryTimer) {
+          clearInterval(this.joinRetryTimer);
+          this.joinRetryTimer = null;
+        }
         this.setupBroadcastChannel(roomCode);
-        const newPid = 'p_' + Math.random().toString(36).slice(2, 7);
+        const newPid = 'p_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6);
         GameState.myPlayerId = newPid;
         GameState.isRoomHost = false;
 
@@ -932,18 +957,31 @@
           }
         };
 
-        // 1. 先透過 BroadcastChannel 嘗試同裝置分頁秒連
         if (this.bc) {
           this.bc.postMessage(joinPayload);
         }
 
-        // 標記成功連線的共用回呼
         this._markClientConnected = () => {
           if (connected) return;
           connected = true;
           this.updateBadge(`🟢 已連線至房號 #${roomCode}`, 'bg-[#d4edda] text-green-800');
           if (onJoinedCallback) onJoinedCallback();
         };
+
+        this.joinRetryTimer = setInterval(() => {
+          const amIInList = GameState.players.some(p => p.id === newPid && p.id !== 'p_joining');
+          if (amIInList && GameState.players.length >= 2) {
+            clearInterval(this.joinRetryTimer);
+            this.joinRetryTimer = null;
+          } else {
+            if (this.hostConn && this.hostConn.open) {
+              this.hostConn.send(joinPayload);
+            }
+            if (this.bc) {
+              this.bc.postMessage(joinPayload);
+            }
+          }
+        }, 800);
 
         if (typeof Peer === 'undefined') return;
 
@@ -954,7 +992,9 @@
               iceServers: [
                 { urls: 'stun:stun.l.google.com:19302' },
                 { urls: 'stun:stun1.l.google.com:19302' },
-                { urls: 'stun:stun2.l.google.com:19302' }
+                { urls: 'stun:stun2.l.google.com:19302' },
+                { urls: 'stun:stun3.l.google.com:19302' },
+                { urls: 'stun:stun4.l.google.com:19302' }
               ]
             }
           });
@@ -963,7 +1003,7 @@
             if (!connected && onErrorCallback) {
               onErrorCallback(`連線逾時：請確認房主已開啟房號 #${roomCode}`);
             }
-          }, 8000);
+          }, 12000);
 
           this.peer.on('open', () => {
             const conn = this.peer.connect(this.prefix + roomCode, { reliable: true });
@@ -1014,7 +1054,6 @@
         GameState.players.forEach(p => { oldPlayerMap[p.id] = p; });
 
         const nextPlayers = serializedList.map(sp => {
-          // 重要修正：若此玩家是本機玩家，且正在創角中，保留本機最新狀態，不被房主較舊的廣播覆蓋！
           const existingLocal = oldPlayerMap[sp.id];
           if (sp.id === GameState.myPlayerId && existingLocal) {
             const isCurrentlyInCreator = !document.getElementById('screen-creator')?.classList.contains('hidden');
@@ -1040,7 +1079,6 @@
             }
           };
 
-          // 若本機玩家已經有較新的外型設定，優先保留本機的臉型與膚色
           if (sp.id === GameState.myPlayerId && existingLocal && existingLocal.avatar) {
             pObj.creatorDone = existingLocal.creatorDone || pObj.creatorDone;
             pObj.avatar.faceShape = existingLocal.avatar.faceShape || sp.avatar.faceShape;
@@ -1146,6 +1184,23 @@
             renderLobbyPlayers();
           }
           this.broadcastState();
+          if (conn && conn.open && !conn.isBC) {
+            try {
+              conn.send({
+                type: 'SYNC_STATE',
+                roomCode: GameState.roomCode,
+                gameLength: GameState.gameLength,
+                players: this.serializePlayers(),
+                chemistry: GameState.chemistry,
+                stats: GameState.stats,
+                roundQueue: GameState.roundQueue,
+                hostQueue: GameState.hostQueue,
+                currentRoundIdx: GameState.currentRoundIdx,
+                currentHostIdx: GameState.currentHostIdx,
+                roundSeed: GameState.roundSeed
+              });
+            } catch (e) {}
+          }
         } else if (data.type === 'UPDATE_AVATAR' && data.playerId && data.avatar) {
           const target = GameState.players.find(p => p.id === data.playerId);
           if (target) {
@@ -1222,7 +1277,6 @@
 
           this.hydratePlayers(data.players || [], () => {
             renderLobbyPlayers();
-            // 重要修正：若非房主玩家還在創角畫面畫圖中，且房主已經先畫完進入 screen-showcase，不要強制打斷非房主玩家的畫圖！
             if (data.navigateScreen) {
               if (data.navigateScreen === 'screen-showcase' && isCurrentlyInCreator && !GameState.hasCompletedCreator) {
                 // 保持在創角介面繼續完成繪製
@@ -1254,7 +1308,7 @@
     }
 
     /**************************************************************
-     * 1. 完整導入題庫 (B, C, D, E, I, J 及大腦裝什麼 30 張問題卡)
+- 1. 完整導入題庫 (B, C, D, E, I, J 及大腦裝什麼 30 張問題卡)
      **************************************************************/
     const QUESTION_BANKS = {
       // 【題庫B】偏食王（我吃不吃...）
@@ -1287,7 +1341,7 @@
         title: "【勇敢王】我會不會怕...",
         btnLabels: ["⭕ 超怕！", "❌ 完全不怕", "🔺 有一點點"],
         normal: [
-          "會飛的巨大蟑螂","喇牙","虎頭蜂","蛇","老鼠","馬陸","蟾蜍（離你的臉只有10公分）","保麗龍摩擦聲",
+          "會飛的巨大蟑螂","喇牙","虎頭蜂","蛇","老鼠","馬陸","蟾蜍（離你的臉只有10公分）","珠頸環鳩（脖子部分）",
           "對著你狂吠的大型犬","深海","搭雲霄飛車","搭大怒神","走在透明玻璃的天空步道上往下看","高空彈跳","搭飛機遇到強烈亂流",
           "密集的小丑魚","搖晃得很厲害的高空纜車","站在沒有護欄的頂樓邊緣往下看","搭海盜船","走吊橋","半夜一個人關燈看恐怖片",
           "一個人去逛遊樂園的鬼屋","半夜起床上廁所的鏡子","睡覺驚醒發現不能動彈","一個人住進燈光昏暗、走廊很長的老舊飯店",
@@ -1331,8 +1385,8 @@
           "在國外旅遊時迷路，且手機剛好沒網路或沒電","環島過","骨折過","住過院","捐過血","學會游泳","考過汽車駕照",
           "自己一個人去吃過「吃到飽餐廳」或「燒肉店」","染過非常誇張的特殊髮色","每天寫日記，並且連續堅持超過一個月以上","參加半馬以上",
           "自己親手做過一頓完整的晚餐","當過班長、學生會幹部或社團社長","考試作弊被抓到過","在上台報告或演講時，緊張到腦袋一片空白忘記台詞",
-          "曾經寫過情書","被別人告白過","參加過聯誼活動","夜唱","大學時打工過","買彩券或統一發票中過超過 1,000 元以上的獎金",
-          "撿到錢包或手機，親自送到警察局招領","養過寵物","成功把一盆植物養活至今","拼完過超過 1,000 片以上的拼圖","夾娃娃機只花 10 元就一發入魂",
+          "曾經寫過情書","被別人告白過","參加過聯誼活動","夜唱","大學時打工過","買彩券或刮刮樂中過超過 1,000 元以上的獎金",
+          "撿到錢包或手機，親自送到警察局招領","養過寵物","成功把一盆植物養活","拼完過超過 1,000 片以上的拼圖","夾娃娃機只花 10 元就一發入魂",
           "搶到非常難搶的演唱會門票","喝醉酒斷片過","剪過自己完全無法接受的失敗髮型，回家偷哭","曾經被警察開過交通罰單","參加過大型音樂祭",
           "在社群媒體上發過文，結果隔天覺得太羞恥偷偷刪掉"
         ],
@@ -1426,7 +1480,7 @@
         "吃了一間超級難吃的餐廳，老闆滿臉期待問你好不好吃，你決定用哪一句「最委婉但其實罵得很髒的話」回答？",
         "在高級品酒會上，大家都在聊單寧與果香，輪到你發表感想時說了哪一句話直接暴露你是外行？",
         "醫生看著你的 X 光片皺眉說「這狀況很罕見」，你非常冷靜地回了一句什麼讓醫生也沉默了？",
-        "明天離職，主管卻陰陽怪氣說公司不缺你一人，你的回應是？",
+        "努力熬夜加班完成報告，主管卻陰陽怪氣說「你們這年代真好，換作我們才不敢交出這種東西」，你心裡最想回他的一句話？",
         "曖昧對象半夜傳訊息問「你覺得我們現在算什麼關係？」，給出一個最讓人摸不著頭緒的回答。",
         "如果要把你「昨晚熬夜後的精神狀態」拍成一部電影，片名會叫什麼？",
         "你出版了一本《完全沒有用的生活小妙招》，書裡的第一個章節標題是什麼？",
@@ -1450,7 +1504,7 @@
         "哪一句「美食評論家的台詞」，其實拿來形容戀愛技巧也完全無違和感？",
         "深夜便利商店店員結帳時對你說了哪一句話，讓你瞬間懷疑他是不是在暗示你什麼？",
         "形容「幫手機插上充電線」的動作，但要寫得盡可能讓人想歪。",
-        "哪一個「專業術語」，聽起來最像在開車？",
+        "哪一個「運動項目的專業術語」，聽起來最像在開車？",
         "幫「半夜偷吃宵夜」這件事，想一個聽起來很像在偷情的藉口。",
         "請用「這就是大人的世界啊」作為結尾，描述一個超級幼稚的行為。",
         "試著用「沒關係，反正我已經習慣了」這句話，搭配一個聽起來超悲慘但其實很蠢的日常小事。",
@@ -1477,7 +1531,7 @@
     };
 
     /**************************************************************
-     * 2. 角色五官定位與 11 種預設部位圖案渲染引擎 (純 Canvas 繪製)
+- 2. 角色五官定位與 11 種預設部位圖案渲染引擎 (純 Canvas 繪製)
      **************************************************************/
     const SKIN_COLORS = [
       { id: 'light', name: '淺膚色', hex: '#FFE5D9' },
@@ -1499,7 +1553,6 @@
       { name: '綠', hex: '#2A9D8F' }
     ];
 
-    // 每種臉型的五官插座座標 (Xface, Yface)，基準畫布為 240x240
     const FACE_SOCKETS = {
       square: { eyes: { x: 120, y: 105 }, nose: { x: 120, y: 135 }, mouth: { x: 120, y: 170 }, hair: { x: 120, y: 62 } },
       round:  { eyes: { x: 120, y: 108 }, nose: { x: 120, y: 136 }, mouth: { x: 120, y: 168 }, hair: { x: 120, y: 66 } },
@@ -1507,7 +1560,6 @@
       oval:   { eyes: { x: 120, y: 112 }, nose: { x: 120, y: 140 }, mouth: { x: 120, y: 172 }, hair: { x: 120, y: 65 } }
     };
 
-    // 繪製臉型底圖
     function drawFaceBase(ctx, shape, skinHex) {
       ctx.save();
       ctx.fillStyle = skinHex || '#FFE5D9';
@@ -1539,7 +1591,6 @@
       ctx.restore();
     }
 
-    // 繪製 11 種預設部位圖案 (index: 0 ~ 10)，以 (cx, cy) 為部位中心基準點
     function drawPresetPart(ctx, partType, presetIdx, cx, cy, hairColor = '#1e1e1e', scale = 1) {
       ctx.save();
       ctx.translate(cx, cy);
@@ -1724,7 +1775,6 @@
       ctx.restore();
     }
 
-    // 渲染完整玩家角色頭像至指定 Canvas
     function renderAvatarToCanvas(canvas, avatarConfig, options = {}) {
       if (!canvas || !avatarConfig) return;
       const ctx = canvas.getContext('2d');
@@ -1742,14 +1792,12 @@
 
       const isFaceMasked = options.maskedPart === 'face' || (options.maskAll && !(options.unmaskedParts && options.unmaskedParts.includes('face')));
 
-      // 1. 畫臉型 (若被馬賽克則畫問號框)
       if (isFaceMasked) {
         drawMosaicBox(ctx, 120, 125, 136, 150, '臉型?');
       } else {
         drawFaceBase(ctx, shape, skinHex);
       }
 
-      // 2. 依序畫 眼睛、鼻子、嘴巴、髮型
       const partsOrder = ['eyes', 'nose', 'mouth', 'hair'];
       partsOrder.forEach(part => {
         if (options.hideParts && options.hideParts.includes(part)) return;
@@ -1886,7 +1934,6 @@
       });
     }
 
-    // 計分核心函式：【主持人在該局絕對不會得分】
     function awardPoints(playerId, points, hostId = null) {
       const activeHostId = hostId || getCurrentHost().id;
       if (playerId === activeHostId) return;
@@ -1929,7 +1976,7 @@
     }
 
     /**************************************************************
-     * 4. 畫面切換與【1】登入介面、【2】等待介面邏輯
+- 4. 畫面切換與【1】登入介面、【2】等待介面邏輯
      **************************************************************/
     function switchScreen(screenId, fromRemote = false) {
       clearAllGameTimers();
@@ -1974,11 +2021,11 @@
       if (GameState.players.length < 2) {
         initDefaultPlayers(document.getElementById('inputNickname')?.value || '玩家1', true);
       }
-      // 快速跳關時自動標記所有玩家已完成創角，避免展示台按鈕鎖死
       GameState.players.forEach(p => { p.creatorDone = true; });
       if (val.startsWith('game-')) {
         const gId = parseInt(val.split('-')[1], 10);
-        if (ALL_GAMES_META[gId].minPlayers >= 3 && GameState.players.length < 3) {
+        const reqPlayers = ALL_GAMES_META[gId]?.minPlayers || 2;
+        while (GameState.players.length < reqPlayers) {
           addAIPlayer(true);
         }
         GameState.roundQueue = [gId];
@@ -2261,7 +2308,7 @@
     }
 
     /**************************************************************
-     * 5. 【3】創角介面 (每個部位完成即同步，防止被房主覆蓋或變回預設)
+- 5. 【3】創角介面
      **************************************************************/
     const CreatorState = {
       stepIndex: 0,
@@ -2344,7 +2391,6 @@
 
     function startTimedDrawingSequence() {
       getLocalPlayer().avatar.parts = {};
-      // 確認臉型與膚色時立即同步給房主，確保臉型與膚色不會變回預設
       syncMyCreatorAvatarToHost();
       document.getElementById('creatorStep1').classList.add('hidden');
       document.getElementById('creatorStep2').classList.remove('hidden');
@@ -2493,7 +2539,6 @@
           imgElement: img,
           dataUrl: dataUrl
         };
-        // 每畫完一個五官部位就立即同步到房主，避免只有最後的髮型被同步而臉眼口鼻遺失！
         syncMyCreatorAvatarToHost();
         loadPartDrawingStep(CreatorState.stepIndex + 1);
       };
@@ -2501,7 +2546,7 @@
     }
 
     /**************************************************************
-     * 6. 【4】玩家展示過場（四人一排綜藝棚，僅顯示暱稱與頭像圖片）
+- 6. 【4】玩家展示過場
      **************************************************************/
     function renderShowcaseStage() {
       const grid = document.getElementById('showcaseStageGrid');
@@ -2535,7 +2580,6 @@
             <canvas id="${cid}" width="160" height="160" class="w-full h-full"></canvas>
             ${isCreating ? `<div class="absolute inset-x-0 bottom-0 bg-black/70 text-[#ffe66d] text-[10px] font-black py-0.5">🎨 繪製中...</div>` : ''}
           </div>
-          <!-- 手繪綜藝節目桌子 -->
           <div class="w-full bg-[#ffe66d] border-3 border-[#1e1e1e] rounded-lg py-1.5 px-2 shadow-[2px_2px_0px_#1e1e1e]">
             <div class="font-black text-sm truncate">${p.name}</div>
             <div class="text-xs font-mono font-black bg-white border border-[#1e1e1e] rounded mt-1 py-0.5">
@@ -2561,7 +2605,7 @@
     }
 
     /**************************************************************
-     * 7. 【5】遊戲說明黑板 & 回合結算綜藝台
+- 7. 【5】遊戲說明黑板 & 回合結算綜藝台
      **************************************************************/
     function renderIntroReadyStatus() {
       const listEl = document.getElementById('introReadyPlayersList');
@@ -2733,6 +2777,10 @@
         case 5: startMiniGame5_MyAnswer(); break;
         case 6: startMiniGame6_FacePuzzle(); break;
         case 7: startMiniGame7_SuperFinder(); break;
+        case 8: startMiniGame8_SoulPainter(); break;
+        case 9: startMiniGame9_MemeMaker(); break;
+        case 10: startMiniGame10_PlasticSurgery(); break;
+        case 11: startMiniGame11_BreakCircle(); break;
         default: startMiniGame0_Telepathy();
       }
     }
@@ -2809,7 +2857,7 @@
     }
 
     /**************************************************************
-     * 遊戲 1：默契感應
+- 遊戲 1：默契感應
      **************************************************************/
     function startMiniGame0_Telepathy() {
       const mount = document.getElementById('miniGameMountPoint');
@@ -3066,7 +3114,7 @@
     }
 
     /**************************************************************
-     * 遊戲 2：猜猜我是誰
+- 遊戲 2：猜猜我是誰
      **************************************************************/
     function startMiniGame1_WhoAmI() {
       const mount = document.getElementById('miniGameMountPoint');
@@ -3355,8 +3403,7 @@
     }
 
     /**************************************************************
-     * 遊戲 3：大腦裝什麼
-     * - 問題卡改成每猜錯三次 (3, 6, 9次) 就從 30 張題庫隨機抽兩個，二擇一發問一次
+- 遊戲 3：大腦裝什麼
      **************************************************************/
     function startMiniGame2_BrainInside() {
       const mount = document.getElementById('miniGameMountPoint');
@@ -3367,8 +3414,8 @@
       let secretWord = host.isAI ? '鉛筆' : '';
       let wordConfirmed = host.isAI;
       let myWrongCount = 0;
-      let myQuestionTokens = 0;      // 可發問次數
-      let currentTwoCards = [];      // 當前隨機抽出的兩張問題卡
+      let myQuestionTokens = 0;
+      let currentTwoCards = [];
       let guessHistory = [];
       let renderedCount = 0;
       let gameEnded = false;
@@ -3439,7 +3486,6 @@
           SoundFX.wrong();
           if (playerId === human.id) {
             myWrongCount++;
-            // 每猜錯滿 3 的倍數次 (3, 6, 9次)，獲得一次二擇一問題卡抽卡機會！
             if (myWrongCount % 3 === 0) {
               myQuestionTokens++;
               if (currentTwoCards.length === 0) {
@@ -3736,9 +3782,7 @@
     }
 
     /**************************************************************
-     * 遊戲 4：記憶考驗
-     * - 修正主持人輸入框過大超出邊框的問題 (加上 min-w-0 w-full 與彈性換行)
-     * - 第 4 回合起，在主持人輸入完新詞語後（或沒輸入時間到時），為該回合增加 20 秒作答時間
+- 遊戲 4：記憶考驗
      **************************************************************/
     function startMiniGame3_MemoryTest() {
       const mount = document.getElementById('miniGameMountPoint');
@@ -3758,6 +3802,8 @@
       let turnAnswers = {};
       let turnRemembered = {};
       let lastFeedbackBanner = null;
+      let hostDraftWord = '';
+      let myDraftAns = '';
 
       function getAutoPresetWord() {
         const pool = QUESTION_BANKS.testMemoryWords;
@@ -3786,6 +3832,43 @@
         initTurnStep(1);
       }, 1800);
       GameState.activeTimers.push(cutTimer);
+
+      function updateMemoryCountsLocally() {
+        const guessers = GameState.players.filter(p => p.id !== host.id);
+        const rememberedCount = guessers.filter(p => !!turnRemembered[p.id]).length;
+        const answeredCount = guessers.filter(p => turnAnswers[p.id] !== undefined).length;
+        const recallIdx = currentTurn - 4;
+
+        const remBadge = document.getElementById('memRememberCountBadge');
+        if (remBadge) remBadge.textContent = `🔒 第 1 ~ 3 回合記憶累積期（已確認記住：${rememberedCount}/${guessers.length} 人）`;
+
+        const remBtn = document.getElementById('memRememberBtn');
+        if (remBtn && !turnRemembered[me.id]) {
+          remBtn.textContent = `🧠 記住了！(${rememberedCount}/${guessers.length}) ➔`;
+        }
+
+        const ansBadge = document.getElementById('memAnsCountBadge');
+        if (ansBadge) {
+          ansBadge.textContent = `✍️ 玩家作答區（第 ${recallIdx + 1} / 7 題｜已答 ${answeredCount}/${guessers.length} 人）`;
+        }
+
+        const waitOtherEl = document.getElementById('memWaitOthersText');
+        if (waitOtherEl) {
+          waitOtherEl.textContent = `⏳ 等待其他玩家作答完畢 (${answeredCount}/${guessers.length} 人)...`;
+        }
+
+        const hostWaitEl = document.getElementById('memHostWaitStatusText');
+        if (hostWaitEl) {
+          hostWaitEl.textContent = (currentTurn < 4)
+            ? `✅ 已出完第 ${currentTurn} 詞！等待全體玩家點擊「記住了」(${rememberedCount}/${guessers.length}人)...`
+            : `⏳ 等待全體玩家回想並填寫第 ${recallIdx + 1} 題答案 (${answeredCount}/${guessers.length}人)...`;
+        }
+
+        const fbCountEl = document.getElementById('memFeedbackCountText');
+        if (fbCountEl && lastFeedbackBanner) {
+          fbCountEl.textContent = `你的回答：「${lastFeedbackBanner.myAns || '(未填寫)'}」｜目前已作答：${answeredCount}/${guessers.length} 人`;
+        }
+      }
 
       function checkTurnReadyToAdvance() {
         const hostNeedsToPrompt = (currentTurn <= 7);
@@ -3823,21 +3906,28 @@
           if (wordHistory.length < currentTurn) {
             wordHistory.push(payload.word);
           }
-          // 重要修正：第 4 回合起，當主持人輸入新詞語後（或逾時自動出題時），自動增加 20 秒作答時間！
           if (currentTurn >= 4 && !bonus20sGrantedForTurn) {
             bonus20sGrantedForTurn = true;
-            stepTimeLeft += 20;
+            stepTimeLeft = (stepTimeLeft <= 0) ? 20 : (stepTimeLeft + 20);
           }
           SoundFX.pop();
           renderMemoryView();
           checkTurnReadyToAdvance();
         } else if (action === 'MEM_REMEMBER_CLICK' && payload.turn === currentTurn) {
           turnRemembered[payload.playerId] = true;
-          renderMemoryView();
+          if (payload.playerId === me.id) {
+            renderMemoryView();
+          } else {
+            updateMemoryCountsLocally();
+          }
           checkTurnReadyToAdvance();
         } else if (action === 'MEM_PLAYER_ANS' && payload.turn === currentTurn) {
           turnAnswers[payload.playerId] = payload.ans;
-          renderMemoryView();
+          if (payload.playerId === me.id) {
+            renderMemoryView();
+          } else {
+            updateMemoryCountsLocally();
+          }
           checkTurnReadyToAdvance();
         } else if (action === 'MEM_NEXT_TURN') {
           initTurnStep(payload.nextTurn);
@@ -3854,14 +3944,13 @@
             const hostNeedsToPrompt = (currentTurn <= 7);
             const playersNeedToAnswer = (currentTurn >= 4);
 
-            // 若第 4~7 回合主持人還沒出題就時間到，先自動出題並增加 20 秒讓玩家作答，不直接跳過玩家作答！
             if (hostNeedsToPrompt && wordHistory.length < currentTurn) {
               SoundFX.wrong();
               if (playersNeedToAnswer && !bonus20sGrantedForTurn) {
-                bonus20sGrantedForTurn = true;
-                stepTimeLeft = 20;
                 if (GameState.isRoomHost) {
                   NetSync.sendGameAction('MEM_HOST_WORD', { turn: currentTurn, word: getAutoPresetWord() });
+                } else {
+                  stepTimeLeft = 20;
                 }
                 return;
               } else {
@@ -3904,6 +3993,8 @@
         turnAnswers = {};
         turnRemembered = {};
         lastFeedbackBanner = null;
+        hostDraftWord = '';
+        myDraftAns = '';
         const hostNeedsToPrompt = (currentTurn <= 7);
         const playersNeedToAnswer = (currentTurn >= 4);
 
@@ -3931,6 +4022,11 @@
       }
 
       function renderMemoryView() {
+        const existingHostInp = document.getElementById('hostMemoryWordInput');
+        if (existingHostInp) hostDraftWord = existingHostInp.value;
+        const existingAnsInp = document.getElementById('memAnswerInput');
+        if (existingAnsInp) myDraftAns = existingAnsInp.value;
+
         const hostNeedsToPrompt = (currentTurn <= 7);
         const playersNeedToAnswer = (currentTurn >= 4);
         const recallIdx = currentTurn - 4;
@@ -4005,7 +4101,7 @@
                 <div class="text-2xl md:text-3xl font-black">
                   ${lastFeedbackBanner.isCorrect ? '⭕ 記憶超群！回答正確 (+1分)！' : `❌ 答錯了！正確答案是「${lastFeedbackBanner.expected}」`}
                 </div>
-                <div class="text-xs font-bold mt-1">
+                <div id="memFeedbackCountText" class="text-xs font-bold mt-1">
                   你的回答：「${lastFeedbackBanner.myAns || '(未填寫)'}」｜目前已作答：${answeredCount}/${guessers.length} 人
                 </div>
               </div>
@@ -4020,7 +4116,7 @@
                     </div>
                     <p class="text-xs font-bold text-neutral-600">你是主持人，只需出題不用回答問題！${currentTurn >= 4 ? '（出題後將為玩家增加 20 秒作答時間）' : ''}</p>
                     <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full max-w-full">
-                      <input id="hostMemoryWordInput" type="text" placeholder="輸入符合主題的新詞語..." class="doodle-input flex-1 w-full min-w-0 text-base" onkeydown="if(event.key==='Enter') window._hostSubmitMemoryWord()" />
+                      <input id="hostMemoryWordInput" type="text" placeholder="輸入符合主題的新詞語..." class="doodle-input flex-1 w-full min-w-0 text-base" oninput="window._updateMemHostDraft(this.value)" onkeydown="if(event.key==='Enter') window._hostSubmitMemoryWord()" />
                       <button onclick="window._hostSubmitMemoryWord()" class="doodle-btn px-5 py-2.5 text-sm bg-[#ff6b6b] text-white flex-shrink-0">
                         出題 ➔
                       </button>
@@ -4033,7 +4129,7 @@
                   </div>
                 ` : `
                   <div class="space-y-2 py-3">
-                    <div class="text-base font-black text-teal-800">
+                    <div id="memHostWaitStatusText" class="text-base font-black text-teal-800">
                       ${!playersNeedToAnswer
                         ? `✅ 已出完第 ${currentTurn} 詞！等待全體玩家點擊「記住了」(${rememberedCount}/${guessers.length}人)...`
                         : `⏳ 等待全體玩家回想並填寫第 ${recallIdx + 1} 題答案 (${answeredCount}/${guessers.length}人)...`}
@@ -4045,30 +4141,30 @@
                   <div class="py-6 text-sm font-black text-neutral-500">⏳ 請稍候，主持人正在輸入本回合新詞語（輸入後將增加 20 秒作答時間）...</div>
                 ` : !playersNeedToAnswer ? `
                   <div class="py-3 space-y-3">
-                    <div class="inline-block bg-neutral-200 border-2 border-[#1e1e1e] px-3 py-1 rounded-full text-xs font-black">
+                    <div id="memRememberCountBadge" class="inline-block bg-neutral-200 border-2 border-[#1e1e1e] px-3 py-1 rounded-full text-xs font-black">
                       🔒 第 1 ~ 3 回合記憶累積期（已確認記住：${rememberedCount}/${guessers.length} 人）
                     </div>
                     <p class="text-sm font-bold text-neutral-600">
                       請記住上方第 ${currentTurn} 回合主持人的詞語「<strong>${wordHistory[currentTurn - 1]}</strong>」！全員點擊記住後自動進入下一題。
                     </p>
-                    <button ${myRememberClicked ? 'disabled' : ''} onclick="window._clickRememberedWord()" class="doodle-btn px-8 py-3 text-base bg-[#ffe66d]">
+                    <button id="memRememberBtn" ${myRememberClicked ? 'disabled' : ''} onclick="window._clickRememberedWord()" class="doodle-btn px-8 py-3 text-base bg-[#ffe66d]">
                       ${myRememberClicked ? '✅ 已確認記住！等待其他人...' : `🧠 記住了！(${rememberedCount}/${guessers.length}) ➔`}
                     </button>
                   </div>
                 ` : myAnsSubmitted ? `
-                  <div class="py-4 text-base font-black text-teal-700">
+                  <div id="memWaitOthersText" class="py-4 text-base font-black text-teal-700">
                     ⏳ 等待其他玩家作答完畢 (${answeredCount}/${guessers.length} 人)...
                   </div>
                 ` : `
                   <div class="space-y-3 w-full max-w-full">
-                    <div class="inline-block bg-[#4ecdc4] border-2 border-[#1e1e1e] px-3 py-1 rounded-full text-xs font-black">
+                    <div id="memAnsCountBadge" class="inline-block bg-[#4ecdc4] border-2 border-[#1e1e1e] px-3 py-1 rounded-full text-xs font-black">
                       ✍️ 玩家作答區（第 ${recallIdx + 1} / 7 題｜已答 ${answeredCount}/${guessers.length} 人）
                     </div>
                     <h4 class="text-lg font-black">
                       請輸入主持人在「第 ${recallIdx + 1} 回合（前三個）」說過的詞語：
                     </h4>
                     <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 max-w-md w-full mx-auto">
-                      <input id="memAnswerInput" type="text" placeholder="輸入第 ${recallIdx + 1} 回合的詞..." class="doodle-input flex-1 w-full min-w-0 text-center text-lg" onkeydown="if(event.key==='Enter') window._submitMemoryAns()" />
+                      <input id="memAnswerInput" type="text" placeholder="輸入第 ${recallIdx + 1} 回合的詞..." class="doodle-input flex-1 w-full min-w-0 text-center text-lg" oninput="window._updateMemAnsDraft(this.value)" onkeydown="if(event.key==='Enter') window._submitMemoryAns()" />
                       <button onclick="window._submitMemoryAns()" class="doodle-btn px-6 py-2.5 text-base bg-[#ffe66d] flex-shrink-0">
                         送出答案
                       </button>
@@ -4093,11 +4189,20 @@
         `;
 
         renderAvatarToCanvas(document.getElementById('memHostCanvas'), host.avatar);
+
+        const newHostInp = document.getElementById('hostMemoryWordInput');
+        if (newHostInp && hostDraftWord) newHostInp.value = hostDraftWord;
+        const newAnsInp = document.getElementById('memAnswerInput');
+        if (newAnsInp && myDraftAns) newAnsInp.value = myDraftAns;
       }
+
+      window._updateMemHostDraft = (val) => { hostDraftWord = val; };
+      window._updateMemAnsDraft = (val) => { myDraftAns = val; };
 
       window._hostSubmitMemoryWord = (forcedWord = null) => {
         const inp = document.getElementById('hostMemoryWordInput');
-        const w = forcedWord !== null ? forcedWord : ((inp?.value || '').trim() || getAutoPresetWord());
+        const w = forcedWord !== null ? forcedWord : ((inp?.value || hostDraftWord || '').trim() || getAutoPresetWord());
+        hostDraftWord = '';
         NetSync.sendGameAction('MEM_HOST_WORD', { turn: currentTurn, word: w });
       };
 
@@ -4110,7 +4215,8 @@
       window._submitMemoryAns = (quickWord = null) => {
         if (turnAnswers[me.id] !== undefined) return;
         const inp = document.getElementById('memAnswerInput');
-        const ans = quickWord !== null ? quickWord : (inp ? inp.value.trim() : '');
+        const ans = quickWord !== null ? quickWord : (inp ? inp.value.trim() : myDraftAns.trim());
+        myDraftAns = '';
         const recallIdx = currentTurn - 4;
         const expected = wordHistory[recallIdx];
         const isCorrect = (ans === expected);
@@ -4119,10 +4225,8 @@
         NetSync.sendGameAction('MEM_PLAYER_ANS', { turn: currentTurn, playerId: me.id, ans });
       };
     }
-
-    /**************************************************************
-     * 遊戲 5：殘酷二選一
-     * - 修正沒有送出畫作時圖片無法顯示的問題：生成預設有效空白畫布圖檔，並在時間到時自動擷取目前畫布並等待全員同步後再進入評選
+/**************************************************************
+- 遊戲 5：殘酷二選一
      **************************************************************/
     function startMiniGame4_CruelBinary() {
       const mount = document.getElementById('miniGameMountPoint');
@@ -4147,8 +4251,7 @@
       let isAnimatingPick = false;
       let battleStarted = false;
 
-      // 產生有效的預設空白圖片 DataURL，確保即使未交卷或斷線也絕不會出現破圖
-      function createFallbackBlankDataUrl(playerName) {
+      function createFallbackBlankDataUrl() {
         const off = document.createElement('canvas');
         off.width = 280; off.height = 280;
         const octx = off.getContext('2d');
@@ -4157,7 +4260,7 @@
         octx.fillStyle = '#dfe6e9';
         octx.font = 'bold 16px "Noto Sans TC", sans-serif';
         octx.textAlign = 'center';
-        octx.fillText(`(${playerName} 未完成畫作)`, 140, 140);
+        octx.fillText('(未完成畫作)', 140, 140);
         return off.toDataURL('image/png');
       }
 
@@ -4174,7 +4277,7 @@
 
       window._onGameEvent = (action, payload) => {
         if (action === 'CRUEL_SUBMIT_DRAW') {
-          submittedDrawings[payload.playerId] = payload.dataUrl || createFallbackBlankDataUrl('玩家');
+          submittedDrawings[payload.playerId] = payload.dataUrl || createFallbackBlankDataUrl();
           if (isHumanHost && !battleStarted) {
             renderCruelDrawPhase();
           }
@@ -4193,10 +4296,15 @@
           const octx = off.getContext('2d');
           octx.fillStyle = '#ffffff';
           octx.fillRect(0, 0, 280, 280);
-          octx.fillStyle = '#b2bec3';
-          octx.font = 'bold 16px sans-serif';
-          octx.textAlign = 'center';
-          octx.fillText(`(AI 畫作 - ${p.name})`, 140, 140);
+          octx.strokeStyle = '#1e1e1e';
+          octx.lineWidth = 4;
+          octx.beginPath();
+          octx.arc(140, 110, 35, 0, Math.PI * 2);
+          octx.moveTo(140, 145);
+          octx.lineTo(140, 220);
+          octx.moveTo(100, 175);
+          octx.lineTo(180, 175);
+          octx.stroke();
           submittedDrawings[p.id] = off.toDataURL('image/png');
         }
       });
@@ -4209,7 +4317,7 @@
           mount.innerHTML = `
             <div class="space-y-4 text-center py-6">
               <div class="doodle-box-sm p-4 bg-[#ffe66d]">
-                <div class="text-xs font-black">🎨 本局繪圖題目：</div>
+                <div class="text-xs font-black">🎨 本局荒謬繪圖題目：</div>
                 <h3 class="text-xl md:text-2xl font-black mt-1">${finalPrompt}</h3>
               </div>
               <div class="doodle-box-sm p-6 bg-[#fffdf7] max-w-lg mx-auto space-y-3">
@@ -4232,7 +4340,7 @@
           mount.innerHTML = `
             <div class="space-y-4 text-center">
               <div class="doodle-box-sm p-3 bg-[#ffe66d]">
-                <div class="text-xs font-black">🎨 本局繪圖題目（主持人【${host.name}】不畫圖負責評選）：</div>
+                <div class="text-xs font-black">🎨 本局荒謬繪圖題目（主持人【${host.name}】不畫圖負責評選）：</div>
                 <h3 class="text-xl md:text-2xl font-black mt-1">${finalPrompt}</h3>
               </div>
 
@@ -4291,7 +4399,6 @@
               window._submitMyCruelDrawing();
             }
             if (GameState.isRoomHost) {
-              // 給網路一點緩衝時間接收最後一刻自動送出的畫布，若仍未收到則使用預設空白畫布補齊
               setTimeout(() => {
                 if (!battleStarted) {
                   window._hostForceCruelBattle();
@@ -4314,7 +4421,7 @@
       window._submitMyCruelDrawing = () => {
         if (submittedDrawings[me.id]) return;
         const c = document.getElementById('cruelMainCanvas');
-        const myUrl = c ? c.toDataURL('image/png') : createFallbackBlankDataUrl(me.name);
+        const myUrl = c ? c.toDataURL('image/png') : createFallbackBlankDataUrl();
         SoundFX.pop();
         NetSync.sendGameAction('CRUEL_SUBMIT_DRAW', { playerId: me.id, dataUrl: myUrl });
         if (!battleStarted) renderCruelDrawPhase();
@@ -4332,15 +4439,15 @@
         const nonHostPlayers = GameState.players.filter(p => p.id !== host.id);
         bracketQueue = nonHostPlayers.map(p => ({
           player: p,
-          dataUrl: submittedDrawings[p.id] || createFallbackBlankDataUrl(p.name)
+          dataUrl: submittedDrawings[p.id] || createFallbackBlankDataUrl()
         }));
         nextBracketMatch();
       }
 
       function nextBracketMatch() {
         isAnimatingPick = false;
-        if (bracketQueue.length === 1) {
-          championItem = bracketQueue[0];
+        if (bracketQueue.length <= 1) {
+          championItem = bracketQueue[0] || { player: GameState.players.find(p => p.id !== host.id) || host, dataUrl: createFallbackBlankDataUrl() };
           awardPoints(championItem.player.id, 3, host.id);
           GameState.stats.cruelChampionGiven[host.id][championItem.player.id] = true;
           GameState.stats.prankHighScorer[championItem.player.id] = (GameState.stats.prankHighScorer[championItem.player.id] || 0) + 4;
@@ -4378,7 +4485,7 @@
                 return `
                   <div id="cruel_card_${idx}" class="doodle-box-sm p-4 bg-white flex flex-col items-center relative transition-all duration-300 ${isWinner ? 'winner-gold-glow scale-105' : ''}">
                     <div class="text-xs font-black bg-neutral-200 px-2.5 py-0.5 rounded mb-2">
-                      參賽作品 ${idx === 0 ? 'A' : 'B'} (${item.player.name})
+                      參賽作品 ${idx === 0 ? 'A' : 'B'}
                     </div>
                     <div class="relative">
                       <img src="${item.dataUrl}" alt="畫作" class="w-52 h-52 object-contain border-3 border-[#1e1e1e] rounded-xl bg-white mb-3" />
@@ -4456,8 +4563,7 @@
     }
 
     /**************************************************************
-     * 遊戲 6：這是我的回答
-     * - 徹底修復輸入到一半因為其他事件或狀態重繪而跳掉的問題（保留草稿與焦點，且在盲猜階段局部更新不重繪整個列表）
+- 遊戲 6：這是我的回答
      **************************************************************/
     function startMiniGame5_MyAnswer() {
       const mount = document.getElementById('miniGameMountPoint');
@@ -4472,11 +4578,11 @@
 
       let qIdx = 0;
       let phaseTimeLeft = 60;
-      let step = 'input'; // 'input' | 'vote' | 'reveal'
+      let step = 'input';
       let textMap = {};
       let voteMap = {};
       let submissions = [];
-      let myDraftText = ''; // 儲存玩家正在輸入的草稿，防止任何意外重繪清空輸入
+      let myDraftText = '';
 
       function startPhase60sTimer(onTimeout) {
         clearAllGameTimers();
@@ -4560,7 +4666,6 @@
       window._onGameEvent = (action, payload) => {
         if (action === 'MYANS_SUBMIT_TEXT' && payload.qIdx === qIdx) {
           textMap[payload.playerId] = payload.text || '(空白)';
-          // 局部更新已交卷人數文字，絕不重繪其他正在打字的玩家輸入框！
           if (step === 'input') {
             const countBadge = document.getElementById('myAnsSubmittedCountBadge');
             if (countBadge) {
@@ -4574,7 +4679,6 @@
           checkAllTextsSubmitted();
         } else if (action === 'MYANS_SUBMIT_VOTE' && payload.qIdx === qIdx) {
           voteMap[payload.voterId] = payload.pickedPlayerId;
-          // 局部更新盲猜人數或自己的按鈕高亮
           if (step === 'vote') {
             const vBadge = document.getElementById('myAnsVotedCountBadge');
             if (vBadge) {
@@ -4763,10 +4867,7 @@
     }
 
     /**************************************************************
-     * 遊戲 7：臉部拼圖
-     * - 部位順序改為亂數洗牌，且不告訴玩家這是哪個部位（僅顯示神祕部位 1/4 ~ 4/4）
-     * - 必須等所有玩家完成當前部位後，才會全員同步進入下一個部位
-     * - 重要修正：使用加速（陷害）時，絕對不重繪畫面、不綁定 mouseleave、且橫幅改為浮動絕對定位不推擠按鈕，確保玩家長按時只會「突然變快 2 倍」而不會直接放下來中斷輸入！
+- 遊戲 7：臉部拼圖
      **************************************************************/
     function startMiniGame6_FacePuzzle() {
       const mount = document.getElementById('miniGameMountPoint');
@@ -4787,7 +4888,7 @@
       const partSequence = deterministicShuffle(baseParts, rng);
 
       let curPartIdx = 0;
-      let movePhase = 'wait_right'; // 'wait_right' | 'moving_right' | 'wait_up' | 'moving_up' | 'step_locked' | 'done'
+      let movePhase = 'wait_right';
       let rafId = null;
       let galleryRevealed = false;
       let speedMultiplier = 1;
@@ -4885,7 +4986,6 @@
           if (isHumanHost && !galleryRevealed) {
             renderHostPuzzleDashboard();
           } else if (!isHumanHost) {
-            // 只局部更新進度文字，不重繪其他正在長按移動的玩家按鈕！
             const puzzlers = GameState.players.filter(p => p.id !== host.id);
             const doneCount = puzzlers.filter(p => !!stepCompletedMap[curPartIdx]?.[p.id]).length;
             const progHeader = document.getElementById('puzzleStepProgressHeader');
@@ -4906,7 +5006,6 @@
           if (isHumanHost && !galleryRevealed) renderHostPuzzleDashboard();
           if (payload.targetId === human.id && !isHumanHost && !galleryRevealed) {
             SoundFX.wrong();
-            // 還原原始設定：瞬間將移動倍率提高為 5.0 倍持續 1 秒，且不重繪按鈕、不改變布局位置，確保正在長按的玩家不會鬆開或中斷！
             speedMultiplier = 5.0;
             const alertEl = document.getElementById('puzzleSabotageBanner');
             if (alertEl) alertEl.classList.remove('hidden');
@@ -5018,7 +5117,6 @@
 
         mount.innerHTML = `
           <div class="flex flex-col items-center space-y-3 relative">
-            <!-- 被主持人陷害時的浮動警告字樣（使用 fixed pointer-events-none，絕不推擠畫面或導致長按按鈕滑出而中斷！） -->
             <div id="puzzleSabotageBanner" class="hidden fixed top-20 left-1/2 -translate-x-1/2 z-50 pointer-events-none doodle-box-sm px-5 py-2.5 bg-[#ff6b6b] text-white border-4 border-[#1e1e1e] text-center shadow-lg">
               <div class="text-base md:text-lg font-black">😈 遭到主持人【${host.name}】陷害！移動速度瞬間暴增 2 倍！</div>
             </div>
@@ -5180,7 +5278,6 @@
         const btnU = document.getElementById('btnHoldUp');
         if (!btnR || !btnU) return;
 
-        // 移除 onmouseleave 觸發，改由真實放開滑鼠/手指 (mouseup / touchend) 決定停止，防止任何震動或微幅滑動中斷長按！
         btnR.onmousedown = btnR.ontouchstart = (e) => { e.preventDefault(); startRightMovement(); };
         btnR.onmouseup = btnR.ontouchend = btnR.ontouchcancel = (e) => { e.preventDefault(); stopRightMovement(); };
 
@@ -5292,7 +5389,7 @@
     }
 
     /**************************************************************
-     * 遊戲 8：超級找找王
+- 遊戲 8：超級找找王
      **************************************************************/
     function startMiniGame7_SuperFinder() {
       const mount = document.getElementById('miniGameMountPoint');
@@ -5635,8 +5732,2230 @@
       renderFinderView();
     }
 
+    /*************************************************************************
+- 擴充四款小遊戲題庫與主邏輯 (遊戲 9 ~ 12，對應 ID 8 ~ 11)
+     *************************************************************************/
+    const NEW_QUESTION_BANKS = {
+      soulPainterPlaces: [
+        "公園長椅上", "捷運車廂裡", "公廁隔間內", "頂樓水塔旁", "旋轉木馬上",
+        "醫院手術室", "警察局拘留室", "豪華遊輪甲板", "便利商店微波爐前", "火山口邊緣",
+        "無人荒島上", "深夜墓園裡", "高級法式餐廳", "幼稚園溜滑梯", "健身房深蹲架",
+        "電梯故障現場", "太空艙失重區", "夜市撈金魚攤", "婚禮紅毯中央", "颱風天的陽台",
+        "海底龍宮裡", "非洲大草原", "圖書館安靜區", "KTV包廂沙發", "雲霄飛車最高點",
+        "銀行金庫裡", "外星人飛碟上", "熱氣球籃子裡", "溫泉池正中央", "相親咖啡廳",
+        "靈骨塔前", "沙漠綠洲旁", "半夜的辦公室", "道歉記者會", "垃圾車後面"
+      ],
+      soulPainterActions: [
+        "偷偷挖鼻孔", "被外星人綁架", "跟蟑螂決一死戰", "跳極樂淨土", "突然肚子痛找衛生紙",
+        "求婚被當場拒絕", "中樂透頭獎發瘋", "假裝自己是雕像", "被蜜蜂追著跑", "上演八點檔甩巴掌",
+        "偷吃別人的便當", "倒立喝珍奶", "被雷劈到爆炸頭", "在地上打滾耍賴", "跟鬼魂猜拳",
+        "練絕世武功", "發現禿頭的瞬間", "把手機掉進馬桶", "cosplay 美少女戰士", "被老闆抓包摸魚",
+        "表演胸口碎大石", "與鴿子深情對望", "試圖飛起來", "被藤蔓緊緊纏住", "像貓一樣舔手手",
+        "現場直播帶貨", "躲避追殺", "進行神秘召喚儀式", "被巨大的螃蟹夾住", "大跳地板動作（Breaking）",
+        "在角落畫圈圈自閉", "舉起雙手投降", "變身成超級賽亞人", "抱著大腿痛哭流涕", "偷偷放一個響屁"
+      ],
+      memeSituations: [
+        "老闆在下班前開心的朝你走來，要跟你說3小時他的「想當年」的表情",
+        "在安靜的電梯裡偷偷放屁，結果比想像中還要響的瞬間",
+        "剛洗完頭出門，一秒被鳥屎精準命中的表情",
+        "滑手機時不小心按到前任三年前貼文讚的表情",
+        "吃麻辣鍋咬到超辣花椒粒的表情",
+        "以為沒人看到在挖鼻孔，轉頭發現正對著監視器的表情",
+        "在衣櫃底下找到以前很喜歡的褲子，要穿時發現穿不下的表情",
+        "半夜起床上廁所，小拇指狠狠踢到桌腳的表情",
+        "聽到朋友在吹牛的表情",
+        "考試最後一分鐘發現背面還有一大題完全沒寫的表情",
+        "說好要請客，結帳時發現忘記帶錢包的表情",
+        "被媽媽連名帶姓大喊全名時的表情",
+        "喝珍奶吸到最後一顆珍珠，結果直接卡進喉嚨的表情",
+        "早上醒來發現鬧鐘沒響，距離上班只剩 5 分鐘的表情",
+        "跟暗戀對象講話講到一半，一顆鼻涕泡泡吹出來的表情",
+        "以為自己在群組私聊罵主管，結果發到有主管的大群組的表情",
+        "去剪頭髮跟設計師說「稍微修一點就好」，結果剪成平頭的表情",
+        "在路上認錯人熱情拍肩，對方轉過來完全不認識的表情",
+        "憋笑憋到內傷的表情",
+        "剛買的全新手機，下一秒螢幕朝下摔在柏油路上的表情",
+        "過年被親戚問「薪水多少？什麼時候結婚？」的表情",
+        "打開冰箱發現昨天特地留的布丁被吃掉的表情",
+        "看鬼片正緊張時，旁邊朋友突然大叫一聲，你的表情",
+        "健身房做深蹲做到最後一下，腿軟差點跪下去的表情",
+        "在路邊踩到狗屎，抬起腳確認鞋底那一刻的表情",
+        "點外送等了一小時，打開發現湯全部灑出來的表情",
+        "被警察攔下來酒測，明明沒喝酒卻莫名心虛的表情",
+        "吃檸檬酸到五官全部擠在臉正中央的瞬間",
+        "跟朋友玩遊戲連輸十把的表情",
+        "在電影院看到一半超想尿尿，但剛好演到最精彩片段的表情",
+        "自拍時不小心切換到前鏡頭，看到雙下巴的表情",
+        "睡覺臉被蚊子猛攻，腫得像鹹蛋超人的表情",
+        "聽到別人講了一個超級冷的冷笑話，全場鴉雀無聲時的表情",
+        "在公車上睡著點頭如搗蒜，不小心靠到隔壁陌生人(帥哥/大美女)肩膀的表情",
+        "中了發票兩百萬，卻發現已經過期一天的表情"
+      ],
+      defaultCirclePrompts: [
+        "我最討厭吃的食物是什麼？",
+        "我們上次聚會去吃的那家餐廳叫什麼名字？",
+        "我平常最常講的一句口頭禪是什麼？",
+        "我最害怕的昆蟲或動物是什麼？",
+        "我放假最喜歡待在哪裡？",
+        "我點手搖飲最常點的甜度冰塊或品項是什麼？"
+      ]
+    };
+
+    /*************************************************************************
+- 遊戲 9 (ID 8)：｜靈魂畫師傳聲筒（最少 3 人）
+     *************************************************************************/
+    function startMiniGame8_SoulPainter() {
+      const mount = document.getElementById('miniGameMountPoint');
+      const host = getCurrentHost();
+      const me = getLocalPlayer();
+      const isHumanHost = (me.id === host.id);
+      const rng = createSeededRandom(GameState.roundSeed + 808);
+
+      const place = NEW_QUESTION_BANKS.soulPainterPlaces[Math.floor(rng() * NEW_QUESTION_BANKS.soulPainterPlaces.length)];
+      const action = NEW_QUESTION_BANKS.soulPainterActions[Math.floor(rng() * NEW_QUESTION_BANKS.soulPainterActions.length)];
+      const secretTopic = `在【${place}】【${action}】`;
+
+      let phase = 'host_pose';
+      let timeLeft = 15;
+
+      let headPose = { x: 140, y: 140, scale: 0.42, rotDeg: 0 };
+      let hostSketchDataUrl = '';
+      let hostSketchImg = null;
+
+      const hostHeadOffCanvas = document.createElement('canvas');
+      hostHeadOffCanvas.width = 240;
+      hostHeadOffCanvas.height = 240;
+      renderAvatarToCanvas(hostHeadOffCanvas, host.avatar);
+
+      const relaySubmissions = {};
+      let judgingList = [];
+      let curJudgeIdx = 0;
+      const tierResults = {
+        '頂級': [],
+        '人上人': [],
+        'NPC': [],
+        '拉完了': []
+      };
+
+      function createBlankCanvasUrl() {
+        const c = document.createElement('canvas');
+        c.width = 280; c.height = 280;
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, 280, 280);
+        return c.toDataURL('image/png');
+      }
+
+      function captureCompositeCanvasUrl(drawCanvasId, includeFadedHint = true) {
+        const comp = document.createElement('canvas');
+        comp.width = 280; comp.height = 280;
+        const ctx = comp.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, 280, 280);
+
+        if (includeFadedHint && hostSketchImg) {
+          ctx.save();
+          ctx.globalAlpha = 0.32;
+          ctx.drawImage(hostSketchImg, 0, 0, 280, 280);
+          ctx.restore();
+        }
+
+        ctx.save();
+        ctx.translate(headPose.x, headPose.y);
+        ctx.rotate((headPose.rotDeg * Math.PI) / 180);
+        ctx.scale(headPose.scale, headPose.scale);
+        ctx.drawImage(hostHeadOffCanvas, -120, -120, 240, 240);
+        ctx.restore();
+
+        const drawCv = document.getElementById(drawCanvasId);
+        if (drawCv) {
+          ctx.drawImage(drawCv, 0, 0, 280, 280);
+        }
+        return comp.toDataURL('image/png');
+      }
+
+      window._onGameEvent = (act, payload) => {
+        if (act === 'SOUL_POSE_DONE') {
+          headPose = payload.headPose || headPose;
+          enterHostSketchPhase();
+        } else if (act === 'SOUL_SKETCH_DONE') {
+          headPose = payload.headPose || headPose;
+          hostSketchDataUrl = payload.sketchDataUrl || createBlankCanvasUrl();
+          const img = new Image();
+          img.onload = () => {
+            hostSketchImg = img;
+            enterPlayerRelayPhase();
+          };
+          img.src = hostSketchDataUrl;
+        } else if (act === 'SOUL_RELAY_SUBMIT') {
+          relaySubmissions[payload.playerId] = {
+            dataUrl: payload.dataUrl,
+            timestamp: payload.timestamp || Date.now()
+          };
+          const countEl = document.getElementById('soulRelayDoneBadge');
+          if (countEl) {
+            const drawers = GameState.players.filter(p => p.id !== host.id);
+            const doneCnt = drawers.filter(p => !!relaySubmissions[p.id]).length;
+            countEl.textContent = `已完成：${doneCnt} / ${drawers.length} 人`;
+          }
+          checkAllRelayDone();
+        } else if (act === 'SOUL_FORCE_JUDGE') {
+          enterTierJudgingPhase();
+        } else if (act === 'SOUL_RATE_WORK') {
+          applyTierRating(payload.playerId, payload.tierName);
+        }
+      };
+
+      function enterHostPosePhase() {
+        clearAllGameTimers();
+        phase = 'host_pose';
+        timeLeft = 15;
+        document.getElementById('playSubProgress').textContent = `階段 1/3：主持人限時 15 秒擺放頭像位置`;
+
+        if (host.isAI && GameState.isRoomHost) {
+          headPose = { x: 110 + Math.floor(rng() * 60), y: 100 + Math.floor(rng() * 60), scale: 0.4, rotDeg: -15 };
+          setTimeout(() => {
+            NetSync.sendGameAction('SOUL_POSE_DONE', { headPose });
+          }, 1200);
+        }
+
+        renderSoulView();
+
+      const tId = setInterval(() => {
+          if (phase !== 'host_pose') return;
+          timeLeft--;
+          const el = document.getElementById('soulTimerText');
+          if (el) el.textContent = `${timeLeft}s`;
+          if (timeLeft <= 0) {
+            clearInterval(tId);
+            if (isHumanHost) {
+              window._finishHostPose();
+            } else if (GameState.isRoomHost) {
+              setTimeout(() => {
+                if (phase === 'host_pose') NetSync.sendGameAction('SOUL_POSE_DONE', { headPose });
+              }, 1200);
+            }
+          }
+        }, 1000);
+        GameState.activeTimers.push(tId);
+      }
+
+      function enterHostSketchPhase() {
+        clearAllGameTimers();
+        phase = 'host_sketch';
+        timeLeft = 30;
+        document.getElementById('playSubProgress').textContent = `階段 1/3：主持人限時 30 秒繪製情境線索底圖`;
+
+        if (host.isAI && GameState.isRoomHost) {
+          const off = document.createElement('canvas');
+          off.width = 280; off.height = 280;
+          const octx = off.getContext('2d');
+          octx.strokeStyle = '#1e1e1e';
+          octx.lineWidth = 4;
+          octx.strokeRect(40, 180, 200, 60);
+          setTimeout(() => {
+            NetSync.sendGameAction('SOUL_SKETCH_DONE', { headPose, sketchDataUrl: off.toDataURL('image/png') });
+          }, 1500);
+        }
+
+        renderSoulView();
+
+        const tId = setInterval(() => {
+          if (phase !== 'host_sketch') return;
+          timeLeft--;
+          const el = document.getElementById('soulTimerText');
+          if (el) el.textContent = `${timeLeft}s`;
+          if (timeLeft <= 0) {
+            clearInterval(tId);
+            if (isHumanHost) {
+              window._finishHostSketch();
+            } else if (GameState.isRoomHost) {
+              setTimeout(() => {
+                if (phase === 'host_sketch') {
+                  NetSync.sendGameAction('SOUL_SKETCH_DONE', { headPose, sketchDataUrl: createBlankCanvasUrl() });
+                }
+              }, 1200);
+            }
+          }
+        }, 1000);
+        GameState.activeTimers.push(tId);
+      }
+      function enterPlayerRelayPhase() {
+        clearAllGameTimers();
+        phase = 'player_relay';
+        timeLeft = 60;
+        document.getElementById('playSubProgress').textContent = `階段 2/3：全體玩家 60 秒接力補完畫作`;
+
+        GameState.players.forEach(p => {
+          if (p.isAI && p.id !== host.id) {
+            const comp = document.createElement('canvas');
+            comp.width = 280; comp.height = 280;
+            const cctx = comp.getContext('2d');
+            cctx.fillStyle = '#ffffff';
+            cctx.fillRect(0, 0, 280, 280);
+            if (hostSketchImg) {
+              cctx.save(); cctx.globalAlpha = 0.32; cctx.drawImage(hostSketchImg, 0, 0, 280, 280); cctx.restore();
+            }
+            cctx.save();
+            cctx.translate(headPose.x, headPose.y);
+            cctx.rotate((headPose.rotDeg * Math.PI) / 180);
+            cctx.scale(headPose.scale, headPose.scale);
+            cctx.drawImage(hostHeadOffCanvas, -120, -120, 240, 240);
+            cctx.restore();
+            cctx.strokeStyle = '#1e1e1e';
+            cctx.lineWidth = 4;
+            cctx.beginPath();
+            cctx.moveTo(headPose.x, headPose.y + 40);
+            cctx.lineTo(headPose.x, headPose.y + 110);
+            cctx.stroke();
+            relaySubmissions[p.id] = { dataUrl: comp.toDataURL('image/png'), timestamp: Date.now() + Math.floor(rng() * 1000) };
+          }
+        });
+
+        renderSoulView();
+        checkAllRelayDone();
+
+        const tId = setInterval(() => {
+          if (phase !== 'player_relay') return;
+          timeLeft--;
+          const el = document.getElementById('soulTimerText');
+          if (el) el.textContent = `${timeLeft}s`;
+          if (timeLeft <= 0) {
+            clearInterval(tId);
+            if (!isHumanHost && !relaySubmissions[me.id]) {
+              window._submitPlayerRelayWork();
+            }
+            if (GameState.isRoomHost) {
+              setTimeout(() => {
+                if (phase === 'player_relay') {
+                  NetSync.sendGameAction('SOUL_FORCE_JUDGE', {});
+                }
+              }, 1200);
+            }
+          }
+        }, 1000);
+        GameState.activeTimers.push(tId);
+      }
+
+      function checkAllRelayDone() {
+        if (phase !== 'player_relay') return;
+        const drawers = GameState.players.filter(p => p.id !== host.id);
+        const allDone = drawers.every(p => !!relaySubmissions[p.id]);
+        if (allDone && GameState.isRoomHost) {
+          setTimeout(() => {
+            if (phase === 'player_relay') {
+              NetSync.sendGameAction('SOUL_FORCE_JUDGE', {});
+            }
+          }, 600);
+        }
+      }
+
+      function enterTierJudgingPhase() {
+        if (phase === 'tier_judging' || phase === 'tier_board') return;
+        clearAllGameTimers();
+        phase = 'tier_judging';
+        const drawers = GameState.players.filter(p => p.id !== host.id);
+        judgingList = drawers.map(p => ({
+          player: p,
+          dataUrl: relaySubmissions[p.id]?.dataUrl || captureCompositeCanvasUrl('non_exist', true),
+          timestamp: relaySubmissions[p.id]?.timestamp || 9999999999999
+        }));
+        judgingList.sort((a, b) => a.timestamp - b.timestamp);
+        curJudgeIdx = 0;
+        document.getElementById('playSubProgress').textContent = `階段 3/3：主持人 Tier 階級評鑑（答案：${secretTopic}）`;
+        renderSoulView();
+
+        if (host.isAI && GameState.isRoomHost) {
+          autoJudgeNextByAI();
+        }
+      }
+
+      function autoJudgeNextByAI() {
+        if (curJudgeIdx >= judgingList.length) return;
+        const tiers = ['頂級', '人上人', 'NPC', '拉完了'];
+        const picked = tiers[Math.floor(rng() * tiers.length)];
+        const targetPid = judgingList[curJudgeIdx].player.id;
+        setTimeout(() => {
+          NetSync.sendGameAction('SOUL_RATE_WORK', { playerId: targetPid, tierName: picked });
+        }, 1500);
+      }
+
+      function applyTierRating(playerId, tierName) {
+        const scoreMap = { '頂級': 7, '人上人': 3, 'NPC': 1, '拉完了': 0 };
+        const pts = scoreMap[tierName] ?? 0;
+        if (pts > 0) {
+          awardPoints(playerId, pts, host.id);
+        }
+        const item = judgingList.find(x => x.player.id === playerId);
+        if (item && tierResults[tierName]) {
+          tierResults[tierName].push(item);
+        }
+        if (pts >= 3) SoundFX.correct(); else SoundFX.wrong();
+
+        const stampEl = document.getElementById('soulTierStampBadge');
+        if (stampEl) {
+          stampEl.textContent = `${tierName} (+${pts}分)`;
+          stampEl.classList.remove('hidden');
+        }
+
+        setTimeout(() => {
+          curJudgeIdx++;
+          if (curJudgeIdx >= judgingList.length) {
+            phase = 'tier_board';
+            SoundFX.fanfare();
+            renderSoulView();
+          } else {
+            renderSoulView();
+            if (host.isAI && GameState.isRoomHost) {
+              autoJudgeNextByAI();
+            }
+          }
+        }, 1100);
+      }
+
+      function renderSoulView() {
+        if (phase === 'host_pose') {
+          if (isHumanHost) {
+            mount.innerHTML = `
+              <div class="space-y-3 text-center">
+                <div class="doodle-box-sm p-3 bg-[#ffe66d]">
+                  <div class="text-xs font-black">🤫 僅主持人可見機密題目（步驟 1：請先擺放你的頭像位置）：</div>
+                  <h3 class="text-xl md:text-2xl font-black text-[#ff6b6b] mt-0.5">${secretTopic}</h3>
+                </div>
+                <div class="flex items-center justify-between max-w-xs mx-auto text-xs font-black">
+                  <span>👇 直接在畫布拖動頭像移動</span>
+                  <span class="bg-[#1e1e1e] text-[#ffe66d] px-2.5 py-1 rounded font-mono">⏱️ <span id="soulTimerText">${timeLeft}s</span></span>
+                </div>
+                <div class="relative w-72 h-72 mx-auto bg-white border-4 border-[#1e1e1e] rounded-2xl shadow-md overflow-hidden touch-none">
+                  <canvas id="soulPoseCanvas" width="280" height="280" class="w-full h-full cursor-move"></canvas>
+                </div>
+                <div class="flex flex-wrap justify-center gap-2 max-w-md mx-auto">
+                  <button onclick="window._adjSoulHead(0.08, 0)" class="doodle-btn px-3 py-2 text-xs bg-white">➕ 放大</button>
+                  <button onclick="window._adjSoulHead(-0.08, 0)" class="doodle-btn px-3 py-2 text-xs bg-white">➖ 縮小</button>
+                  <button onclick="window._adjSoulHead(0, -15)" class="doodle-btn px-3 py-2 text-xs bg-white">↺ 左旋轉</button>
+                  <button onclick="window._adjSoulHead(0, 15)" class="doodle-btn px-3 py-2 text-xs bg-white">↻ 右旋轉</button>
+                </div>
+                <div>
+                  <button onclick="window._finishHostPose()" class="doodle-btn px-8 py-2.5 text-base bg-[#ff6b6b] text-white">
+                    ✅ 頭像擺放完成，開始畫線索底圖 ➔
+                  </button>
+                </div>
+              </div>
+            `;
+            setupHostPoseCanvas();
+          } else {
+            mount.innerHTML = `
+              <div class="py-14 text-center doodle-box-sm bg-[#fffdf7] space-y-3">
+                <div class="text-4xl">🎭</div>
+                <h4 class="text-lg font-black">主持人【${host.name}】正在擺放頭像姿勢... (<span id="soulTimerText">${timeLeft}s</span>)</h4>
+                <p class="text-xs font-bold text-neutral-500">待主持人擺好頭像並畫完線索底圖後，就輪到你們接力作畫囉！</p>
+              </div>
+            `;
+          }
+        } else if (phase === 'host_sketch') {
+          if (isHumanHost) {
+            mount.innerHTML = `
+              <div class="space-y-3 text-center">
+                <div class="doodle-box-sm p-3 bg-[#ffe66d]">
+                  <div class="text-xs font-black">🖌️ 步驟 2：請在頭像周圍畫出情境線索底圖（30秒）：</div>
+                  <h3 class="text-xl font-black text-[#ff6b6b]">${secretTopic}</h3>
+                </div>
+                <div class="flex items-center justify-center gap-3">
+                  <span class="bg-[#1e1e1e] text-[#ffe66d] px-3 py-1 rounded font-mono text-xs font-black">⏱️ <span id="soulTimerText">${timeLeft}s</span></span>
+                  <button onclick="window._clearSoulSketch()" class="doodle-btn px-3 py-1 text-xs bg-white">🗑️ 清空筆跡</button>
+                  <button onclick="window._finishHostSketch()" class="doodle-btn px-5 py-1.5 text-sm bg-[#ff6b6b] text-white">✅ 完成底圖並交給玩家 ➔</button>
+                </div>
+                <div class="relative w-72 h-72 mx-auto bg-white border-4 border-[#1e1e1e] rounded-2xl shadow-md overflow-hidden touch-none">
+                  <canvas id="soulHostBgCanvas" width="280" height="280" class="absolute inset-0 w-full h-full pointer-events-none"></canvas>
+                  <canvas id="soulHostDrawCanvas" width="280" height="280" class="relative z-10 w-full h-full cursor-crosshair"></canvas>
+                </div>
+              </div>
+            `;
+            drawLockedHeadOnCanvas('soulHostBgCanvas', false);
+            bindSimpleFreehandCanvas('soulHostDrawCanvas');
+          } else {
+            mount.innerHTML = `
+              <div class="py-14 text-center doodle-box-sm bg-[#fffdf7] space-y-3">
+                <div class="text-4xl">🎨</div>
+                <h4 class="text-lg font-black">主持人【${host.name}】正在繪製情境線索底圖... (<span id="soulTimerText">${timeLeft}s</span>)</h4>
+                <p class="text-xs font-bold text-neutral-500">請準備好腦補主持人到底在什麼地點做什麼動作！</p>
+              </div>
+            `;
+          }
+        } else if (phase === 'player_relay') {
+          const drawers = GameState.players.filter(p => p.id !== host.id);
+          const doneCnt = drawers.filter(p => !!relaySubmissions[p.id]).length;
+
+          if (isHumanHost) {
+            mount.innerHTML = `
+              <div class="py-10 text-center doodle-box-sm bg-[#fffdf7] space-y-3">
+                <div class="text-xs font-black bg-[#ffe66d] px-3 py-1 rounded-full inline-block border border-black">
+                  題目：${secretTopic}
+                </div>
+                <h4 class="text-xl font-black">玩家正在根據你的半透明底圖接力作畫中！</h4>
+                <div class="text-sm font-black text-red-600">
+                  ⏱️ 剩餘 <span id="soulTimerText">${timeLeft}s</span> ｜ <span id="soulRelayDoneBadge">已完成：${doneCnt} / ${drawers.length} 人</span>
+                </div>
+              </div>
+            `;
+          } else if (relaySubmissions[me.id]) {
+            mount.innerHTML = `
+              <div class="py-12 text-center doodle-box-sm bg-[#fffdf7] space-y-3">
+                <div class="text-3xl">✅</div>
+                <h4 class="text-lg font-black text-teal-800">你的接力畫作已送出！等待其他玩家完成 (<span id="soulRelayDoneBadge">已完成：${doneCnt} / ${drawers.length} 人</span>)...</h4>
+              </div>
+            `;
+          } else {
+            mount.innerHTML = `
+              <div class="space-y-3 text-center">
+                <div class="doodle-box-sm p-3 bg-[#4ecdc4]/30">
+                  <div class="text-xs font-black">🕵️ 猜猜主持人在哪裡做什麼？請在半透明底圖上接力補完畫面！</div>
+                  <div class="flex items-center justify-center gap-3 mt-1">
+                    <span class="bg-[#1e1e1e] text-[#ffe66d] px-2.5 py-0.5 rounded font-mono text-xs font-black">⏱️ <span id="soulTimerText">${timeLeft}s</span></span>
+                    <span id="soulRelayDoneBadge" class="text-xs font-black">已完成：${doneCnt} / ${drawers.length} 人</span>
+                    <button onclick="window._clearSoulRelay()" class="doodle-btn px-2.5 py-1 text-xs bg-white">🗑️ 清空重畫</button>
+                    <button onclick="window._submitPlayerRelayWork()" class="doodle-btn px-4 py-1 text-xs bg-[#ff6b6b] text-white">✅ 完成交卷 ➔</button>
+                  </div>
+                </div>
+                <div class="relative w-72 h-72 mx-auto bg-white border-4 border-[#1e1e1e] rounded-2xl shadow-md overflow-hidden touch-none">
+                  <canvas id="soulRelayBgCanvas" width="280" height="280" class="absolute inset-0 w-full h-full pointer-events-none"></canvas>
+                  <canvas id="soulRelayDrawCanvas" width="280" height="280" class="relative z-10 w-full h-full cursor-crosshair"></canvas>
+                </div>
+              </div>
+            `;
+            drawLockedHeadOnCanvas('soulRelayBgCanvas', true);
+            bindSimpleFreehandCanvas('soulRelayDrawCanvas');
+          }
+        } else if (phase === 'tier_judging') {
+          const curItem = judgingList[curJudgeIdx];
+          mount.innerHTML = `
+            <div class="space-y-4 text-center">
+              <div class="doodle-box-sm p-3 bg-[#ffe66d]">
+                <div class="text-xs font-black">📢 正解揭曉：【 ${secretTopic} 】</div>
+                <div class="text-sm font-black mt-0.5">正在評鑑第 ${curJudgeIdx + 1} / ${judgingList.length} 位靈魂畫師：${curItem.player.name}</div>
+              </div>
+
+              <div class="relative w-64 h-64 mx-auto doodle-box-sm p-2 bg-white">
+                <img src="${curItem.dataUrl}" class="w-full h-full object-contain rounded-xl" />
+                <div id="soulTierStampBadge" class="hidden theme-cut-in absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#ff6b6b] text-white border-4 border-[#1e1e1e] px-5 py-2 rounded-2xl text-2xl font-black shadow-xl rotate-[-8deg]">
+                  頂級 (+7分)
+                </div>
+              </div>
+
+              ${isHumanHost ? `
+                <div class="space-y-1.5">
+                  <div class="text-xs font-black text-red-600">🎤 請主持人給予這幅靈魂作品殘酷的 Tier 階級評價：</div>
+                  <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 max-w-lg mx-auto">
+                    <button onclick="window._hostRateSoulTier('${curItem.player.id}', '頂級')" class="doodle-btn py-2.5 text-sm bg-[#ff6b6b] text-white">👑 頂級 (+7分)</button>
+                    <button onclick="window._hostRateSoulTier('${curItem.player.id}', '人上人')" class="doodle-btn py-2.5 text-sm bg-[#ffe66d]">✨ 人上人 (+3分)</button>
+                    <button onclick="window._hostRateSoulTier('${curItem.player.id}', 'NPC')" class="doodle-btn py-2.5 text-sm bg-[#4ecdc4]">😐 NPC (+1分)</button>
+                    <button onclick="window._hostRateSoulTier('${curItem.player.id}', '拉完了')" class="doodle-btn py-2.5 text-sm bg-neutral-300">💩 拉完了 (+0分)</button>
+                  </div>
+                </div>
+              ` : `
+                <div class="text-xs font-black text-neutral-500">⏳ 等待主持人【${host.name}】蓋章評分中...</div>
+              `}
+            </div>
+          `;
+        } else if (phase === 'tier_board') {
+          const tierMeta = [
+            { key: '頂級', color: 'bg-[#ff6b6b] text-white', pts: '+7' },
+            { key: '人上人', color: 'bg-[#ffe66d] text-[#1e1e1e]', pts: '+3' },
+            { key: 'NPC', color: 'bg-[#4ecdc4] text-[#1e1e1e]', pts: '+1' },
+            { key: '拉完了', color: 'bg-neutral-300 text-neutral-800', pts: '+0' }
+          ];
+          mount.innerHTML = `
+            <div class="space-y-4">
+              <div class="doodle-box-sm p-3 bg-[#fff9db] text-center">
+                <div class="text-xs font-black text-red-600">🏆 靈魂畫師傳聲筒 全場 Tier 階級排行榜</div>
+                <div class="font-black text-base">題目：${secretTopic}</div>
+              </div>
+
+              <div class="space-y-2.5">
+                ${tierMeta.map(tm => `
+                  <div class="doodle-box-sm overflow-hidden flex items-stretch bg-white">
+                    <div class="w-24 sm:w-28 flex flex-col items-center justify-center font-black p-2 border-r-3 border-[#1e1e1e] ${tm.color}">
+                      <span class="text-base sm:text-lg">${tm.key}</span>
+                      <span class="text-xs opacity-90">(${tm.pts}分)</span>
+                    </div>
+                    <div class="flex-1 p-2 flex flex-wrap items-center gap-3 min-h-[88px]">
+                      ${tierResults[tm.key].length === 0 ? `<span class="text-xs font-bold text-neutral-400 pl-2">（從缺）</span>` : ''}
+                      ${tierResults[tm.key].map(item => `
+                        <div class="flex flex-col items-center">
+                          <img src="${item.dataUrl}" class="w-16 h-16 object-contain border-2 border-[#1e1e1e] rounded-lg bg-white" />
+                          <span class="text-[11px] font-black mt-0.5">${item.player.name}</span>
+                        </div>
+                      `).join('')}
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+
+              <div class="text-center pt-2">
+                <button onclick="finishMiniGameAndShowRoundResult()" class="doodle-btn px-8 py-3 text-lg bg-[#ff6b6b] text-white">
+                  進入本局計分台 ➔
+                </button>
+              </div>
+            </div>
+          `;
+        }
+      }
+
+      function setupHostPoseCanvas() {
+        const c = document.getElementById('soulPoseCanvas');
+        if (!c) return;
+        const ctx = c.getContext('2d');
+        let dragging = false;
+
+        const redraw = () => {
+          ctx.clearRect(0, 0, 280, 280);
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, 280, 280);
+          ctx.save();
+          ctx.translate(headPose.x, headPose.y);
+          ctx.rotate((headPose.rotDeg * Math.PI) / 180);
+          ctx.scale(headPose.scale, headPose.scale);
+          ctx.drawImage(hostHeadOffCanvas, -120, -120, 240, 240);
+          ctx.strokeStyle = '#ff6b6b';
+          ctx.lineWidth = 4;
+          ctx.setLineDash([6, 4]);
+          ctx.strokeRect(-115, -115, 230, 230);
+          ctx.restore();
+        };
+        redraw();
+
+        const getPos = (e) => {
+          const r = c.getBoundingClientRect();
+          const cx = e.touches ? e.touches[0].clientX : e.clientX;
+          const cy = e.touches ? e.touches[0].clientY : e.clientY;
+          return { x: (cx - r.left) * (280 / r.width), y: (cy - r.top) * (280 / r.height) };
+        };
+
+        c.onmousedown = c.ontouchstart = (e) => { e.preventDefault(); dragging = true; };
+        c.onmousemove = c.ontouchmove = (e) => {
+          if (!dragging) return;
+          e.preventDefault();
+          const p = getPos(e);
+          headPose.x = Math.max(30, Math.min(250, p.x));
+          headPose.y = Math.max(30, Math.min(250, p.y));
+          redraw();
+        };
+        window.addEventListener('mouseup', () => dragging = false);
+        window.addEventListener('touchend', () => dragging = false);
+        window._redrawSoulPose = redraw;
+      }
+
+      function drawLockedHeadOnCanvas(canvasId, withFadedSketch = false) {
+        const c = document.getElementById(canvasId);
+        if (!c) return;
+        const ctx = c.getContext('2d');
+        ctx.clearRect(0, 0, 280, 280);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, 280, 280);
+        if (withFadedSketch && hostSketchImg) {
+          ctx.save();
+          ctx.globalAlpha = 0.32;
+          ctx.drawImage(hostSketchImg, 0, 0, 280, 280);
+          ctx.restore();
+        }
+        ctx.save();
+        ctx.translate(headPose.x, headPose.y);
+        ctx.rotate((headPose.rotDeg * Math.PI) / 180);
+        ctx.scale(headPose.scale, headPose.scale);
+        ctx.drawImage(hostHeadOffCanvas, -120, -120, 240, 240);
+        ctx.restore();
+      }
+
+      function bindSimpleFreehandCanvas(canvasId) {
+        const c = document.getElementById(canvasId);
+        if (!c) return;
+        const ctx = c.getContext('2d');
+        let drawing = false, lx = 0, ly = 0;
+        const getPos = (e) => {
+          const r = c.getBoundingClientRect();
+          const cx = e.touches ? e.touches[0].clientX : e.clientX;
+          const cy = e.touches ? e.touches[0].clientY : e.clientY;
+          return { x: (cx - r.left) * (280 / r.width), y: (cy - r.top) * (280 / r.height) };
+        };
+        c.onmousedown = c.ontouchstart = (e) => { e.preventDefault(); drawing = true; const p = getPos(e); lx = p.x; ly = p.y; };
+        c.onmousemove = c.ontouchmove = (e) => {
+          if (!drawing) return;
+          e.preventDefault();
+          const p = getPos(e);
+          ctx.strokeStyle = '#1e1e1e';
+          ctx.lineWidth = 4;
+          ctx.lineCap = 'round';
+          ctx.beginPath(); ctx.moveTo(lx, ly); ctx.lineTo(p.x, p.y); ctx.stroke();
+          lx = p.x; ly = p.y;
+        };
+        window.addEventListener('mouseup', () => drawing = false);
+        window.addEventListener('touchend', () => drawing = false);
+      }
+
+      window._adjSoulHead = (dScale, dRot) => {
+        headPose.scale = Math.max(0.2, Math.min(0.85, headPose.scale + dScale));
+        headPose.rotDeg = (headPose.rotDeg + dRot) % 360;
+        if (window._redrawSoulPose) window._redrawSoulPose();
+      };
+
+      window._finishHostPose = () => {
+        if (phase !== 'host_pose') return;
+        SoundFX.pop();
+        NetSync.sendGameAction('SOUL_POSE_DONE', { headPose });
+      };
+
+      window._clearSoulSketch = () => {
+        const c = document.getElementById('soulHostDrawCanvas');
+        if (c) c.getContext('2d').clearRect(0, 0, 280, 280);
+      };
+
+      window._finishHostSketch = () => {
+        if (phase !== 'host_sketch') return;
+        const c = document.getElementById('soulHostDrawCanvas');
+        const url = c ? c.toDataURL('image/png') : createBlankCanvasUrl();
+        SoundFX.pop();
+        NetSync.sendGameAction('SOUL_SKETCH_DONE', { headPose, sketchDataUrl: url });
+      };
+
+      window._clearSoulRelay = () => {
+        const c = document.getElementById('soulRelayDrawCanvas');
+        if (c) c.getContext('2d').clearRect(0, 0, 280, 280);
+      };
+
+      window._submitPlayerRelayWork = () => {
+        if (relaySubmissions[me.id]) return;
+        const finalUrl = captureCompositeCanvasUrl('soulRelayDrawCanvas', true);
+        SoundFX.pop();
+        NetSync.sendGameAction('SOUL_RELAY_SUBMIT', {
+          playerId: me.id,
+          dataUrl: finalUrl,
+          timestamp: Date.now()
+        });
+        if (phase === 'player_relay') renderSoulView();
+      };
+
+      window._hostRateSoulTier = (playerId, tierName) => {
+        NetSync.sendGameAction('SOUL_RATE_WORK', { playerId, tierName });
+      };
+
+      enterHostPosePhase();
+    }
+
+    /*************************************************************************
+- 遊戲 10 (ID 9)：｜表情包製造機（最少 3 人）
+     *************************************************************************/
+    function startMiniGame9_MemeMaker() {
+      const mount = document.getElementById('miniGameMountPoint');
+      const host = getCurrentHost();
+      const me = getLocalPlayer();
+      const isHumanHost = (me.id === host.id);
+      const rng = createSeededRandom(GameState.roundSeed + 909);
+
+      const situationPrompt = NEW_QUESTION_BANKS.memeSituations[Math.floor(rng() * NEW_QUESTION_BANKS.memeSituations.length)];
+      const baseSockets = FACE_SOCKETS[host.avatar.faceShape || 'round'] || FACE_SOCKETS.round;
+
+      let phase = 'editing';
+      let timeLeft = 60;
+      let activeTool = 'eyes';
+
+      const partTransforms = {
+        eyes:  { x: baseSockets.eyes.x,  y: baseSockets.eyes.y,  scaleX: 1, scaleY: 1, rotDeg: 0, ownerId: host.id },
+        nose:  { x: baseSockets.nose.x,  y: baseSockets.nose.y,  scaleX: 1, scaleY: 1, rotDeg: 0, ownerId: host.id },
+        mouth: { x: baseSockets.mouth.x, y: baseSockets.mouth.y, scaleX: 1, scaleY: 1, rotDeg: 0, ownerId: host.id }
+      };
+
+      const memeSubmissions = {};
+      let awardBestVividId = null;
+      let awardMostBrokenId = null;
+
+      function drawTransformedPart(ctx, partKey, tf) {
+        const owner = GameState.players.find(p => p.id === tf.ownerId) || host;
+        const partData = owner.avatar.parts?.[partKey];
+        const ownerSockets = FACE_SOCKETS[owner.avatar.faceShape || 'round'] || FACE_SOCKETS.round;
+        const stdSock = ownerSockets[partKey];
+
+        ctx.save();
+        ctx.translate(tf.x, tf.y);
+        ctx.rotate((tf.rotDeg * Math.PI) / 180);
+        ctx.scale(tf.scaleX, tf.scaleY);
+
+        if (partData && partData.mode === 'custom') {
+          if (partData.imgElement && partData.imgElement.complete && partData.imgElement.naturalWidth > 0) {
+            ctx.drawImage(partData.imgElement, -stdSock.x, -stdSock.y, 240, 240);
+          } else if (partData.dataUrl) {
+            const img = new Image();
+            img.onload = () => {
+              partData.imgElement = img;
+              if (window._redrawMemeParts) window._redrawMemeParts();
+            };
+            img.src = partData.dataUrl;
+          }
+        } else {
+          const pIdx = partData ? (partData.presetIndex ?? 0) : 0;
+          drawPresetPart(ctx, partKey, pIdx, 0, 0, owner.avatar.hairColor || '#1e1e1e', 1);
+        }
+        ctx.restore();
+      }
+
+      function exportMemeCompositeDataUrl() {
+        const out = document.createElement('canvas');
+        out.width = 240; out.height = 240;
+        const octx = out.getContext('2d');
+        octx.fillStyle = '#fffdf9';
+        octx.fillRect(0, 0, 240, 240);
+
+        drawFaceBase(octx, host.avatar.faceShape, host.avatar.skinColor);
+        const hairTf = { x: baseSockets.hair.x, y: baseSockets.hair.y, scaleX: 1, scaleY: 1, rotDeg: 0, ownerId: host.id };
+        drawTransformedPart(octx, 'hair', hairTf);
+
+        ['eyes', 'nose', 'mouth'].forEach(k => {
+          drawTransformedPart(octx, k, partTransforms[k]);
+        });
+
+        const brushCv = document.getElementById('memeBrushCanvas');
+        if (brushCv) {
+          octx.drawImage(brushCv, 0, 0, 240, 240);
+        }
+        return out.toDataURL('image/png');
+      }
+
+      GameState.players.forEach(p => {
+        if (p.isAI && p.id !== host.id) {
+          const aiCv = document.createElement('canvas');
+          aiCv.width = 240; aiCv.height = 240;
+          const actx = aiCv.getContext('2d');
+          actx.fillStyle = '#fffdf9';
+          actx.fillRect(0, 0, 240, 240);
+          drawFaceBase(actx, host.avatar.faceShape, host.avatar.skinColor);
+          drawTransformedPart(actx, 'hair', { x: baseSockets.hair.x, y: baseSockets.hair.y, scaleX: 1, scaleY: 1, rotDeg: 0, ownerId: host.id });
+          drawTransformedPart(actx, 'eyes',  { x: 120, y: 98,  scaleX: 1.4, scaleY: 0.7, rotDeg: 15,  ownerId: p.id });
+          drawTransformedPart(actx, 'nose',  { x: 125, y: 135, scaleX: 0.9, scaleY: 1.3, rotDeg: -10, ownerId: host.id });
+          drawTransformedPart(actx, 'mouth', { x: 120, y: 175, scaleX: 1.5, scaleY: 1.4, rotDeg: 8,   ownerId: p.id });
+          memeSubmissions[p.id] = aiCv.toDataURL('image/png');
+        }
+      });
+
+      window._onGameEvent = (act, payload) => {
+        if (act === 'MEME_SUBMIT') {
+          memeSubmissions[payload.playerId] = payload.dataUrl;
+          const badge = document.getElementById('memeDoneCountBadge');
+          if (badge) {
+            const makers = GameState.players.filter(p => p.id !== host.id);
+            const cnt = makers.filter(p => !!memeSubmissions[p.id]).length;
+            badge.textContent = `已交卷：${cnt} / ${makers.length} 人`;
+          }
+          checkAllMemesDone();
+        } else if (act === 'MEME_FORCE_AWARD') {
+          enterMemeAwardPhase();
+        } else if (act === 'MEME_GIVE_AWARD') {
+          if (payload.awardType === 'vivid') {
+            awardBestVividId = payload.winnerId;
+            awardPoints(payload.winnerId, 7, host.id);
+          } else if (payload.awardType === 'broken') {
+            awardMostBrokenId = payload.winnerId;
+            awardPoints(payload.winnerId, 3, host.id);
+          }
+          SoundFX.correct();
+          renderMemeView();
+          if (awardBestVividId && awardMostBrokenId && GameState.isRoomHost) {
+            setTimeout(() => {
+              finishMiniGameAndShowRoundResult();
+            }, 2400);
+          }
+        }
+      };
+
+      function checkAllMemesDone() {
+        if (phase !== 'editing') return;
+        const makers = GameState.players.filter(p => p.id !== host.id);
+        if (makers.every(p => !!memeSubmissions[p.id]) && GameState.isRoomHost) {
+          setTimeout(() => {
+            if (phase === 'editing') NetSync.sendGameAction('MEME_FORCE_AWARD', {});
+          }, 600);
+        }
+      }
+
+      function enterMemeAwardPhase() {
+        if (phase === 'awarding') return;
+        clearAllGameTimers();
+        phase = 'awarding';
+        SoundFX.fanfare();
+        renderMemeView();
+
+        if (host.isAI && GameState.isRoomHost) {
+          const makers = GameState.players.filter(p => p.id !== host.id);
+          const w1 = makers[0]?.id;
+          const w2 = makers[1]?.id || w1;
+          setTimeout(() => {
+            if (w1) NetSync.sendGameAction('MEME_GIVE_AWARD', { awardType: 'vivid', winnerId: w1 });
+          }, 1200);
+          setTimeout(() => {
+            if (w2) NetSync.sendGameAction('MEME_GIVE_AWARD', { awardType: 'broken', winnerId: w2 });
+          }, 2400);
+        }
+      }
+
+      function renderMemeView() {
+        const makers = GameState.players.filter(p => p.id !== host.id);
+        const doneCnt = makers.filter(p => !!memeSubmissions[p.id]).length;
+
+        if (phase === 'editing') {
+          document.getElementById('playSubProgress').textContent = `五官魔改工廠｜限時 60 秒打造專屬表情包`;
+
+          if (isHumanHost) {
+            mount.innerHTML = `
+              <div class="py-10 text-center doodle-box-sm bg-[#fffdf7] space-y-3">
+                <div class="text-xs font-black bg-[#ffe66d] px-3 py-1 rounded-full inline-block border border-black">本局情境題</div>
+                <h3 class="text-xl md:text-2xl font-black px-4">「${situationPrompt}」</h3>
+                <p class="text-sm font-bold text-neutral-600">全體玩家正在魔改你的五官製作表情包！</p>
+                <div class="text-sm font-black text-red-600">
+                  ⏱️ 剩餘 <span id="memeTimerText">${timeLeft}s</span> ｜ <span id="memeDoneCountBadge">已交卷：${doneCnt} / ${makers.length} 人</span>
+                </div>
+              </div>
+            `;
+          } else if (memeSubmissions[me.id]) {
+            mount.innerHTML = `
+              <div class="py-12 text-center doodle-box-sm bg-[#fffdf7] space-y-3">
+                <div class="text-3xl">😂</div>
+                <h4 class="text-lg font-black text-teal-800">你的魔性表情包已送出！等待其他玩家完成 (<span id="memeDoneCountBadge">已交卷：${doneCnt} / ${makers.length} 人</span>)...</h4>
+              </div>
+            `;
+          } else {
+            mount.innerHTML = `
+              <div class="space-y-3 text-center">
+                <div class="doodle-box-sm p-3 bg-[#ffe66d]">
+                  <div class="flex items-center justify-between text-xs font-black mb-1">
+                    <span>🎭 請做出主持人在以下情境的表情包：</span>
+                    <span class="bg-[#1e1e1e] text-[#ffe66d] px-2.5 py-0.5 rounded font-mono">⏱️ <span id="memeTimerText">${timeLeft}s</span></span>
+                  </div>
+                  <h3 class="text-base md:text-lg font-black leading-snug">「${situationPrompt}」</h3>
+                </div>
+
+                <div class="flex justify-center gap-2">
+                  ${[
+                    { k: 'eyes', label: '👀 眼睛' },
+                    { k: 'nose', label: '👃 鼻子' },
+                    { k: 'mouth', label: '👄 嘴巴' },
+                    { k: 'brush', label: '🖌️ 畫筆' }
+                  ].map(t => `
+                    <button id="memeToolBtn_${t.k}" onclick="window._switchMemeTool('${t.k}')" class="doodle-btn px-3.5 py-1.5 text-xs ${activeTool === t.k ? 'bg-[#ffe66d] ring-2 ring-black' : 'bg-white'}">
+                      ${t.label}
+                    </button>
+                  `).join('')}
+                </div>
+
+                <div class="relative w-64 h-64 mx-auto bg-[#fffdf9] border-4 border-[#1e1e1e] rounded-2xl shadow-md overflow-hidden touch-none">
+                  <canvas id="memePartsCanvas" width="240" height="240" class="absolute inset-0 w-full h-full"></canvas>
+                  <canvas id="memeBrushCanvas" width="240" height="240" class="relative z-10 w-full h-full ${activeTool === 'brush' ? 'cursor-crosshair' : 'pointer-events-none'}"></canvas>
+                </div>
+
+                <div id="memeTransformControls" class="flex flex-wrap justify-center gap-1.5 max-w-lg mx-auto ${activeTool === 'brush' ? 'opacity-40 pointer-events-none' : ''}">
+                  <button onclick="window._modMemePart(0.15, 0.15, 0)" class="doodle-btn px-2.5 py-1.5 text-xs bg-white">➕ 放大</button>
+                  <button onclick="window._modMemePart(-0.15, -0.15, 0)" class="doodle-btn px-2.5 py-1.5 text-xs bg-white">➖ 縮小</button>
+                  <button onclick="window._modMemePart(0, 0.2, 0)" class="doodle-btn px-2.5 py-1.5 text-xs bg-white">↕️ 加長</button>
+                  <button onclick="window._modMemePart(0, -0.2, 0)" class="doodle-btn px-2.5 py-1.5 text-xs bg-white">↕️ 縮短</button>
+                  <button onclick="window._modMemePart(0.2, 0, 0)" class="doodle-btn px-2.5 py-1.5 text-xs bg-white">↔️ 加寬</button>
+                  <button onclick="window._modMemePart(-0.2, 0, 0)" class="doodle-btn px-2.5 py-1.5 text-xs bg-white">↔️ 縮窄</button>
+                  <button onclick="window._modMemePart(0, 0, -15)" class="doodle-btn px-2.5 py-1.5 text-xs bg-white">↺ 左旋轉</button>
+                  <button onclick="window._modMemePart(0, 0, 15)" class="doodle-btn px-2.5 py-1.5 text-xs bg-white">↻ 右旋轉</button>
+                  <button onclick="window._swapMemePartOwner()" class="doodle-btn px-3 py-1.5 text-xs bg-[#a29bfe] text-white">🎲 替換他人五官</button>
+                </div>
+
+                <div class="flex justify-center gap-3 pt-1">
+                  <button onclick="window._clearMemeBrush()" class="doodle-btn px-3 py-1.5 text-xs bg-white">🗑️ 清空畫筆</button>
+                  <button onclick="window._submitMyMeme()" class="doodle-btn px-6 py-2 text-sm bg-[#ff6b6b] text-white">
+                    ✅ 完成表情包並交卷 (<span id="memeDoneCountBadge">已交卷：${doneCnt} / ${makers.length} 人</span>) ➔
+                  </button>
+                </div>
+              </div>
+            `;
+            initMemeInteractiveCanvases();
+          }
+        } else {
+          mount.innerHTML = `
+            <div class="space-y-4 text-center">
+              <div class="doodle-box-sm p-3 bg-[#ffe66d]">
+                <div class="text-xs font-black">🏆 表情包製造機 大賞頒獎典禮</div>
+                <h3 class="text-base md:text-lg font-black mt-0.5">情境：「${situationPrompt}」</h3>
+                <p class="text-xs font-bold text-red-700 mt-1">
+                  ${isHumanHost
+                    ? (!awardBestVividId ? '👑 請主持人先頒發第一項大獎：【最傳神獎 (+7分)】' : (!awardMostBrokenId ? '🤪 請主持人接著頒發第二項大獎：【最崩壞獎 (+3分)】' : '🎉 兩大獎項皆已頒發完畢！'))
+                    : '⏳ 等待主持人【' + host.name + '】欽點「最傳神獎(+7)」與「最崩壞獎(+3)」！'}
+                </p>
+              </div>
+
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                ${makers.map(p => {
+                  const url = memeSubmissions[p.id] || '';
+                  const isVivid = (awardBestVividId === p.id);
+                  const isBroken = (awardMostBrokenId === p.id);
+                  const canPickThis = isHumanHost && (!awardBestVividId || (!awardMostBrokenId && (makers.length === 1 || awardBestVividId !== p.id)));
+                  return `
+                    <div class="doodle-box-sm p-3 bg-white flex flex-col items-center relative ${isVivid || isBroken ? 'winner-gold-glow' : ''}">
+                      <span class="text-xs font-black mb-1">${p.name}</span>
+                      <div class="w-36 h-36 border-2 border-[#1e1e1e] rounded-xl overflow-hidden bg-[#fffdf9] wiggle-slow">
+                        <img src="${url}" class="w-full h-full object-contain" />
+                      </div>
+                     ${isVivid ? `<div class="mt-2 bg-[#ff6b6b] text-white text-xs font-black px-3 py-1 rounded-full border-2 border-black">👑 最傳神獎 (+7分!)</div>` : ''}
+                      ${isBroken ? `<div class="mt-2 bg-[#a29bfe] text-white text-xs font-black px-3 py-1 rounded-full border-2 border-black">🤪 最崩壞獎 (+3分!)</div>` : ''}
+                      ${canPickThis && !isBroken && (!isVivid || makers.length === 1) ? `
+                        <button onclick="window._hostGiveMemeAward('${p.id}')" class="doodle-btn w-full py-1.5 text-xs bg-[#ffe66d] mt-2">
+                          ${!awardBestVividId ? '👑 頒發【最傳神獎 +7】' : '🤪 頒發【最崩壞獎 +3】'}
+                        </button>
+                      ` : ''}
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          `;
+        }
+      }
+
+      function initMemeInteractiveCanvases() {
+        const pCv = document.getElementById('memePartsCanvas');
+        const bCv = document.getElementById('memeBrushCanvas');
+        if (!pCv || !bCv) return;
+        const pCtx = pCv.getContext('2d');
+        const bCtx = bCv.getContext('2d');
+
+        const redrawParts = () => {
+          pCtx.clearRect(0, 0, 240, 240);
+          pCtx.fillStyle = '#fffdf9';
+          pCtx.fillRect(0, 0, 240, 240);
+          drawFaceBase(pCtx, host.avatar.faceShape, host.avatar.skinColor);
+          drawTransformedPart(pCtx, 'hair', { x: baseSockets.hair.x, y: baseSockets.hair.y, scaleX: 1, scaleY: 1, rotDeg: 0, ownerId: host.id });
+
+          ['eyes', 'nose', 'mouth'].forEach(k => {
+            drawTransformedPart(pCtx, k, partTransforms[k]);
+            if (activeTool === k) {
+              pCtx.save();
+              pCtx.strokeStyle = '#ff6b6b';
+              pCtx.lineWidth = 2;
+              pCtx.setLineDash([4, 3]);
+              pCtx.beginPath();
+              pCtx.arc(partTransforms[k].x, partTransforms[k].y, 26, 0, Math.PI * 2);
+              pCtx.stroke();
+              pCtx.restore();
+            }
+          });
+        };
+        redrawParts();
+        window._redrawMemeParts = redrawParts;
+
+        let draggingPart = false;
+        const getPos = (c, e) => {
+          const r = c.getBoundingClientRect();
+          const cx = e.touches ? e.touches[0].clientX : e.clientX;
+          const cy = e.touches ? e.touches[0].clientY : e.clientY;
+          return { x: (cx - r.left) * (240 / r.width), y: (cy - r.top) * (240 / r.height) };
+        };
+
+        pCv.onmousedown = pCv.ontouchstart = (e) => {
+          if (activeTool === 'brush') return;
+          e.preventDefault();
+          draggingPart = true;
+        };
+        pCv.onmousemove = pCv.ontouchmove = (e) => {
+          if (!draggingPart || activeTool === 'brush') return;
+          e.preventDefault();
+          const pos = getPos(pCv, e);
+          partTransforms[activeTool].x = Math.max(25, Math.min(215, pos.x));
+          partTransforms[activeTool].y = Math.max(25, Math.min(215, pos.y));
+          redrawParts();
+        };
+        window.addEventListener('mouseup', () => draggingPart = false);
+        window.addEventListener('touchend', () => draggingPart = false);
+
+        let drawingBrush = false, lx = 0, ly = 0;
+        bCv.onmousedown = bCv.ontouchstart = (e) => {
+          if (activeTool !== 'brush') return;
+          e.preventDefault();
+          drawingBrush = true;
+          const p = getPos(bCv, e);
+          lx = p.x; ly = p.y;
+        };
+        bCv.onmousemove = bCv.ontouchmove = (e) => {
+          if (!drawingBrush || activeTool !== 'brush') return;
+          e.preventDefault();
+          const p = getPos(bCv, e);
+          bCtx.strokeStyle = '#1e1e1e';
+          bCtx.lineWidth = 4;
+          bCtx.lineCap = 'round';
+          bCtx.beginPath(); bCtx.moveTo(lx, ly); bCtx.lineTo(p.x, p.y); bCtx.stroke();
+          lx = p.x; ly = p.y;
+        };
+        window.addEventListener('mouseup', () => drawingBrush = false);
+        window.addEventListener('touchend', () => drawingBrush = false);
+      }
+
+      window._switchMemeTool = (toolKey) => {
+        activeTool = toolKey;
+        ['eyes', 'nose', 'mouth', 'brush'].forEach(k => {
+          const btn = document.getElementById(`memeToolBtn_${k}`);
+          if (btn) {
+            btn.className = `doodle-btn px-3.5 py-1.5 text-xs ${activeTool === k ? 'bg-[#ffe66d] ring-2 ring-black' : 'bg-white'}`;
+          }
+        });
+        const bCv = document.getElementById('memeBrushCanvas');
+        if (bCv) {
+          if (activeTool === 'brush') bCv.classList.remove('pointer-events-none');
+          else bCv.classList.add('pointer-events-none');
+        }
+        const ctrl = document.getElementById('memeTransformControls');
+        if (ctrl) {
+          if (activeTool === 'brush') ctrl.classList.add('opacity-40', 'pointer-events-none');
+          else ctrl.classList.remove('opacity-40', 'pointer-events-none');
+        }
+        if (window._redrawMemeParts) window._redrawMemeParts();
+      };
+
+      window._modMemePart = (dSx, dSy, dRot) => {
+        if (activeTool === 'brush') return;
+        const tf = partTransforms[activeTool];
+        tf.scaleX = Math.max(0.35, Math.min(2.6, tf.scaleX + dSx));
+        tf.scaleY = Math.max(0.35, Math.min(2.6, tf.scaleY + dSy));
+        tf.rotDeg = (tf.rotDeg + dRot) % 360;
+        if (window._redrawMemeParts) window._redrawMemeParts();
+      };
+
+      window._swapMemePartOwner = () => {
+        if (activeTool === 'brush') return;
+        const tf = partTransforms[activeTool];
+        const otherPool = GameState.players.filter(p => p.id !== tf.ownerId);
+        if (otherPool.length > 0) {
+          const picked = otherPool[Math.floor(Math.random() * otherPool.length)];
+          tf.ownerId = picked.id;
+          SoundFX.pop();
+          if (window._redrawMemeParts) window._redrawMemeParts();
+        }
+      };
+
+      window._clearMemeBrush = () => {
+        const bCv = document.getElementById('memeBrushCanvas');
+        if (bCv) bCv.getContext('2d').clearRect(0, 0, 240, 240);
+      };
+
+      window._submitMyMeme = () => {
+        if (memeSubmissions[me.id]) return;
+        const dataUrl = exportMemeCompositeDataUrl();
+        SoundFX.pop();
+        NetSync.sendGameAction('MEME_SUBMIT', { playerId: me.id, dataUrl });
+        if (phase === 'editing') renderMemeView();
+      };
+
+      window._hostGiveMemeAward = (winnerId) => {
+        if (!isHumanHost) return;
+        const type = !awardBestVividId ? 'vivid' : 'broken';
+        NetSync.sendGameAction('MEME_GIVE_AWARD', { awardType: type, winnerId });
+      };
+
+      renderMemeView();
+
+      const timerId = setInterval(() => {
+        if (phase !== 'editing') return;
+        timeLeft--;
+        const tEl = document.getElementById('memeTimerText');
+        if (tEl) tEl.textContent = `${timeLeft}s`;
+        if (timeLeft <= 0) {
+          clearInterval(timerId);
+          if (!isHumanHost && !memeSubmissions[me.id]) {
+            window._submitMyMeme();
+          }
+          if (GameState.isRoomHost) {
+            setTimeout(() => {
+              if (phase === 'editing') NetSync.sendGameAction('MEME_FORCE_AWARD', {});
+            }, 1200);
+          }
+        }
+      }, 1000);
+      GameState.activeTimers.push(timerId);
+    }
+
+    /*************************************************************************
+- 遊戲 11 (ID 10)：｜完美整形診所（最少 3 人）
+     *************************************************************************/
+    function startMiniGame10_PlasticSurgery() {
+      const mount = document.getElementById('miniGameMountPoint');
+      const host = getCurrentHost();
+      const me = getLocalPlayer();
+      const isHumanHost = (me.id === host.id);
+      const rng = createSeededRandom(GameState.roundSeed + 1010);
+
+      const nPlayers = GameState.players.length;
+      const totalBidRounds = Math.max(nPlayers, 6);
+      const itemsPerRound = nPlayers <= 5 ? 3 : (nPlayers <= 8 ? 4 : 6);
+
+      let phase = 'bidding';
+      let curBidRound = 0;
+      let bidTimeLeft = 8;
+      let currentRoundItems = [];
+      let roundPicks = {};
+      let bidRevealed = false;
+
+      const playerInventory = {};
+      GameState.players.forEach(p => { playerInventory[p.id] = []; });
+
+      const allPartTypes = ['eyes', 'nose', 'mouth', 'hair'];
+      const bidRoundsData = [];
+      for (let r = 0; r < totalBidRounds; r++) {
+        const items = [];
+        for (let i = 0; i < itemsPerRound; i++) {
+          const pType = allPartTypes[(r + i) % 4];
+          const randOwner = GameState.players[Math.floor(rng() * nPlayers)];
+          const useCustom = randOwner && randOwner.avatar.parts?.[pType]?.mode === 'custom' && rng() < 0.65;
+          items.push({
+            id: `part_r${r}_i${i}`,
+            partType: pType,
+            partLabel: pType === 'eyes' ? '眼睛' : (pType === 'nose' ? '鼻子' : (pType === 'mouth' ? '嘴巴' : '髮型')),
+            ownerId: useCustom ? randOwner.id : null,
+            presetIndex: Math.floor(rng() * 11),
+            hairColor: HAIR_COLORS[Math.floor(rng() * HAIR_COLORS.length)].hex
+          });
+        }
+        bidRoundsData.push(items);
+      }
+
+      let surgeryTimeLeft = 60;
+      const mySockets = FACE_SOCKETS[me.avatar.faceShape || 'round'] || FACE_SOCKETS.round;
+      const surgeryLayout = {
+        eyes:  { item: null, x: mySockets.eyes.x,  y: mySockets.eyes.y,  scale: 1, rotDeg: 0, keepOriginal: true },
+        nose:  { item: null, x: mySockets.nose.x,  y: mySockets.nose.y,  scale: 1, rotDeg: 0, keepOriginal: true },
+        mouth: { item: null, x: mySockets.mouth.x, y: mySockets.mouth.y, scale: 1, rotDeg: 0, keepOriginal: true },
+        hair:  { item: null, x: mySockets.hair.x,  y: mySockets.hair.y,  scale: 1, rotDeg: 0, keepOriginal: true }
+      };
+      let activeSurgeryPart = 'eyes';
+      const afterSubmissions = {};
+      let awardSuccessId = null;
+      let awardFunnyId = null;
+
+      function drawAuctionPartItem(ctx, item, cx, cy, scale = 1, rotDeg = 0) {
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate((rotDeg * Math.PI) / 180);
+        ctx.scale(scale, scale);
+        if (item.ownerId) {
+          const owner = GameState.players.find(p => p.id === item.ownerId);
+          const pData = owner?.avatar?.parts?.[item.partType];
+          const oSock = (FACE_SOCKETS[owner?.avatar?.faceShape || 'round'] || FACE_SOCKETS.round)[item.partType];
+          if (pData && pData.mode === 'custom' && pData.imgElement) {
+            ctx.drawImage(pData.imgElement, -oSock.x, -oSock.y, 240, 240);
+            ctx.restore();
+            return;
+          }
+        }
+        drawPresetPart(ctx, item.partType, item.presetIndex, 0, 0, item.hairColor, 1.15);
+        ctx.restore();
+      }
+
+      function exportMySurgeryCanvasUrl() {
+        const out = document.createElement('canvas');
+        out.width = 240; out.height = 240;
+        const octx = out.getContext('2d');
+        octx.fillStyle = '#fffdf9';
+        octx.fillRect(0, 0, 240, 240);
+        drawFaceBase(octx, me.avatar.faceShape, me.avatar.skinColor);
+
+        ['eyes', 'nose', 'mouth', 'hair'].forEach(k => {
+          const slot = surgeryLayout[k];
+          if (slot.item) {
+            drawAuctionPartItem(octx, slot.item, slot.x, slot.y, slot.scale, slot.rotDeg);
+          } else if (slot.keepOriginal) {
+            const origData = me.avatar.parts?.[k];
+            if (origData && origData.mode === 'custom' && origData.imgElement) {
+              octx.drawImage(origData.imgElement, 0, 0, 240, 240);
+            } else {
+              drawPresetPart(octx, k, origData?.presetIndex ?? 0, mySockets[k].x, mySockets[k].y, me.avatar.hairColor, 1);
+            }
+          }
+        });
+        return out.toDataURL('image/png');
+      }
+
+      window._onGameEvent = (act, payload) => {
+        if (act === 'SURGERY_BID_PICK' && payload.round === curBidRound) {
+          roundPicks[payload.playerId] = payload.itemIdx;
+          renderPlasticView();
+          checkAllBidPicked();
+        } else if (act === 'SURGERY_BID_RESOLVE' && payload.round === curBidRound) {
+          resolveCurrentBidRound();
+        } else if (act === 'SURGERY_NEXT_BID') {
+          startBidRound(payload.nextRound);
+        } else if (act === 'SURGERY_SUBMIT_AFTER') {
+          afterSubmissions[payload.playerId] = payload.dataUrl;
+          const badge = document.getElementById('surgeryDoneCountBadge');
+          if (badge) {
+            const patients = GameState.players.filter(p => p.id !== host.id);
+            const cnt = patients.filter(p => !!afterSubmissions[p.id]).length;
+            badge.textContent = `已完成手術：${cnt} / ${patients.length} 人`;
+          }
+          checkAllSurgeryDone();
+        } else if (act === 'SURGERY_FORCE_SHOWCASE') {
+          enterSurgeryShowcasePhase();
+        } else if (act === 'SURGERY_GIVE_AWARD') {
+          if (payload.awardType === 'success') {
+            awardSuccessId = payload.winnerId;
+            awardPoints(payload.winnerId, 7, host.id);
+          } else if (payload.awardType === 'funny') {
+            awardFunnyId = payload.winnerId;
+            awardPoints(payload.winnerId, 5, host.id);
+          }
+          SoundFX.correct();
+          renderPlasticView();
+          if (awardSuccessId && awardFunnyId && GameState.isRoomHost) {
+            setTimeout(() => {
+              finishMiniGameAndShowRoundResult();
+            }, 2400);
+          }
+        }
+      };
+
+      function startBidRound(rIdx) {
+        clearAllGameTimers();
+        if (rIdx >= totalBidRounds) {
+          enterSurgeryOperationPhase();
+          return;
+        }
+        phase = 'bidding';
+        curBidRound = rIdx;
+        bidTimeLeft = 8;
+        roundPicks = {};
+        bidRevealed = false;
+        currentRoundItems = bidRoundsData[rIdx];
+
+        GameState.players.forEach(p => {
+          if (p.isAI && p.id !== host.id) {
+            roundPicks[p.id] = Math.floor(rng() * currentRoundItems.length);
+          }
+        });
+
+        document.getElementById('playSubProgress').textContent = `五官搶奪戰：第 ${curBidRound + 1} / ${totalBidRounds} 輪（撞選直接報廢！）`;
+        renderPlasticView();
+        checkAllBidPicked();
+
+        const tId = setInterval(() => {
+          if (bidRevealed || phase !== 'bidding') return;
+          bidTimeLeft--;
+          const el = document.getElementById('bidTimerText');
+          if (el) el.textContent = `${bidTimeLeft}s`;
+          if (bidTimeLeft <= 0) {
+            clearInterval(tId);
+            if (GameState.isRoomHost) {
+              NetSync.sendGameAction('SURGERY_BID_RESOLVE', { round: curBidRound });
+            } else {
+              resolveCurrentBidRound();
+            }
+          }
+        }, 1000);
+        GameState.activeTimers.push(tId);
+      }
+
+      function checkAllBidPicked() {
+        if (bidRevealed) return;
+        const bidders = GameState.players.filter(p => p.id !== host.id);
+        if (bidders.every(p => roundPicks[p.id] !== undefined)) {
+          resolveCurrentBidRound();
+        }
+      }
+
+      function resolveCurrentBidRound() {
+        if (bidRevealed) return;
+        bidRevealed = true;
+        clearAllGameTimers();
+
+        const pickMap = {};
+        currentRoundItems.forEach((_, idx) => { pickMap[idx] = []; });
+        Object.entries(roundPicks).forEach(([pid, itemIdx]) => {
+          if (pickMap[itemIdx]) pickMap[itemIdx].push(pid);
+        });
+
+        let anySuccess = false;
+        Object.entries(pickMap).forEach(([itemIdx, pids]) => {
+          if (pids.length === 1) {
+            const winnerPid = pids[0];
+            const wonItem = currentRoundItems[itemIdx];
+            playerInventory[winnerPid].push(wonItem);
+            if (winnerPid === me.id) {
+              surgeryLayout[wonItem.partType].item = wonItem;
+              surgeryLayout[wonItem.partType].keepOriginal = false;
+            }
+            anySuccess = true;
+          }
+        });
+
+        if (anySuccess) SoundFX.correct(); else SoundFX.wrong();
+        renderPlasticView();
+
+        if (GameState.isRoomHost) {
+          const nextT = setTimeout(() => {
+            NetSync.sendGameAction('SURGERY_NEXT_BID', { nextRound: curBidRound + 1 });
+          }, 2000);
+          GameState.activeTimers.push(nextT);
+        }
+      }
+
+      function enterSurgeryOperationPhase() {
+        clearAllGameTimers();
+        phase = 'surgery';
+        surgeryTimeLeft = 60;
+        document.getElementById('playSubProgress').textContent = `第二階段：60 秒動刀手術（自由拼貼搶到的五官）`;
+
+        GameState.players.forEach(p => {
+          if (p.isAI && p.id !== host.id) {
+            const c = document.createElement('canvas');
+            c.width = 240; c.height = 240;
+            const ctx = c.getContext('2d');
+            ctx.fillStyle = '#fffdf9';
+            ctx.fillRect(0, 0, 240, 240);
+            drawFaceBase(ctx, p.avatar.faceShape, p.avatar.skinColor);
+            const inv = playerInventory[p.id] || [];
+            const pSocks = FACE_SOCKETS[p.avatar.faceShape || 'round'] || FACE_SOCKETS.round;
+            ['eyes', 'nose', 'mouth', 'hair'].forEach(k => {
+              const found = inv.find(x => x.partType === k);
+              if (found) {
+                drawAuctionPartItem(ctx, found, pSocks[k].x, pSocks[k].y, 1.2, (rng() * 20 - 10));
+              } else {
+                drawPresetPart(ctx, k, p.avatar.parts?.[k]?.presetIndex ?? 0, pSocks[k].x, pSocks[k].y, p.avatar.hairColor, 1);
+              }
+            });
+            afterSubmissions[p.id] = c.toDataURL('image/png');
+          }
+        });
+
+        renderPlasticView();
+        checkAllSurgeryDone();
+
+        const tId = setInterval(() => {
+          if (phase !== 'surgery') return;
+          surgeryTimeLeft--;
+          const el = document.getElementById('surgeryTimerText');
+          if (el) el.textContent = `${surgeryTimeLeft}s`;
+          if (surgeryTimeLeft <= 0) {
+            clearInterval(tId);
+            if (!isHumanHost && !afterSubmissions[me.id]) {
+              window._submitMySurgeryWork();
+            }
+            if (GameState.isRoomHost) {
+              setTimeout(() => {
+                if (phase === 'surgery') NetSync.sendGameAction('SURGERY_FORCE_SHOWCASE', {});
+              }, 1200);
+            }
+          }
+        }, 1000);
+        GameState.activeTimers.push(tId);
+      }
+
+      function checkAllSurgeryDone() {
+        if (phase !== 'surgery') return;
+        const patients = GameState.players.filter(p => p.id !== host.id);
+        if (patients.every(p => !!afterSubmissions[p.id]) && GameState.isRoomHost) {
+          setTimeout(() => {
+            if (phase === 'surgery') NetSync.sendGameAction('SURGERY_FORCE_SHOWCASE', {});
+          }, 600);
+        }
+      }
+
+      function enterSurgeryShowcasePhase() {
+        if (phase === 'showcase') return;
+        clearAllGameTimers();
+        phase = 'showcase';
+        SoundFX.fanfare();
+        document.getElementById('playSubProgress').textContent = `術前術後大公開：Before vs After 醫美案例評選`;
+        renderPlasticView();
+
+        if (host.isAI && GameState.isRoomHost) {
+          const patients = GameState.players.filter(p => p.id !== host.id);
+          const w1 = patients[0]?.id;
+          const w2 = patients[1]?.id || w1;
+          setTimeout(() => {
+            if (w1) NetSync.sendGameAction('SURGERY_GIVE_AWARD', { awardType: 'success', winnerId: w1 });
+          }, 1200);
+          setTimeout(() => {
+            if (w2) NetSync.sendGameAction('SURGERY_GIVE_AWARD', { awardType: 'funny', winnerId: w2 });
+          }, 2400);
+        }
+      }
+
+      function renderPlasticView() {
+        if (phase === 'bidding') {
+          const myPick = roundPicks[me.id];
+          const myBag = playerInventory[me.id] || [];
+
+          mount.innerHTML = `
+            <div class="space-y-4 text-center">
+              <div class="doodle-box-sm p-3 bg-[#fffdf7] flex flex-wrap items-center justify-between gap-2">
+                <div class="text-left">
+                  <span class="text-xs font-black bg-[#ffe66d] px-2.5 py-0.5 rounded border border-black">
+                    第 ${curBidRound + 1} / ${totalBidRounds} 輪競標
+                  </span>
+                  <span class="text-xs font-bold ml-2">暗選 1 個無主五官，沒人跟你撞選就能獨佔！撞選直接報廢！</span>
+                </div>
+                <span class="bg-[#1e1e1e] text-[#ffe66d] px-3 py-1 rounded font-mono text-xs font-black">⏱️ <span id="bidTimerText">${bidTimeLeft}s</span></span>
+              </div>
+
+              <div class="grid grid-cols-3 ${itemsPerRound === 3 ? 'sm:grid-cols-3' : (itemsPerRound === 4 ? 'sm:grid-cols-4' : 'sm:grid-cols-6')} gap-3">
+                ${currentRoundItems.map((item, idx) => {
+                  const biddersOnThis = Object.entries(roundPicks).filter(([_, iIdx]) => iIdx === idx).map(([pid]) => GameState.players.find(p => p.id === pid)?.name || '');
+                  const isClashed = bidRevealed && biddersOnThis.length > 1;
+                  const isWon = bidRevealed && biddersOnThis.length === 1;
+                  let cardCls = 'bg-white';
+                  if (bidRevealed) {
+                    if (isWon) cardCls = 'bg-[#d4edda] ring-4 ring-green-600';
+                    else if (isClashed) cardCls = 'bg-red-100 ring-4 ring-red-500 opacity-75';
+                  } else if (myPick === idx) {
+                    cardCls = 'bg-[#ffe66d] ring-4 ring-black';
+                  }
+                  return `
+                    <button ${(isHumanHost || bidRevealed) ? 'disabled' : ''} onclick="window._pickBidItem(${idx})" class="doodle-box-sm p-3 flex flex-col items-center relative ${cardCls}">
+                      <span class="text-xs font-black mb-1">#${idx + 1} ${item.partLabel}</span>
+                      <div class="w-20 h-20 bg-[#fffdf9] border-2 border-[#1e1e1e] rounded-xl overflow-hidden">
+                        <canvas id="bid_cv_${item.id}" width="140" height="140" class="w-full h-full"></canvas>
+                      </div>
+                      ${bidRevealed ? `
+                        <div class="mt-1.5 text-[11px] font-black">
+                          ${isWon ? `<span class="text-green-800">🎉 ${biddersOnThis[0]} 獨得!</span>` : (isClashed ? `<span class="text-red-700">💥 撞選報廢 (${biddersOnThis.join('、')})</span>` : `<span class="text-neutral-400">無人問津</span>`)}
+                        </div>
+                      ` : `
+                        <div class="mt-1.5 text-[11px] font-bold text-neutral-500">${myPick === idx ? '✅ 已暗選' : '點此搶奪'}</div>
+                      `}
+                    </button>
+                  `;
+                }).join('')}
+              </div>
+
+              ${!isHumanHost ? `
+                <div class="doodle-box-sm p-2.5 bg-neutral-100 text-xs font-black">
+                  🎒 你目前已搶到的五官庫（共 ${myBag.length} 件）：
+                  ${myBag.length === 0 ? '尚無戰利品' : myBag.map(x => `<span class="bg-white px-2 py-0.5 rounded border border-black mx-0.5">${x.partLabel}</span>`).join('')}
+                </div>
+              ` : `
+                <div class="text-xs font-black text-neutral-500">🎤 你是主刀評審主持人，請觀賞大家爭搶五官零件！</div>
+              `}
+            </div>
+          `;
+
+          currentRoundItems.forEach(item => {
+            const cv = document.getElementById(`bid_cv_${item.id}`);
+            if (cv) {
+              const ctx = cv.getContext('2d');
+              ctx.clearRect(0, 0, 140, 140);
+              ctx.save();
+              ctx.scale(140 / 240, 140 / 240);
+              drawAuctionPartItem(ctx, item, 120, 120, 1.25, 0);
+              ctx.restore();
+            }
+          });
+        } else if (phase === 'surgery') {
+          const patients = GameState.players.filter(p => p.id !== host.id);
+          const doneCnt = patients.filter(p => !!afterSubmissions[p.id]).length;
+          const myBag = playerInventory[me.id] || [];
+
+          if (isHumanHost) {
+            mount.innerHTML = `
+              <div class="py-12 text-center doodle-box-sm bg-[#fffdf7] space-y-3">
+                <div class="text-4xl">💉</div>
+                <h4 class="text-xl font-black">所有病患正在手術室進行 60 秒五官重組手術！</h4>
+                <div class="text-sm font-black text-red-600">
+                  ⏱️ 剩餘 <span id="surgeryTimerText">${surgeryTimeLeft}s</span> ｜ <span id="surgeryDoneCountBadge">已完成手術：${doneCnt} / ${patients.length} 人</span>
+                </div>
+              </div>
+            `;
+          } else if (afterSubmissions[me.id]) {
+            mount.innerHTML = `
+              <div class="py-12 text-center doodle-box-sm bg-[#fffdf7] space-y-3">
+                <div class="text-3xl">✨</div>
+                <h4 class="text-lg font-black text-teal-800">手術縫合完成！等待其他病患出院 (<span id="surgeryDoneCountBadge">已完成手術：${doneCnt} / ${patients.length} 人</span>)...</h4>
+              </div>
+            `;
+          } else {
+            mount.innerHTML = `
+              <div class="space-y-3 text-center">
+                <div class="doodle-box-sm p-3 bg-[#4ecdc4]/30 flex flex-wrap items-center justify-between gap-2">
+                  <span class="text-xs font-black">🏥 動刀手術台：點選戰利品換上新五官，並直接拖曳調整位置與大小！</span>
+                  <span class="bg-[#1e1e1e] text-[#ffe66d] px-2.5 py-0.5 rounded font-mono text-xs font-black">⏱️ <span id="surgeryTimerText">${surgeryTimeLeft}s</span></span>
+                </div>
+
+                <div class="flex justify-center gap-2">
+                  ${[
+                    { k: 'eyes', n: '👀 眼睛' },
+                    { k: 'nose', n: '👃 鼻子' },
+                    { k: 'mouth', n: '👄 嘴巴' },
+                    { k: 'hair', n: '💇 髮型' }
+                  ].map(t => `
+                    <button onclick="window._selectSurgerySlot('${t.k}')" class="doodle-btn px-3 py-1.5 text-xs ${activeSurgeryPart === t.k ? 'bg-[#ffe66d] ring-2 ring-black' : 'bg-white'}">
+                      ${t.n}
+                    </button>
+                  `).join('')}
+                </div>
+
+                <div class="flex flex-wrap items-center justify-center gap-2 bg-neutral-100 p-2 rounded-xl border-2 border-[#1e1e1e]">
+                  <span class="text-xs font-black">更換【${activeSurgeryPart}】零件：</span>
+                  <button onclick="window._equipSurgeryItem(null, true)" class="doodle-btn px-2.5 py-1 text-xs bg-white">保留原貌</button>
+                  <button onclick="window._equipSurgeryItem(null, false)" class="doodle-btn px-2.5 py-1 text-xs bg-white">留白摘除</button>
+                  ${myBag.filter(x => x.partType === activeSurgeryPart).map((item, idx) => `
+                    <button onclick="window._equipSurgeryItem('${item.id}', false)" class="doodle-btn px-2.5 py-1 text-xs bg-[#ffe66d]">
+                      戰利品 #${idx + 1}
+                    </button>
+                  `).join('')}
+                </div>
+
+                <div class="relative w-64 h-64 mx-auto bg-[#fffdf9] border-4 border-[#1e1e1e] rounded-2xl shadow-md overflow-hidden touch-none">
+                  <canvas id="surgeryMainCanvas" width="240" height="240" class="w-full h-full cursor-move"></canvas>
+                </div>
+
+                <div class="flex flex-wrap justify-center gap-2">
+                  <button onclick="window._adjSurgerySlot(0.15, 0)" class="doodle-btn px-3 py-1.5 text-xs bg-white">➕ 放大</button>
+                  <button onclick="window._adjSurgerySlot(-0.15, 0)" class="doodle-btn px-3 py-1.5 text-xs bg-white">➖ 縮小</button>
+                  <button onclick="window._adjSurgerySlot(0, -15)" class="doodle-btn px-3 py-1.5 text-xs bg-white">↺ 左旋轉</button>
+                  <button onclick="window._adjSurgerySlot(0, 15)" class="doodle-btn px-3 py-1.5 text-xs bg-white">↻ 右旋轉</button>
+                  <button onclick="window._submitMySurgeryWork()" class="doodle-btn px-5 py-1.5 text-sm bg-[#ff6b6b] text-white">
+                    ✅ 完成整形手術 (<span id="surgeryDoneCountBadge">已完成手術：${doneCnt} / ${patients.length} 人</span>) ➔
+                  </button>
+                </div>
+              </div>
+            `;
+            setupSurgeryCanvas();
+          }
+        } else if (phase === 'showcase') {
+          const patients = GameState.players.filter(p => p.id !== host.id);
+          mount.innerHTML = `
+            <div class="space-y-4 text-center">
+              <div class="doodle-box-sm p-3 bg-[#ffe66d]">
+                <div class="text-xs font-black">🏥 完美整形診所 術前 Before vs 術後 After 成果發表會</div>
+                <p class="text-xs font-bold text-red-700 mt-1">
+                  ${isHumanHost
+                    ? (!awardSuccessId ? '👑 請院長主持人先頒發：【整容最成功 (+7分)】' : (!awardFunnyId ? '🤣 請院長主持人接著頒發：【整容最搞笑 (+5分)】' : '🎉 醫美大賞頒發完畢！'))
+                    : `⏳ 等待院長【${host.name}】評選「整容最成功(+7)」與「整容最搞笑(+5)」！`}
+                </p>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                ${patients.map(p => {
+                  const afterUrl = afterSubmissions[p.id] || '';
+                  const isSuc = (awardSuccessId === p.id);
+                  const isFun = (awardFunnyId === p.id);
+                  const canPick = isHumanHost && (!awardSuccessId || (!awardFunnyId && (patients.length === 1 || awardSuccessId !== p.id)));
+                  return `
+                    <div class="doodle-box-sm p-3 bg-white flex flex-col items-center ${isSuc || isFun ? 'winner-gold-glow' : ''}">
+                      <div class="font-black text-sm mb-2">病患：${p.name}</div>
+                      <div class="flex items-center justify-center gap-3">
+                        <div class="flex flex-col items-center">
+                          <span class="text-[10px] font-black bg-neutral-200 px-2 py-0.5 rounded mb-1">Before 術前</span>
+                          <div class="w-24 h-24 border-2 border-[#1e1e1e] rounded-xl overflow-hidden bg-[#fffdf9]">
+                            <canvas id="surg_before_${p.id}" width="140" height="140" class="w-full h-full"></canvas>
+                          </div>
+                        </div>
+                        <span class="text-xl font-black">➔</span>
+                        <div class="flex flex-col items-center">
+                          <span class="text-[10px] font-black bg-[#ffe66d] px-2 py-0.5 rounded border border-black mb-1">After 術後</span>
+                          <div class="w-24 h-24 border-2 border-[#1e1e1e] rounded-xl overflow-hidden bg-[#fffdf9]">
+                            <img src="${afterUrl}" class="w-full h-full object-contain" />
+                          </div>
+                        </div>
+                      </div>
+                      ${isSuc ? `<div class="mt-2 bg-[#ff6b6b] text-white text-xs font-black px-3 py-1 rounded-full border-2 border-black">👑 整容最成功 (+7分!)</div>` : ''}
+                      ${isFun ? `<div class="mt-2 bg-[#4ecdc4] text-[#1e1e1e] text-xs font-black px-3 py-1 rounded-full border-2 border-black">🤣 整容最搞笑 (+5分!)</div>` : ''}
+                      ${canPick && !isFun && (!isSuc || patients.length === 1) ? `
+                        <button onclick="window._hostGiveSurgeryAward('${p.id}')" class="doodle-btn w-full py-1.5 text-xs bg-[#ffe66d] mt-2">
+                          ${!awardSuccessId ? '👑 頒發【整容最成功 +7】' : '🤣 頒發【整容最搞笑 +5】'}
+                        </button>
+                      ` : ''}
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          `;
+          patients.forEach(p => {
+            renderAvatarToCanvas(document.getElementById(`surg_before_${p.id}`), p.avatar);
+          });
+        }
+      }
+
+      function setupSurgeryCanvas() {
+        const c = document.getElementById('surgeryMainCanvas');
+        if (!c) return;
+        const ctx = c.getContext('2d');
+        let dragging = false;
+
+        const redraw = () => {
+          ctx.clearRect(0, 0, 240, 240);
+          ctx.fillStyle = '#fffdf9';
+          ctx.fillRect(0, 0, 240, 240);
+          drawFaceBase(ctx, me.avatar.faceShape, me.avatar.skinColor);
+
+          ['eyes', 'nose', 'mouth', 'hair'].forEach(k => {
+            const slot = surgeryLayout[k];
+            if (slot.item) {
+              drawAuctionPartItem(ctx, slot.item, slot.x, slot.y, slot.scale, slot.rotDeg);
+            } else if (slot.keepOriginal) {
+              const origData = me.avatar.parts?.[k];
+              if (origData && origData.mode === 'custom' && origData.imgElement) {
+                ctx.drawImage(origData.imgElement, 0, 0, 240, 240);
+              } else {
+                drawPresetPart(ctx, k, origData?.presetIndex ?? 0, mySockets[k].x, mySockets[k].y, me.avatar.hairColor, 1);
+              }
+            }
+            if (activeSurgeryPart === k) {
+              ctx.save();
+              ctx.strokeStyle = '#ff6b6b';
+              ctx.lineWidth = 2;
+              ctx.setLineDash([4, 3]);
+              ctx.beginPath();
+              ctx.arc(slot.x, slot.y, 24, 0, Math.PI * 2);
+              ctx.stroke();
+              ctx.restore();
+            }
+          });
+        };
+        redraw();
+        window._redrawSurgery = redraw;
+
+        const getPos = (e) => {
+          const r = c.getBoundingClientRect();
+          const cx = e.touches ? e.touches[0].clientX : e.clientX;
+          const cy = e.touches ? e.touches[0].clientY : e.clientY;
+          return { x: (cx - r.left) * (240 / r.width), y: (cy - r.top) * (240 / r.height) };
+        };
+        c.onmousedown = c.ontouchstart = (e) => { e.preventDefault(); dragging = true; };
+        c.onmousemove = c.ontouchmove = (e) => {
+          if (!dragging) return;
+          e.preventDefault();
+          const p = getPos(e);
+          surgeryLayout[activeSurgeryPart].x = Math.max(25, Math.min(215, p.x));
+          surgeryLayout[activeSurgeryPart].y = Math.max(25, Math.min(215, p.y));
+          redraw();
+        };
+        window.addEventListener('mouseup', () => dragging = false);
+        window.addEventListener('touchend', () => dragging = false);
+      }
+
+      window._pickBidItem = (idx) => {
+        if (bidRevealed || isHumanHost) return;
+        SoundFX.pop();
+        NetSync.sendGameAction('SURGERY_BID_PICK', { round: curBidRound, playerId: me.id, itemIdx: idx });
+      };
+
+      window._selectSurgerySlot = (slotKey) => {
+        activeSurgeryPart = slotKey;
+        renderPlasticView();
+      };
+
+      window._equipSurgeryItem = (itemId, keepOrig) => {
+        const slot = surgeryLayout[activeSurgeryPart];
+        if (!itemId) {
+          slot.item = null;
+          slot.keepOriginal = keepOrig;
+        } else {
+          const bag = playerInventory[me.id] || [];
+          const found = bag.find(x => x.id === itemId);
+          if (found) {
+            slot.item = found;
+            slot.keepOriginal = false;
+          }
+        }
+        SoundFX.pop();
+        if (window._redrawSurgery) window._redrawSurgery();
+      };
+
+      window._adjSurgerySlot = (dScale, dRot) => {
+        const slot = surgeryLayout[activeSurgeryPart];
+        slot.scale = Math.max(0.4, Math.min(2.4, slot.scale + dScale));
+        slot.rotDeg = (slot.rotDeg + dRot) % 360;
+        if (window._redrawSurgery) window._redrawSurgery();
+      };
+
+      window._submitMySurgeryWork = () => {
+        if (afterSubmissions[me.id]) return;
+        const url = exportMySurgeryCanvasUrl();
+        SoundFX.pop();
+        NetSync.sendGameAction('SURGERY_SUBMIT_AFTER', { playerId: me.id, dataUrl: url });
+        if (phase === 'surgery') renderPlasticView();
+      };
+
+      window._hostGiveSurgeryAward = (winnerId) => {
+        if (!isHumanHost) return;
+        const type = !awardSuccessId ? 'success' : 'funny';
+        NetSync.sendGameAction('SURGERY_GIVE_AWARD', { awardType: type, winnerId });
+      };
+
+      startBidRound(0);
+    }
+
+    /*************************************************************************
+- 遊戲 12 (ID 11)：｜破壞小圈圈（最少 4 人）
+     *************************************************************************/
+    function startMiniGame11_BreakCircle() {
+      const mount = document.getElementById('miniGameMountPoint');
+      const host = getCurrentHost();
+      const me = getLocalPlayer();
+      const isHumanHost = (me.id === host.id);
+      const rng = createSeededRandom(GameState.roundSeed + 1111);
+
+      const nPlayers = GameState.players.length;
+      const recommendedCircleCount = nPlayers <= 5 ? 2 : (nPlayers <= 8 ? 3 : 4);
+
+      let phase = 'select_circle';
+      let curQIdx = 0;
+      let stepTimeLeft = 40;
+
+      let circleMemberIds = [];
+      let currentPromptText = '';
+      let answersMap = {};
+      let verifiedCorrectMap = {};
+      let lastRoundOutcome = null;
+
+      let hostPromptDraft = '';
+      let playerAnsDraft = '';
+
+      function getDefaultCirclePrompt() {
+        const pool = NEW_QUESTION_BANKS.defaultCirclePrompts;
+        return pool[(curQIdx + Math.floor(rng() * pool.length)) % pool.length];
+      }
+
+      window._onGameEvent = (act, payload) => {
+        if (act === 'CIRCLE_LOCK_MEMBERS') {
+          circleMemberIds = payload.memberIds || [];
+          SoundFX.pop();
+          startCircleQuestionPhase(0);
+        } else if (act === 'CIRCLE_SET_PROMPT' && payload.qIdx === curQIdx) {
+          currentPromptText = payload.promptText || getDefaultCirclePrompt();
+          SoundFX.pop();
+          startCircleAnswerPhase();
+        } else if (act === 'CIRCLE_SUBMIT_ANS' && payload.qIdx === curQIdx) {
+          answersMap[payload.playerId] = payload.ansText;
+          if (phase === 'all_answer') {
+            const badge = document.getElementById('circleAnsweredCountBadge');
+            if (badge) {
+              const doneCnt = GameState.players.filter(p => answersMap[p.id] !== undefined).length;
+              badge.textContent = `已作答：${doneCnt} / ${GameState.players.length} 人`;
+            }
+            if (payload.playerId === me.id) {
+              renderCircleView();
+            }
+          }
+          checkAllCircleAnswered();
+        } else if (act === 'CIRCLE_FORCE_VERIFY' && payload.qIdx === curQIdx) {
+          enterHostVerifyPhase();
+        } else if (act === 'CIRCLE_TOGGLE_CHECK') {
+          verifiedCorrectMap[payload.targetId] = !!payload.isCorrect;
+          if (phase === 'host_verify') renderCircleView();
+        } else if (act === 'CIRCLE_CONFIRM_VERIFICATION' && payload.qIdx === curQIdx) {
+          verifiedCorrectMap = payload.verifiedCorrectMap || verifiedCorrectMap;
+          settleSingleQuestionOutcome();
+        } else if (act === 'CIRCLE_NEXT_QUESTION') {
+          startCircleQuestionPhase(payload.nextQIdx);
+        }
+      };
+
+      if (host.isAI && GameState.isRoomHost) {
+        const candidates = GameState.players.filter(p => p.id !== host.id);
+        const picked = candidates.slice(0, recommendedCircleCount).map(p => p.id);
+        setTimeout(() => {
+          NetSync.sendGameAction('CIRCLE_LOCK_MEMBERS', { memberIds: picked });
+        }, 1200);
+      }
+
+      function startCircleQuestionPhase(qIndex) {
+        clearAllGameTimers();
+        if (qIndex >= 2) {
+          finishMiniGameAndShowRoundResult();
+          return;
+        }
+        curQIdx = qIndex;
+        phase = 'host_question';
+        stepTimeLeft = 40;
+        currentPromptText = '';
+        answersMap = {};
+        verifiedCorrectMap = {};
+        hostPromptDraft = '';
+        playerAnsDraft = '';
+
+        document.getElementById('playSubProgress').textContent = `第 ${curQIdx + 1} / 2 題：主持人限時 40 秒輸入小圈圈專屬密語題`;
+        renderCircleView();
+
+        if (host.isAI && GameState.isRoomHost) {
+          setTimeout(() => {
+            NetSync.sendGameAction('CIRCLE_SET_PROMPT', { qIdx: curQIdx, promptText: getDefaultCirclePrompt() });
+          }, 1500);
+        }
+
+        const tId = setInterval(() => {
+          if (phase !== 'host_question') return;
+          stepTimeLeft--;
+          const el = document.getElementById('circleTimerText');
+          if (el) el.textContent = `${stepTimeLeft}s`;
+          if (stepTimeLeft <= 0) {
+            clearInterval(tId);
+            if (GameState.isRoomHost) {
+              const fallback = (hostPromptDraft || '').trim() || getDefaultCirclePrompt();
+              NetSync.sendGameAction('CIRCLE_SET_PROMPT', { qIdx: curQIdx, promptText: fallback });
+            }
+          }
+        }, 1000);
+        GameState.activeTimers.push(tId);
+      }
+
+      function startCircleAnswerPhase() {
+        clearAllGameTimers();
+        phase = 'all_answer';
+        stepTimeLeft = 30;
+        playerAnsDraft = '';
+
+        document.getElementById('playSubProgress').textContent = `第 ${curQIdx + 1} / 2 題：全員限時 30 秒作答（含主持人標準答案）`;
+
+        GameState.players.forEach(p => {
+          if (p.isAI) {
+            const isCircle = (p.id === host.id || circleMemberIds.includes(p.id));
+            answersMap[p.id] = (isCircle && rng() < 0.75) ? '珍珠奶茶' : (rng() < 0.25 ? '珍珠奶茶' : '臭豆腐');
+          }
+        });
+
+        renderCircleView();
+        checkAllCircleAnswered();
+
+        const tId = setInterval(() => {
+          if (phase !== 'all_answer') return;
+          stepTimeLeft--;
+          const el = document.getElementById('circleTimerText');
+          if (el) el.textContent = `${stepTimeLeft}s`;
+          if (stepTimeLeft <= 0) {
+            clearInterval(tId);
+            if (answersMap[me.id] === undefined) {
+              const inp = document.getElementById('circleAnsInput');
+              const val = (inp ? inp.value : playerAnsDraft).trim();
+              NetSync.sendGameAction('CIRCLE_SUBMIT_ANS', { qIdx: curQIdx, playerId: me.id, ansText: val });
+            }
+            if (GameState.isRoomHost) {
+              setTimeout(() => {
+                if (phase === 'all_answer') {
+                  GameState.players.forEach(p => {
+                    if (answersMap[p.id] === undefined) answersMap[p.id] = '';
+                  });
+                  NetSync.sendGameAction('CIRCLE_FORCE_VERIFY', { qIdx: curQIdx });
+                }
+              }, 900);
+            }
+          }
+        }, 1000);
+        GameState.activeTimers.push(tId);
+      }
+
+      function checkAllCircleAnswered() {
+        if (phase !== 'all_answer') return;
+        if (GameState.players.every(p => answersMap[p.id] !== undefined) && GameState.isRoomHost) {
+          setTimeout(() => {
+            if (phase === 'all_answer') {
+              NetSync.sendGameAction('CIRCLE_FORCE_VERIFY', { qIdx: curQIdx });
+            }
+          }, 500);
+        }
+      }
+
+      function enterHostVerifyPhase() {
+        if (phase === 'host_verify' || phase === 'round_summary') return;
+        clearAllGameTimers();
+        phase = 'host_verify';
+        const hostStdAns = (answersMap[host.id] || '').trim();
+
+        GameState.players.forEach(p => {
+          const pAns = (answersMap[p.id] || '').trim();
+          verifiedCorrectMap[p.id] = (p.id === host.id && pAns.length > 0) || (hostStdAns.length > 0 && pAns === hostStdAns);
+        });
+
+        document.getElementById('playSubProgress').textContent = `第 ${curQIdx + 1} / 2 題：由主持人核對同義詞並勾選答對名單`;
+        renderCircleView();
+
+        if (host.isAI && GameState.isRoomHost) {
+          setTimeout(() => {
+            NetSync.sendGameAction('CIRCLE_CONFIRM_VERIFICATION', { qIdx: curQIdx, verifiedCorrectMap });
+          }, 2000);
+        }
+      }
+
+      function settleSingleQuestionOutcome() {
+        if (phase === 'round_summary') return;
+        clearAllGameTimers();
+        phase = 'round_summary';
+
+        const hostCorrect = (answersMap[host.id] || '').trim().length > 0;
+        const allCircleMembersCorrect = hostCorrect && circleMemberIds.every(cid => !!verifiedCorrectMap[cid]);
+        const saboteurs = GameState.players.filter(p => p.id !== host.id && !circleMemberIds.includes(p.id));
+        const winningSaboteurs = saboteurs.filter(s => !!verifiedCorrectMap[s.id]);
+
+        const isCircleSuccess = (allCircleMembersCorrect && winningSaboteurs.length === 0);
+
+        if (isCircleSuccess) {
+          SoundFX.fanfare();
+          circleMemberIds.forEach(cid => {
+            awardPoints(cid, 3, host.id);
+            if (!GameState.chemistry[host.id]) GameState.chemistry[host.id] = {};
+            GameState.chemistry[host.id][cid] = (GameState.chemistry[host.id][cid] || 0) + 5;
+          });
+        } else {
+          SoundFX.wrong();
+          winningSaboteurs.forEach(sab => {
+            awardPoints(sab.id, 5, host.id);
+          });
+        }
+
+        lastRoundOutcome = {
+          isCircleSuccess,
+          winningSaboteurs: winningSaboteurs.map(s => s.name)
+        };
+
+        renderCircleView();
+      }
+
+      function renderCircleView() {
+        const amInCircle = (me.id === host.id || circleMemberIds.includes(me.id));
+
+        if (phase === 'select_circle') {
+          const candidates = GameState.players.filter(p => p.id !== host.id);
+          if (isHumanHost) {
+            mount.innerHTML = `
+              <div class="space-y-4 text-center">
+                <div class="doodle-box-sm p-4 bg-[#ffe66d]">
+                  <div class="text-xs font-black">🤫 秘密組建小圈圈（建議勾選 ${recommendedCircleCount} 位心腹成員）</div>
+                  <h3 class="text-lg md:text-xl font-black mt-1">請勾選要拉進「小圈圈」的成員，未入選者將成為「破壞者」！</h3>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 max-w-xl mx-auto">
+                  ${candidates.map(p => {
+                    const picked = circleMemberIds.includes(p.id);
+                    return `
+                      <button onclick="window._toggleCircleMember('${p.id}')" class="doodle-box-sm p-3 flex items-center justify-between ${picked ? 'bg-[#4ecdc4] ring-4 ring-black' : 'bg-white'}">
+                        <span class="font-black text-sm truncate">${p.name}</span>
+                        <span class="text-xs font-black">${picked ? '✅ 小圈圈' : '⬜ 未選'}</span>
+                      </button>
+                    `;
+                  }).join('')}
+                </div>
+
+                <div>
+                  <button ${circleMemberIds.length === 0 ? 'disabled' : ''} onclick="window._confirmCircleMembers()" class="doodle-btn px-8 py-3 text-base bg-[#ff6b6b] text-white">
+                    🔒 確認小圈圈名單（已選 ${circleMemberIds.length} 人）➔
+                  </button>
+                </div>
+              </div>
+            `;
+          } else {
+            mount.innerHTML = `
+              <div class="py-14 text-center doodle-box-sm bg-[#fffdf7] space-y-3">
+                <div class="text-4xl">🤫</div>
+                <h4 class="text-lg font-black">主持人【${host.name}】正在秘密勾選「小圈圈」心腹名單...</h4>
+                <p class="text-xs font-bold text-neutral-500">究竟你會被拉進小圈圈，還是成為被排擠的「破壞者」呢？</p>
+              </div>
+            `;
+          }
+        } else if (phase === 'host_question') {
+          const existingPromptInp = document.getElementById('circleHostPromptInput');
+          if (existingPromptInp) hostPromptDraft = existingPromptInp.value;
+
+          mount.innerHTML = `
+            <div class="space-y-4 text-center">
+              <div class="doodle-box-sm p-3 ${amInCircle ? 'bg-[#d4edda]' : 'bg-red-100'} flex flex-wrap items-center justify-between gap-2">
+                <span class="text-xs font-black">
+                  ${isHumanHost
+                    ? `👑 你是小圈圈創始主持人（成員：${circleMemberIds.map(id => GameState.players.find(p => p.id === id)?.name).join('、')}）`
+                    : (amInCircle ? '🤝 你的身分：【小圈圈成員】（全力與主持人答出相同暗號！）' : '💣 你的身分：【破壞者】（你被排擠了！猜中他們的密語即可瓦解小圈圈拿 +5 分！）')}
+                </span>
+                <span class="bg-[#1e1e1e] text-[#ffe66d] px-2.5 py-0.5 rounded font-mono text-xs font-black">⏱️ <span id="circleTimerText">${stepTimeLeft}s</span></span>
+              </div>
+
+              ${isHumanHost ? `
+                <div class="doodle-box-sm p-5 bg-white space-y-3 max-w-lg mx-auto">
+                  <label class="block text-sm font-black">✏️ 請輸入第 ${curQIdx + 1} / 2 題「只有小圈圈才知道的專屬問題或密語提示」（40秒內未輸入將自動出預設題）：</label>
+                  <input id="circleHostPromptInput" type="text" placeholder="例如：我們上次一起去吃結果超難吃的那家店？" class="doodle-input w-full min-w-0 text-base" oninput="window._updateCirclePromptDraft(this.value)" onkeydown="if(event.key==='Enter') window._submitCirclePrompt()" />
+                  <div class="flex justify-center gap-2 pt-1">
+                    <button onclick="window._submitCirclePrompt('${getDefaultCirclePrompt()}')" class="doodle-btn px-3 py-2 text-xs bg-neutral-100">🎲 使用預設題目</button>
+                    <button onclick="window._submitCirclePrompt()" class="doodle-btn px-6 py-2 text-sm bg-[#ff6b6b] text-white">📤 發送密語問題 ➔</button>
+                  </div>
+                </div>
+              ` : `
+                <div class="py-12 doodle-box-sm bg-[#fffdf7] space-y-2">
+                  <div class="text-3xl">✍️</div>
+                  <h4 class="text-base font-black">等待主持人【${host.name}】輸入第 ${curQIdx + 1} / 2 道密語問題...</h4>
+                </div>
+              `}
+            </div>
+          `;
+
+          const newPromptInp = document.getElementById('circleHostPromptInput');
+          if (newPromptInp && hostPromptDraft) newPromptInp.value = hostPromptDraft;
+        } else if (phase === 'all_answer') {
+          const existingAnsInp = document.getElementById('circleAnsInput');
+          if (existingAnsInp) playerAnsDraft = existingAnsInp.value;
+
+          const doneCnt = GameState.players.filter(p => answersMap[p.id] !== undefined).length;
+          const mySubmitted = answersMap[me.id] !== undefined;
+
+          mount.innerHTML = `
+            <div class="space-y-4 text-center">
+              <div class="doodle-box-sm p-4 bg-[#fffdf7]">
+                <div class="flex items-center justify-center gap-2 mb-1">
+                  <span class="text-xs font-black px-2.5 py-0.5 rounded border border-black ${amInCircle ? 'bg-[#4ecdc4]' : 'bg-[#ff6b6b] text-white'}">
+                    ${amInCircle ? '🤝 小圈圈陣營' : '💣 破壞者陣營'}
+                  </span>
+                  <span id="circleAnsweredCountBadge" class="text-xs font-black bg-[#ffe66d] px-2.5 py-0.5 rounded border border-black">
+                    已作答：${doneCnt} / ${GameState.players.length} 人
+                  </span>
+                  <span class="bg-[#1e1e1e] text-[#ffe66d] px-2.5 py-0.5 rounded font-mono text-xs font-black">
+                    ⏱️ <span id="circleTimerText">${stepTimeLeft}s</span>
+                  </span>
+                </div>
+                <h3 class="text-xl md:text-2xl font-black mt-2">📢 密語問題：「${currentPromptText}」</h3>
+              </div>
+
+              ${mySubmitted ? `
+                <div class="doodle-box-sm p-6 bg-white font-black text-teal-800">
+                  ✅ 你已送出答案（「${answersMap[me.id] || '(空白)'}」），等待其他玩家作答完畢...
+                </div>
+              ` : `
+                <div class="doodle-box-sm p-5 bg-white space-y-3 max-w-lg mx-auto">
+                  <label class="block text-sm font-black">
+                    ${isHumanHost ? '🔑 請輸入本題的「標準答案」（未填寫留白將直接算小圈圈失敗）：' : '✏️ 請輸入你的答案（30秒內未作答將留白）：'}
+                  </label>
+                  <input id="circleAnsInput" type="text" placeholder="請在此輸入答案..." class="doodle-input w-full min-w-0 text-base text-center" oninput="window._updateCircleAnsDraft(this.value)" onkeydown="if(event.key==='Enter') window._submitCircleAns()" />
+                  <button onclick="window._submitCircleAns()" class="doodle-btn px-8 py-2.5 text-base bg-[#ffe66d]">
+                    📤 確認送出答案
+                  </button>
+                </div>
+              `}
+            </div>
+          `;
+
+          const newAnsInp = document.getElementById('circleAnsInput');
+          if (newAnsInp && playerAnsDraft) newAnsInp.value = playerAnsDraft;
+        } else if (phase === 'host_verify') {
+          mount.innerHTML = `
+            <div class="space-y-4">
+              <div class="doodle-box-sm p-3 bg-[#fff3cd] text-center">
+                <div class="text-xs font-black text-red-600">
+                  ⚖️ 同義詞人工核對階段（⚠️ 規則鐵律：即使破壞者答對，主持人也必須如實勾選以示公正！）
+                </div>
+                <div class="font-black text-base mt-1">問題：「${currentPromptText}」｜主持人標準答案：「${answersMap[host.id] || '(空白)'}」</div>
+              </div>
+
+              <div class="space-y-2">
+            ${GameState.players.map(p => {
+              const isThisHost = (p.id === host.id);
+              const pAns = answersMap[p.id] || '(未作答留白)';
+              const isChecked = isThisHost ? ((answersMap[host.id] || '').trim().length > 0) : !!verifiedCorrectMap[p.id];
+              return `
+                <label class="doodle-box-sm p-3 flex items-center justify-between gap-3 ${isThisHost ? 'cursor-default' : 'cursor-pointer'} ${isChecked ? 'bg-[#d4edda] ring-2 ring-green-700' : 'bg-white'}">
+                  <div class="flex items-center gap-2">
+                    <input type="checkbox" ${isChecked ? 'checked' : ''} ${(!isHumanHost || isThisHost) ? 'disabled' : ''} onchange="window._toggleVerifyAns('${p.id}', this.checked)" class="w-5 h-5 accent-green-700" />
+                    <span class="font-black text-sm">${p.name} ${isThisHost ? '🎤(主持人標準答案)' : ''}：</span>
+                    <span class="font-bold text-base underline break-all">「${pAns}」</span>
+                  </div>
+                  <span class="text-xs font-black px-2 py-0.5 rounded border border-black ${isChecked ? 'bg-green-600 text-white' : 'bg-neutral-200'}">
+                    ${isThisHost ? (isChecked ? '👑 標準答案' : '⚠️ 未填寫') : (isChecked ? '⭕ 算答對' : '❌ 算答錯')}
+                  </span>
+                </label>
+              `;
+            }).join('')}
+          </div>
+
+              ${isHumanHost ? `
+                <div class="text-center pt-2">
+                  <button onclick="window._confirmCircleVerification()" class="doodle-btn px-8 py-3 text-lg bg-[#ff6b6b] text-white">
+                    ✅ 確認並公布結果 ➔
+                  </button>
+                </div>
+              ` : `
+                <div class="text-center text-xs font-black text-neutral-500">⏳ 等待主持人【${host.name}】核對同義詞並確認結果...</div>
+              `}
+            </div>
+          `;
+        } else if (phase === 'round_summary') {
+          const out = lastRoundOutcome;
+          mount.innerHTML = `
+            <div class="space-y-4 text-center py-4">
+              <div class="theme-cut-in doodle-box-sm p-5 ${out.isCircleSuccess ? 'bg-[#d4edda] border-green-700' : 'bg-red-100 border-red-600'} border-4">
+                <div class="text-2xl md:text-3xl font-black">
+                  ${out.isCircleSuccess
+                    ? '🎉 小圈圈大成功！全體心腹默契滿分（每人 +3 分）！'
+                    : '💥 小圈圈當場瓦解！（小圈圈 0 分）'}
+                </div>
+                <p class="text-sm font-bold mt-2">
+                  ${out.isCircleSuccess
+                    ? `小圈圈成員（${circleMemberIds.map(id => GameState.players.find(p => p.id === id)?.name).join('、')}）全數答對，且沒有任何破壞者猜中！`
+                    : (out.winningSaboteurs.length > 0
+                        ? `💣 破壞者【${out.winningSaboteurs.join('、')}】成功破解密語，每人狂奪 +5 分！`
+                        : `😅 小圈圈內部有人答錯或留白，默契失敗全軍覆沒！`)}
+                </p>
+              </div>
+
+              <div class="pt-2">
+                ${isHumanHost || GameState.isRoomHost ? `
+                  <button onclick="window._nextCircleQuestion()" class="doodle-btn px-8 py-3 text-lg bg-[#ffe66d]">
+                    ${curQIdx + 1 < 2 ? '➡️ 進入第 2 題密語攻防' : '🏆 進入本局計分台'} ➔
+                  </button>
+                ` : `
+                  <div class="text-xs font-black text-neutral-500">⏳ 等待主持人進入下一階段...</div>
+                `}
+              </div>
+            </div>
+          `;
+        }
+      }
+
+      window._toggleCircleMember = (pid) => {
+        if (!isHumanHost) return;
+        if (circleMemberIds.includes(pid)) {
+          circleMemberIds = circleMemberIds.filter(id => id !== pid);
+        } else {
+          circleMemberIds.push(pid);
+        }
+        SoundFX.pop();
+        renderCircleView();
+      };
+
+      window._confirmCircleMembers = () => {
+        if (!isHumanHost || circleMemberIds.length === 0) return;
+        NetSync.sendGameAction('CIRCLE_LOCK_MEMBERS', { memberIds: circleMemberIds });
+      };
+
+      window._updateCirclePromptDraft = (val) => { hostPromptDraft = val; };
+      window._updateCircleAnsDraft = (val) => { playerAnsDraft = val; };
+
+      window._submitCirclePrompt = (forcedText = null) => {
+        if (!isHumanHost || phase !== 'host_question') return;
+        const inp = document.getElementById('circleHostPromptInput');
+        const txt = forcedText !== null ? forcedText : ((inp?.value || hostPromptDraft || '').trim() || getDefaultCirclePrompt());
+        hostPromptDraft = '';
+        NetSync.sendGameAction('CIRCLE_SET_PROMPT', { qIdx: curQIdx, promptText: txt });
+      };
+
+      window._submitCircleAns = () => {
+        if (phase !== 'all_answer' || answersMap[me.id] !== undefined) return;
+        const inp = document.getElementById('circleAnsInput');
+        const txt = (inp ? inp.value : playerAnsDraft).trim();
+        playerAnsDraft = '';
+        SoundFX.pop();
+        NetSync.sendGameAction('CIRCLE_SUBMIT_ANS', { qIdx: curQIdx, playerId: me.id, ansText: txt });
+      };
+
+      window._toggleVerifyAns = (targetId, checked) => {
+        if (!isHumanHost) return;
+        NetSync.sendGameAction('CIRCLE_TOGGLE_CHECK', { targetId, isCorrect: checked });
+      };
+
+      window._confirmCircleVerification = () => {
+        if (!isHumanHost) return;
+        NetSync.sendGameAction('CIRCLE_CONFIRM_VERIFICATION', { qIdx: curQIdx, verifiedCorrectMap });
+      };
+
+      window._nextCircleQuestion = () => {
+        NetSync.sendGameAction('CIRCLE_NEXT_QUESTION', { nextQIdx: curQIdx + 1 });
+      };
+
+      renderCircleView();
+    }
+
     /**************************************************************
-     * 8. 【6】最終結算畫面
+- 8. 【6】最終結算畫面
      **************************************************************/
     function ensureDemoScoresIfZero() {
       const totalPts = GameState.players.reduce((acc, p) => acc + p.totalScore, 0);
