@@ -6916,15 +6916,13 @@
         bidRoundsData.push(items);
       }
 
-      let surgeryTimeLeft = 60;
+     let surgeryTimeLeft = 60;
       const mySockets = FACE_SOCKETS[me.avatar.faceShape || 'round'] || FACE_SOCKETS.round;
-      const surgeryLayout = {
-        eyes:  { item: null, x: mySockets.eyes.x,  y: mySockets.eyes.y,  scale: 1, rotDeg: 0, keepOriginal: true },
-        nose:  { item: null, x: mySockets.nose.x,  y: mySockets.nose.y,  scale: 1, rotDeg: 0, keepOriginal: true },
-        mouth: { item: null, x: mySockets.mouth.x, y: mySockets.mouth.y, scale: 1, rotDeg: 0, keepOriginal: true },
-        hair:  { item: null, x: mySockets.hair.x,  y: mySockets.hair.y,  scale: 1, rotDeg: 0, keepOriginal: true }
-      };
-      let activeSurgeryPart = 'eyes';
+      // 保留哪些原有的基礎五官（可自由勾選保留或摘除）
+      const keepOriginalParts = { eyes: true, nose: true, mouth: true, hair: true };
+      // 自由放置的多五官圖層陣列（可同時擺放多個眼睛、多個嘴巴等，無數量限制）：[{ item, x, y, scale, rotDeg, active }]
+      let placedItems = [];
+      let selectedPlacedIdx = -1;
       const afterSubmissions = {};
       let awardSuccessId = null;
       let awardFunnyId = null;
@@ -6956,17 +6954,22 @@
         octx.fillRect(0, 0, 240, 240);
         drawFaceBase(octx, me.avatar.faceShape, me.avatar.skinColor);
 
+        // 1. 先繪製選擇保留的原有基礎五官
         ['eyes', 'nose', 'mouth', 'hair'].forEach(k => {
-          const slot = surgeryLayout[k];
-          if (slot.item) {
-            drawAuctionPartItem(octx, slot.item, slot.x, slot.y, slot.scale, slot.rotDeg);
-          } else if (slot.keepOriginal) {
+          if (keepOriginalParts[k]) {
             const origData = me.avatar.parts?.[k];
             if (origData && origData.mode === 'custom' && origData.imgElement) {
               octx.drawImage(origData.imgElement, 0, 0, 240, 240);
             } else {
               drawPresetPart(octx, k, origData?.presetIndex ?? 0, mySockets[k].x, mySockets[k].y, me.avatar.hairColor, 1);
             }
+          }
+        });
+
+        // 2. 依序疊加所有啟用中的戰利品五官（支援多個眼睛、多個嘴巴任意組合）
+        placedItems.forEach(layer => {
+          if (layer.active) {
+            drawAuctionPartItem(octx, layer.item, layer.x, layer.y, layer.scale, layer.rotDeg);
           }
         });
         return out.toDataURL('image/png');
@@ -7069,15 +7072,29 @@
           if (pickMap[itemIdx]) pickMap[itemIdx].push(pid);
         });
 
-        let anySuccess = false;
+       let anySuccess = false;
         Object.entries(pickMap).forEach(([itemIdx, pids]) => {
           if (pids.length === 1) {
             const winnerPid = pids[0];
             const wonItem = currentRoundItems[itemIdx];
             playerInventory[winnerPid].push(wonItem);
             if (winnerPid === me.id) {
-              surgeryLayout[wonItem.partType].item = wonItem;
-              surgeryLayout[wonItem.partType].keepOriginal = false;
+              // 自動將搶到的新五官放上手術台，若已有同類五官則稍微錯開座標方便同時顯示多個
+              const sameTypeCount = placedItems.filter(x => x.item.partType === wonItem.partType).length;
+              const basePos = mySockets[wonItem.partType] || { x: 120, y: 120 };
+              const offsetX = (sameTypeCount % 2 === 1 ? 1 : -1) * Math.ceil(sameTypeCount / 2) * 22;
+              const offsetY = sameTypeCount * 14;
+              placedItems.push({
+                item: wonItem,
+                x: Math.max(35, Math.min(205, basePos.x + offsetX)),
+                y: Math.max(35, Math.min(205, basePos.y + offsetY)),
+                scale: 1,
+                rotDeg: 0,
+                active: true
+              });
+              selectedPlacedIdx = placedItems.length - 1;
+              // 搶到某部位的第一個零件時，預設先幫玩家隱藏該部位原貌（玩家仍可在手術台隨時點開關恢復）
+              keepOriginalParts[wonItem.partType] = false;
             }
             anySuccess = true;
           }
@@ -7098,7 +7115,7 @@
         clearAllGameTimers();
         phase = 'surgery';
         surgeryTimeLeft = 60;
-        document.getElementById('playSubProgress').textContent = `第二階段：60 秒動刀手術（自由拼貼搶到的五官）`;
+        document.getElementById('playSubProgress').textContent = `第二階段：60 秒動刀手術（不限部位數量，自由拼貼所有戰利品！）`;
 
         GameState.players.forEach(p => {
           if (p.isAI && p.id !== host.id) {
@@ -7111,12 +7128,17 @@
             const inv = playerInventory[p.id] || [];
             const pSocks = FACE_SOCKETS[p.avatar.faceShape || 'round'] || FACE_SOCKETS.round;
             ['eyes', 'nose', 'mouth', 'hair'].forEach(k => {
-              const found = inv.find(x => x.partType === k);
-              if (found) {
-                drawAuctionPartItem(ctx, found, pSocks[k].x, pSocks[k].y, 1.2, (rng() * 20 - 10));
-              } else {
+              const hasWonType = inv.some(x => x.partType === k);
+              if (!hasWonType) {
                 drawPresetPart(ctx, k, p.avatar.parts?.[k]?.presetIndex ?? 0, pSocks[k].x, pSocks[k].y, p.avatar.hairColor, 1);
               }
+            });
+            // AI 也會把搶到的所有五官（包含複數眼睛、嘴巴）全部貼到臉上！
+            inv.forEach((wonItem, idx) => {
+              const base = pSocks[wonItem.partType] || { x: 120, y: 120 };
+              const ox = ((idx % 3) - 1) * 18;
+              const oy = (Math.floor(idx / 3)) * 16;
+              drawAuctionPartItem(ctx, wonItem, base.x + ox, base.y + oy, 1.15, (rng() * 24 - 12));
             });
             afterSubmissions[p.id] = c.toDataURL('image/png');
           }
@@ -7245,10 +7267,9 @@
               ctx.restore();
             }
           });
-        } else if (phase === 'surgery') {
+     } else if (phase === 'surgery') {
           const patients = GameState.players.filter(p => p.id !== host.id);
           const doneCnt = patients.filter(p => !!afterSubmissions[p.id]).length;
-          const myBag = playerInventory[me.id] || [];
 
           if (isHumanHost) {
             mount.innerHTML = `
@@ -7271,30 +7292,32 @@
             mount.innerHTML = `
               <div class="space-y-3 text-center">
                 <div class="doodle-box-sm p-3 bg-[#4ecdc4]/30 flex flex-wrap items-center justify-between gap-2">
-                  <span class="text-xs font-black">🏥 動刀手術台：點選戰利品換上新五官，並直接拖曳調整位置與大小！</span>
+                  <span class="text-xs font-black">🏥 自由動刀手術台：不限單一五官數量！可同時擺放多個眼睛、嘴巴，直接在畫布點擊五官即可拖曳！</span>
                   <span class="bg-[#1e1e1e] text-[#ffe66d] px-2.5 py-0.5 rounded font-mono text-xs font-black">⏱️ <span id="surgeryTimerText">${surgeryTimeLeft}s</span></span>
                 </div>
 
-                <div class="flex justify-center gap-2">
+                <!-- 1. 原有基礎五官保留或摘除開關 -->
+                <div class="flex flex-wrap items-center justify-center gap-1.5 bg-neutral-100 p-2 rounded-xl border-2 border-[#1e1e1e]">
+                  <span class="text-xs font-black">底圖原貌開關：</span>
                   ${[
-                    { k: 'eyes', n: '👀 眼睛' },
-                    { k: 'nose', n: '👃 鼻子' },
-                    { k: 'mouth', n: '👄 嘴巴' },
-                    { k: 'hair', n: '💇 髮型' }
+                    { k: 'eyes', n: '原有眼睛' },
+                    { k: 'nose', n: '原有鼻子' },
+                    { k: 'mouth', n: '原有嘴巴' },
+                    { k: 'hair', n: '原有髮型' }
                   ].map(t => `
-                    <button onclick="window._selectSurgerySlot('${t.k}')" class="doodle-btn px-3 py-1.5 text-xs ${activeSurgeryPart === t.k ? 'bg-[#ffe66d] ring-2 ring-black' : 'bg-white'}">
-                      ${t.n}
+                    <button onclick="window._toggleOrigSurgeryPart('${t.k}')" class="doodle-btn px-2.5 py-1 text-xs ${keepOriginalParts[t.k] ? 'bg-[#d4edda] ring-2 ring-green-700' : 'bg-white opacity-60'}">
+                      ${keepOriginalParts[t.k] ? '👁️ 顯示' : '🚫 隱藏'}${t.n}
                     </button>
                   `).join('')}
                 </div>
 
-                <div class="flex flex-wrap items-center justify-center gap-2 bg-neutral-100 p-2 rounded-xl border-2 border-[#1e1e1e]">
-                  <span class="text-xs font-black">更換【${activeSurgeryPart}】零件：</span>
-                  <button onclick="window._equipSurgeryItem(null, true)" class="doodle-btn px-2.5 py-1 text-xs bg-white">保留原貌</button>
-                  <button onclick="window._equipSurgeryItem(null, false)" class="doodle-btn px-2.5 py-1 text-xs bg-white">留白摘除</button>
-                  ${myBag.filter(x => x.partType === activeSurgeryPart).map((item, idx) => `
-                    <button onclick="window._equipSurgeryItem('${item.id}', false)" class="doodle-btn px-2.5 py-1 text-xs bg-[#ffe66d]">
-                      戰利品 #${idx + 1}
+                <!-- 2. 搶到的戰利品清單（點選切換當前要縮放/旋轉的零件，不限同部位數量） -->
+                <div class="flex flex-wrap items-center justify-center gap-1.5 bg-[#fff9db] p-2 rounded-xl border-2 border-[#1e1e1e]">
+                  <span class="text-xs font-black">🎒 戰利品圖層（可全部同時擺上臉）：</span>
+                  ${placedItems.length === 0 ? `<span class="text-xs font-bold text-neutral-400">（本次未搶到任何五官）</span>` : ''}
+                  ${placedItems.map((layer, idx) => `
+                    <button onclick="window._selectPlacedSurgeryItem(${idx})" class="doodle-btn px-2.5 py-1 text-xs ${selectedPlacedIdx === idx ? 'bg-[#ffe66d] ring-2 ring-black' : 'bg-white'} ${!layer.active ? 'line-through opacity-50' : ''}">
+                      #${idx + 1} ${layer.item.partLabel} ${layer.active ? '✅' : '(已隱藏)'}
                     </button>
                   `).join('')}
                 </div>
@@ -7304,10 +7327,15 @@
                 </div>
 
                 <div class="flex flex-wrap justify-center gap-2">
-                  <button onclick="window._adjSurgerySlot(0.15, 0)" class="doodle-btn px-3 py-1.5 text-xs bg-white">➕ 放大</button>
-                  <button onclick="window._adjSurgerySlot(-0.15, 0)" class="doodle-btn px-3 py-1.5 text-xs bg-white">➖ 縮小</button>
+                  <button onclick="window._adjSurgerySlot(0.15, 0)" class="doodle-btn px-3 py-1.5 text-xs bg-white">➕ 放大選中</button>
+                  <button onclick="window._adjSurgerySlot(-0.15, 0)" class="doodle-btn px-3 py-1.5 text-xs bg-white">➖ 縮小選中</button>
                   <button onclick="window._adjSurgerySlot(0, -15)" class="doodle-btn px-3 py-1.5 text-xs bg-white">↺ 左旋轉</button>
                   <button onclick="window._adjSurgerySlot(0, 15)" class="doodle-btn px-3 py-1.5 text-xs bg-white">↻ 右旋轉</button>
+                  ${selectedPlacedIdx >= 0 && placedItems[selectedPlacedIdx] ? `
+                    <button onclick="window._togglePlacedItemActive(${selectedPlacedIdx})" class="doodle-btn px-3 py-1.5 text-xs ${placedItems[selectedPlacedIdx].active ? 'bg-neutral-200' : 'bg-[#4ecdc4]'}">
+                      ${placedItems[selectedPlacedIdx].active ? '🗑️ 暫時移除此件' : '➕ 放回臉上'}
+                    </button>
+                  ` : ''}
                   <button onclick="window._submitMySurgeryWork()" class="doodle-btn px-5 py-1.5 text-sm bg-[#ff6b6b] text-white">
                     ✅ 完成整形手術 (<span id="surgeryDoneCountBadge">已完成手術：${doneCnt} / ${patients.length} 人</span>) ➔
                   </button>
@@ -7384,11 +7412,9 @@
           ctx.fillRect(0, 0, 240, 240);
           drawFaceBase(ctx, me.avatar.faceShape, me.avatar.skinColor);
 
+          // 1. 畫出勾選保留的原有五官
           ['eyes', 'nose', 'mouth', 'hair'].forEach(k => {
-            const slot = surgeryLayout[k];
-            if (slot.item) {
-              drawAuctionPartItem(ctx, slot.item, slot.x, slot.y, slot.scale, slot.rotDeg);
-            } else if (slot.keepOriginal) {
+            if (keepOriginalParts[k]) {
               const origData = me.avatar.parts?.[k];
               if (origData && origData.mode === 'custom' && origData.imgElement) {
                 ctx.drawImage(origData.imgElement, 0, 0, 240, 240);
@@ -7396,13 +7422,19 @@
                 drawPresetPart(ctx, k, origData?.presetIndex ?? 0, mySockets[k].x, mySockets[k].y, me.avatar.hairColor, 1);
               }
             }
-            if (activeSurgeryPart === k) {
+          });
+
+          // 2. 畫出所有啟用的戰利品五官，並標示當前選中的零件紅框
+          placedItems.forEach((layer, idx) => {
+            if (!layer.active) return;
+            drawAuctionPartItem(ctx, layer.item, layer.x, layer.y, layer.scale, layer.rotDeg);
+            if (idx === selectedPlacedIdx) {
               ctx.save();
               ctx.strokeStyle = '#ff6b6b';
               ctx.lineWidth = 2;
               ctx.setLineDash([4, 3]);
               ctx.beginPath();
-              ctx.arc(slot.x, slot.y, 24, 0, Math.PI * 2);
+              ctx.arc(layer.x, layer.y, 26, 0, Math.PI * 2);
               ctx.stroke();
               ctx.restore();
             }
@@ -7417,13 +7449,39 @@
           const cy = e.touches ? e.touches[0].clientY : e.clientY;
           return { x: (cx - r.left) * (240 / r.width), y: (cy - r.top) * (240 / r.height) };
         };
-        c.onmousedown = c.ontouchstart = (e) => { e.preventDefault(); dragging = true; };
+
+        c.onmousedown = c.ontouchstart = (e) => {
+          e.preventDefault();
+          const p = getPos(e);
+          // 支援直接在畫布上點擊距離最近的戰利品五官來切換選取並拖曳！
+          let bestIdx = selectedPlacedIdx;
+          let bestDist = 999;
+          placedItems.forEach((layer, idx) => {
+            if (!layer.active) return;
+            const d = Math.hypot(layer.x - p.x, layer.y - p.y);
+            if (d < 38 && d <= bestDist) {
+              bestDist = d;
+              bestIdx = idx;
+            }
+          });
+          if (bestIdx !== selectedPlacedIdx && bestIdx >= 0) {
+            selectedPlacedIdx = bestIdx;
+          }
+          dragging = true;
+          if (selectedPlacedIdx >= 0 && placedItems[selectedPlacedIdx]?.active) {
+            placedItems[selectedPlacedIdx].x = Math.max(25, Math.min(215, p.x));
+            placedItems[selectedPlacedIdx].y = Math.max(25, Math.min(215, p.y));
+            redraw();
+          }
+        };
+
         c.onmousemove = c.ontouchmove = (e) => {
           if (!dragging) return;
           e.preventDefault();
+          if (selectedPlacedIdx < 0 || !placedItems[selectedPlacedIdx]?.active) return;
           const p = getPos(e);
-          surgeryLayout[activeSurgeryPart].x = Math.max(25, Math.min(215, p.x));
-          surgeryLayout[activeSurgeryPart].y = Math.max(25, Math.min(215, p.y));
+          placedItems[selectedPlacedIdx].x = Math.max(25, Math.min(215, p.x));
+          placedItems[selectedPlacedIdx].y = Math.max(25, Math.min(215, p.y));
           redraw();
         };
         window.addEventListener('mouseup', () => dragging = false);
@@ -7436,32 +7494,33 @@
         NetSync.sendGameAction('SURGERY_BID_PICK', { round: curBidRound, playerId: me.id, itemIdx: idx });
       };
 
-      window._selectSurgerySlot = (slotKey) => {
-        activeSurgeryPart = slotKey;
+      window._toggleOrigSurgeryPart = (partKey) => {
+        keepOriginalParts[partKey] = !keepOriginalParts[partKey];
+        SoundFX.pop();
         renderPlasticView();
       };
 
-      window._equipSurgeryItem = (itemId, keepOrig) => {
-        const slot = surgeryLayout[activeSurgeryPart];
-        if (!itemId) {
-          slot.item = null;
-          slot.keepOriginal = keepOrig;
-        } else {
-          const bag = playerInventory[me.id] || [];
-          const found = bag.find(x => x.id === itemId);
-          if (found) {
-            slot.item = found;
-            slot.keepOriginal = false;
-          }
+      window._selectPlacedSurgeryItem = (idx) => {
+        selectedPlacedIdx = idx;
+        if (placedItems[idx] && !placedItems[idx].active) {
+          placedItems[idx].active = true;
         }
         SoundFX.pop();
-        if (window._redrawSurgery) window._redrawSurgery();
+        renderPlasticView();
+      };
+
+      window._togglePlacedItemActive = (idx) => {
+        if (!placedItems[idx]) return;
+        placedItems[idx].active = !placedItems[idx].active;
+        SoundFX.pop();
+        renderPlasticView();
       };
 
       window._adjSurgerySlot = (dScale, dRot) => {
-        const slot = surgeryLayout[activeSurgeryPart];
-        slot.scale = Math.max(0.4, Math.min(2.4, slot.scale + dScale));
-        slot.rotDeg = (slot.rotDeg + dRot) % 360;
+        if (selectedPlacedIdx < 0 || !placedItems[selectedPlacedIdx]) return;
+        const layer = placedItems[selectedPlacedIdx];
+        layer.scale = Math.max(0.4, Math.min(2.4, layer.scale + dScale));
+        layer.rotDeg = (layer.rotDeg + dRot) % 360;
         if (window._redrawSurgery) window._redrawSurgery();
       };
 
